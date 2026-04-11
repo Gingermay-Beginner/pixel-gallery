@@ -133,13 +133,13 @@ function updateCatSize(){
 const cat = { wx: 0, y:0, dir:'right', spd:3.2, walkFrame:0, moving:false, onFrame:false, frameIdx:-1, jumpVy:0, jumping:false };
 let walkTick=0;
 
-function floorY(){ return H*0.73; }   // floor line (visual)
-function catFloorY(){ return H*0.73 + CH; }  // cat feet target
+function floorY(){ return H*0.73; }
+function catFloorY(){ return floorY() + CH/2; }  // cat.y when standing on floor
 function frameTopY(i){
   const r=getPaintRect(i);
   if(!r) return catFloorY();
   const FB=Math.max(r.pw*0.035,9);
-  return r.py - FB*2 + CH;  // feet land on top of frame
+  return r.py - FB*2 + CH/2;  // cat center when standing on frame top
 }
 function frameLeft(i){
   const r=getPaintRect(i);
@@ -340,8 +340,7 @@ function draw(){
     const bob = cat.moving ? Math.sin(walkTick*0.30)*catScale*0.7 : 0;
     const tilt = cat.moving ? Math.sin(walkTick*0.15)*0.06 : 0;
     ctx.save();
-    // cat.y = feet position
-    ctx.translate(screenCatX + CW/2, cat.y - CH + bob);
+    ctx.translate(screenCatX + CW/2, cat.y + bob);
     ctx.rotate(tilt);
     if(cat.dir==='right') ctx.scale(-1,1);
     ctx.imageSmoothingEnabled=false;
