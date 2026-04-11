@@ -127,7 +127,7 @@ let cameraX = 0; // world X at center of screen
 const CAT_COLS=20, CAT_ROWS=16, CAT_FRAMES=3;
 let catScale=4, CW=80, CH=64;
 function updateCatSize(){
-  catScale = Math.max(2, Math.round(H*0.085/CAT_ROWS));
+  catScale = Math.max(2, Math.round(H*0.05/CAT_ROWS));
   CW=CAT_COLS*catScale; CH=CAT_ROWS*catScale;
 }
 const cat = { wx: 0, y:0, dir:'right', spd:3.2, walkFrame:0, moving:false };
