@@ -54,29 +54,7 @@ canvas { display:block; }
 .pc-date{font-size:0.68rem;color:#886644;margin-top:3px;letter-spacing:0.08em;}
 .pc-desc{font-size:0.8rem;color:#3a1e08;margin-top:10px;line-height:1.9;white-space:pre-line;font-style:italic;}
 .pc-stamp-col{display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0;}
-.pc-stamp{
-  width:52px; height:60px;
-  position:relative;
-  display:flex; align-items:center; justify-content:center; font-size:1.3rem;
-  background:#ddeeff;
-  box-shadow: inset 0 0 0 5px white, 1px 2px 5px rgba(0,0,0,0.2);
-  flex-shrink:0;
-  overflow:visible;
-}
-/* Perforations: dot centers sit exactly on stamp edges */
-.pc-stamp::before{
-  content:''; position:absolute; inset:-6px; z-index:2; pointer-events:none;
-  background:
-    radial-gradient(circle, white 3px, transparent 3px) 0px 2px             / 8px 8px repeat-x,
-    radial-gradient(circle, white 3px, transparent 3px) left 0px bottom 2px / 8px 8px repeat-x,
-    radial-gradient(circle, white 3px, transparent 3px) 2px 0px             / 8px 8px repeat-y,
-    radial-gradient(circle, white 3px, transparent 3px) right 2px top 0px   / 8px 8px repeat-y,
-    radial-gradient(circle, white 3px, transparent 3px) 6px  6px  / 12px 12px no-repeat,
-    radial-gradient(circle, white 3px, transparent 3px) right 6px top    6px / 12px 12px no-repeat,
-    radial-gradient(circle, white 3px, transparent 3px) 6px  bottom 6px     / 12px 12px no-repeat,
-    radial-gradient(circle, white 3px, transparent 3px) right 6px bottom 6px/ 12px 12px no-repeat;
-}
-.pc-stamp span { position:relative; z-index:3; }
+.pc-stamp-canvas { display:block; }
 .pc-postmark{width:52px;height:26px;border:1.5px solid rgba(180,80,60,0.45);border-radius:50%;
   display:flex;align-items:center;justify-content:center;
   font-size:0.48rem;color:rgba(180,80,60,0.55);letter-spacing:0.04em;text-align:center;font-style:italic;line-height:1.2;}
@@ -102,7 +80,7 @@ canvas { display:block; }
             <div class="pc-desc"  id="ov-desc"></div>
           </div>
           <div class="pc-stamp-col">
-            <div class="pc-stamp"><span id="ov-stamp"></span></div>
+            <canvas class="pc-stamp-canvas" id="ov-stamp" width="76" height="88"></canvas>
             <div class="pc-postmark" id="ov-mark"></div>
           </div>
         </div>
@@ -190,7 +168,43 @@ function openOverlay(i){
   document.getElementById('ov-title').textContent=p.title;
   document.getElementById('ov-date').textContent=p.date;
   document.getElementById('ov-desc').textContent=p.desc;
-  document.getElementById('ov-stamp').textContent=p.stamp;
+  // Draw stamp on canvas
+  const sc = document.getElementById('ov-stamp');
+  const sx2 = sc.getContext('2d');
+  const SW=76, SH=88, PAD=6, R=3, GAP=8;
+  sx2.clearRect(0,0,SW,SH);
+  // Background
+  sx2.fillStyle='#ddeeff';
+  sx2.fillRect(PAD,PAD,SW-PAD*2,SH-PAD*2);
+  // White inner border
+  sx2.strokeStyle='white'; sx2.lineWidth=5;
+  sx2.strokeRect(PAD+2.5,PAD+2.5,SW-PAD*2-5,SH-PAD*2-5);
+  // Emoji
+  sx2.font=`${20}px sans-serif`; sx2.textAlign='center'; sx2.textBaseline='middle';
+  sx2.fillText(p.stamp, SW/2, SH/2);
+  // Perforations — draw AFTER so they're on top
+  sx2.fillStyle='white';
+  function dots(x0,y0,dx,dy,n){
+    for(let i=0;i<n;i++){
+      sx2.beginPath();
+      sx2.arc(x0+dx*i, y0+dy*i, R, 0, Math.PI*2);
+      sx2.fill();
+    }
+  }
+  const cols = Math.floor((SW-PAD*2)/GAP)+1;
+  const rows = Math.floor((SH-PAD*2)/GAP)+1;
+  // top & bottom
+  for(let i=0;i<cols;i++){
+    const x=PAD+i*GAP; if(x>SW-PAD) break;
+    sx2.beginPath(); sx2.arc(x,PAD,R,0,Math.PI*2); sx2.fill();
+    sx2.beginPath(); sx2.arc(x,SH-PAD,R,0,Math.PI*2); sx2.fill();
+  }
+  // left & right
+  for(let i=1;i<rows-1;i++){
+    const y=PAD+i*GAP; if(y>SH-PAD) break;
+    sx2.beginPath(); sx2.arc(PAD,y,R,0,Math.PI*2); sx2.fill();
+    sx2.beginPath(); sx2.arc(SW-PAD,y,R,0,Math.PI*2); sx2.fill();
+  }
   document.getElementById('ov-mark').textContent=p.date.slice(0,7)+"\nMay's\nMuseum";
   overlay.classList.add('show'); overlayOpen=true;
   document.getElementById('dpad').classList.add('hidden');
