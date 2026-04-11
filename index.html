@@ -318,13 +318,41 @@ function draw(){
   {
     const screenCatX = cat.wx - cameraX + W/2 - CW/2;
     const bob = cat.moving ? Math.sin(walkTick*0.30)*catScale*0.7 : 0;
-    const tilt = cat.moving ? Math.sin(walkTick*0.15)*0.06 : 0; // gentle sway
+    const tilt = cat.moving ? Math.sin(walkTick*0.15)*0.06 : 0;
     ctx.save();
     ctx.translate(screenCatX + CW/2, floorY()-CH/2 + bob);
     ctx.rotate(tilt);
     if(cat.dir==='left') ctx.scale(-1,1);
     ctx.imageSmoothingEnabled=false;
     ctx.drawImage(catImg,-CW/2,-CH/2,CW,CH);
+
+    // Animated tail — drawn on top, swinging
+    const tailTick = cat.moving ? walkTick*0.18 : Date.now()*0.002;
+    const swing = Math.sin(tailTick)*0.5 + 0.6; // 0.1 ~ 1.1
+    const s = catScale;
+    // Tail base: right side of cat body, lower area
+    const tx = CW/2 - s*0.5;   // right edge
+    const ty = s*2;             // mid body height
+    // Control point swings upward
+    const cx1 = tx + s*2;
+    const cy1 = ty - s*3 * swing;
+    const ex  = tx + s*1.5;
+    const ey  = ty - s*5 * swing;
+    ctx.strokeStyle='#111111';
+    ctx.lineWidth = s*1.2;
+    ctx.lineCap='round';
+    ctx.beginPath();
+    ctx.moveTo(tx, ty);
+    ctx.quadraticCurveTo(cx1, cy1, ex, ey);
+    ctx.stroke();
+    // Tail tip (slightly lighter)
+    ctx.strokeStyle='#2d2d2d';
+    ctx.lineWidth=s*0.8;
+    ctx.beginPath();
+    ctx.moveTo(ex, ey);
+    ctx.quadraticCurveTo(ex+s*0.8, ey-s*1.2, ex+s*0.3, ey-s*2);
+    ctx.stroke();
+
     ctx.restore();
   }
 
