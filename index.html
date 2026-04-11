@@ -130,7 +130,8 @@ function updateCatSize(){
   catScale = Math.max(2, Math.round(H*0.085/CAT_ROWS));
   CW=CAT_COLS*catScale; CH=CAT_ROWS*catScale;
 }
-const cat = { wx: 0, y:0, dir:'right', spd:3.2 };
+const cat = { wx: 0, y:0, dir:'right', spd:3.2, walkFrame:0, moving:false };
+let walkTick=0;
 
 function floorY(){ return H*0.73; }
 
@@ -314,12 +315,31 @@ function draw(){
   }
 
   // === Cat ===
-  if(catImg.complete){
+  {
     const screenCatX = cat.wx - cameraX + W/2 - CW/2;
-    ctx.save(); ctx.translate(screenCatX, floorY()-CH);
+    // Bob: vertical bounce when moving
+    const bob = cat.moving ? Math.sin(walkTick*0.28)*catScale*0.6 : 0;
+    const baseY = floorY()-CH + bob;
+    // Leg swing: 4-frame cycle
+    const legPhase = cat.moving ? Math.floor(walkTick/6)%4 : 0;
+    ctx.save();
+    ctx.translate(screenCatX, baseY);
     if(cat.dir==='left'){ctx.translate(CW,0);ctx.scale(-1,1);}
     ctx.imageSmoothingEnabled=false;
+    // Draw legs animated over the sprite
     ctx.drawImage(catImg,0,0,CW,CH);
+    // Animated legs overlay
+    const s=catScale;
+    ctx.fillStyle='#111111';
+    // Front legs: pixel positions on 16×20 grid, scaled
+    // Front leg pair at grid col 6-7, back leg pair at col 9-10, bottom rows 14-16
+    const legSwing = [[-1,0],[0,1],[1,0],[0,-1]][legPhase];
+    // Front legs
+    ctx.fillRect((6)*s+(legSwing[0]*s*0.6|0), 14*s, 2*s, 3*s);
+    ctx.fillRect((8)*s+(-legSwing[0]*s*0.6|0), 14*s, 2*s, 3*s);
+    // Back legs
+    ctx.fillRect((10)*s+(-legSwing[0]*s*0.5|0), 14*s, 2*s, 3*s);
+    ctx.fillRect((12)*s+(legSwing[0]*s*0.5|0), 14*s, 2*s, 3*s);
     ctx.restore();
   }
 
@@ -338,6 +358,8 @@ function update(){
   let dx=0;
   if(keys['ArrowLeft']||keys['a']||keys['A'])  {dx=-cat.spd;cat.dir='left';}
   if(keys['ArrowRight']||keys['d']||keys['D']) {dx=cat.spd;cat.dir='right';}
+  cat.moving = dx!==0;
+  if(cat.moving) walkTick++; else walkTick=0;
 
   const minWX=HALL_PAD()-W*0.1;
   const maxWX=totalWidth()-HALL_PAD()+W*0.1;
