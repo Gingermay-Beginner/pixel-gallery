@@ -139,7 +139,7 @@ function frameTopY(i){
   const r=getPaintRect(i);
   if(!r) return catFloorY();
   const FB=Math.max(r.pw*0.035,9);
-  return r.py - FB*2 - CH/2;  // cat center when feet on frame top
+  return r.py - FB*2 - CH/2 + 6;
 }
 function frameLeft(i){
   const r=getPaintRect(i);
