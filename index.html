@@ -173,9 +173,11 @@ function openOverlay(i){
   const sx2 = sc.getContext('2d');
   const SW=76, SH=88, PAD=6, R=3, GAP=8;
   sx2.clearRect(0,0,SW,SH);
-  // Background
+  // Background + shadow
+  sx2.shadowColor='rgba(0,0,0,0.25)'; sx2.shadowBlur=6; sx2.shadowOffsetX=2; sx2.shadowOffsetY=3;
   sx2.fillStyle='#ddeeff';
   sx2.fillRect(PAD,PAD,SW-PAD*2,SH-PAD*2);
+  sx2.shadowColor='transparent';
   // White inner border
   sx2.strokeStyle='white'; sx2.lineWidth=5;
   sx2.strokeRect(PAD+2.5,PAD+2.5,SW-PAD*2-5,SH-PAD*2-5);
