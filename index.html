@@ -262,16 +262,15 @@ function draw(){
     // Label plate on wall below frame
     const lw=pw+FB*2, lx=sx-FB, ly=py+ph+FB*2+6;
     ctx.fillStyle='#f5ecd5';
-    ctx.beginPath(); ctx.roundRect(lx,ly,lw,52,3); ctx.fill();
+    ctx.beginPath(); ctx.roundRect(lx,ly,lw,30,3); ctx.fill();
     ctx.strokeStyle='#c8a050'; ctx.lineWidth=1; ctx.stroke();
 
-    const near=Math.abs(cat.wx-(paintingWorldX(i)))<PAINTING_SPACING()*0.4;
     ctx.fillStyle='#2a1408';
-    ctx.font=`bold ${Math.min(13,lw*0.09)}px 'PingFang SC',sans-serif`;
-    ctx.textAlign='center'; ctx.fillText(paintings[i].title, sx+pw/2, ly+18);
+    ctx.font=`bold ${Math.min(12,lw*0.085)}px 'PingFang SC',sans-serif`;
+    ctx.textAlign='center'; ctx.fillText(paintings[i].title, sx+pw/2, ly+13);
     ctx.fillStyle='#886644';
-    ctx.font=`${Math.min(10,lw*0.07)}px 'PingFang SC',sans-serif`;
-    ctx.fillText(paintings[i].date, sx+pw/2, ly+32);
+    ctx.font=`${Math.min(9,lw*0.065)}px 'PingFang SC',sans-serif`;
+    ctx.fillText(paintings[i].date, sx+pw/2, ly+25);
 
   }
 
