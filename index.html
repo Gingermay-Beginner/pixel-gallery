@@ -55,21 +55,28 @@ canvas { display:block; }
 .pc-desc{font-size:0.8rem;color:#3a1e08;margin-top:10px;line-height:1.9;white-space:pre-line;font-style:italic;}
 .pc-stamp-col{display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0;}
 .pc-stamp{
-  width:42px;height:50px;
+  width:46px;height:52px;
   position:relative;
-  display:flex;align-items:center;justify-content:center;font-size:1.3rem;
+  display:flex;align-items:center;justify-content:center;font-size:1.35rem;
   background:#ddeeff;
   filter:drop-shadow(1px 2px 4px rgba(0,0,0,0.18));
   flex-shrink:0;
 }
+/* White inner border — covers jagged inner edge */
+.pc-stamp::after{
+  content:'';position:absolute;inset:3px;z-index:1;pointer-events:none;
+  border:3px solid white;
+}
+/* Perforations along outer edge */
 .pc-stamp::before{
   content:'';position:absolute;inset:-5px;z-index:2;pointer-events:none;
   background:
-    radial-gradient(circle, white 3.5px, transparent 3.5px) top    0px  left 4px / 8px 8px repeat-x,
-    radial-gradient(circle, white 3.5px, transparent 3.5px) bottom 0px  left 4px / 8px 8px repeat-x,
-    radial-gradient(circle, white 3.5px, transparent 3.5px) left   0px  top  4px / 8px 8px repeat-y,
-    radial-gradient(circle, white 3.5px, transparent 3.5px) right  0px  top  4px / 8px 8px repeat-y;
+    radial-gradient(circle, white 3.2px, transparent 3.2px) top    0px  left 3px / 7px 7px repeat-x,
+    radial-gradient(circle, white 3.2px, transparent 3.2px) bottom 0px  left 3px / 7px 7px repeat-x,
+    radial-gradient(circle, white 3.2px, transparent 3.2px) left   0px  top  3px / 7px 7px repeat-y,
+    radial-gradient(circle, white 3.2px, transparent 3.2px) right  0px  top  3px / 7px 7px repeat-y;
 }
+.pc-stamp span { position:relative; z-index:3; }
 .pc-postmark{width:52px;height:26px;border:1.5px solid rgba(180,80,60,0.45);border-radius:50%;
   display:flex;align-items:center;justify-content:center;
   font-size:0.48rem;color:rgba(180,80,60,0.55);letter-spacing:0.04em;text-align:center;font-style:italic;line-height:1.2;}
@@ -95,7 +102,7 @@ canvas { display:block; }
             <div class="pc-desc"  id="ov-desc"></div>
           </div>
           <div class="pc-stamp-col">
-            <div class="pc-stamp" id="ov-stamp"></div>
+            <div class="pc-stamp"><span id="ov-stamp"></span></div>
             <div class="pc-postmark" id="ov-mark"></div>
           </div>
         </div>
