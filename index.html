@@ -130,10 +130,29 @@ function updateCatSize(){
   catScale = Math.max(2, Math.round(H*0.05/CAT_ROWS));
   CW=CAT_COLS*catScale; CH=CAT_ROWS*catScale;
 }
-const cat = { wx: 0, y:0, dir:'right', spd:3.2, walkFrame:0, moving:false };
+const cat = { wx: 0, y:0, dir:'right', spd:3.2, walkFrame:0, moving:false, onFrame:false, frameIdx:-1, jumpVy:0, jumping:false };
 let walkTick=0;
 
 function floorY(){ return H*0.73; }
+function frameTopY(i){
+  const r=getPaintRect(i);
+  if(!r) return floorY();
+  const FB=Math.max(r.pw*0.035,9);
+  return r.py - FB*2;
+}
+function frameLeft(i){
+  const r=getPaintRect(i);
+  if(!r) return 0;
+  const FB=Math.max(r.pw*0.035,9);
+  const sx = r.wx - cameraX + W/2;
+  return r.wx - FB*2;
+}
+function frameRight(i){
+  const r=getPaintRect(i);
+  if(!r) return 0;
+  const FB=Math.max(r.pw*0.035,9);
+  return r.wx + r.pw + FB*2;
+}
 
 const keys={};
 document.addEventListener('keydown',e=>{
@@ -320,14 +339,13 @@ function draw(){
     const bob = cat.moving ? Math.sin(walkTick*0.30)*catScale*0.7 : 0;
     const tilt = cat.moving ? Math.sin(walkTick*0.15)*0.06 : 0;
     ctx.save();
-    ctx.translate(screenCatX + CW/2, floorY()-CH/2 + bob);
+    ctx.translate(screenCatX + CW/2, cat.y - CH/2 + bob);
     ctx.rotate(tilt);
     if(cat.dir==='left') ctx.scale(-1,1);
     ctx.imageSmoothingEnabled=false;
     const frame = cat.moving ? Math.floor(walkTick/8) % CAT_FRAMES : 0;
     ctx.drawImage(catImg, frame*CAT_COLS*catScale, 0, CAT_COLS*catScale, CAT_ROWS*catScale,
                   -CW/2, -CH/2, CW, CH);
-
     ctx.restore();
   }
 
@@ -346,8 +364,53 @@ function update(){
   let dx=0;
   if(keys['ArrowLeft']||keys['a']||keys['A'])  {dx=-cat.spd;cat.dir='left';}
   if(keys['ArrowRight']||keys['d']||keys['D']) {dx=cat.spd;cat.dir='right';}
+
+  // Jump up to frame top / down to floor
+  if((keys['ArrowUp']||keys['w']||keys['W']) && !cat.jumping && !cat.onFrame){
+    // find nearest painting
+    let best=-1, bd=Infinity;
+    for(let i=0;i<paintings.length;i++){
+      const d=Math.abs(cat.wx - paintingWorldX(i));
+      if(d<bd){bd=d;best=i;}
+    }
+    if(best>=0 && bd < PAINTING_SPACING()*0.6){
+      cat.jumpVy = -12;
+      cat.jumping = true;
+      cat.frameIdx = best;
+    }
+  }
+  if((keys['ArrowDown']||keys['s']||keys['S']) && cat.onFrame && !cat.jumping){
+    cat.jumpVy = 2;
+    cat.jumping = true;
+    cat.onFrame = false;
+    cat.frameIdx = -1;
+  }
+
+  // Gravity / jump
+  if(cat.jumping){
+    cat.y += cat.jumpVy;
+    cat.jumpVy += 0.8;
+    const floor = cat.onFrame ? floorY() : floorY();
+    if(cat.frameIdx >= 0 && !cat.onFrame){
+      const target = frameTopY(cat.frameIdx);
+      if(cat.y <= target && cat.jumpVy < 0){
+        cat.y = target; cat.jumpVy = 0; cat.jumping = false; cat.onFrame = true;
+      }
+    }
+    if(cat.y >= floorY()){
+      cat.y = floorY(); cat.jumpVy = 0; cat.jumping = false; cat.onFrame = false; cat.frameIdx = -1;
+    }
+  }
+
+  // Clamp cat to frame bounds when on frame
+  if(cat.onFrame && cat.frameIdx >= 0){
+    const l = frameLeft(cat.frameIdx), r = frameRight(cat.frameIdx);
+    cat.wx = Math.max(l + CW/2, Math.min(r - CW/2, cat.wx + dx));
+    dx = 0;
+  }
+
   cat.moving = dx!==0;
-  if(cat.moving) walkTick++; else walkTick=0;
+  if(cat.moving) walkTick++; else if(!cat.jumping) walkTick=0;
 
   const minWX=HALL_PAD()-W*0.1;
   const maxWX=totalWidth()-HALL_PAD()+W*0.1;
@@ -361,6 +424,7 @@ function update(){
 function initCat(){
   updateCatSize();
   cat.wx=paintingWorldX(0);
+  cat.y=floorY();
   cameraX=cat.wx;
 }
 catImg.onload=initCat; if(catImg.complete) initCat();
