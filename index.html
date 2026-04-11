@@ -7,291 +7,214 @@
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
 html,body { width:100%; height:100%; background:#111; overflow:hidden;
-  font-family:'PingFang SC',sans-serif; }
-canvas { display:block; touch-action:none; }
-
-/* D-pad */
-#dpad {
-  position:fixed; bottom:18px; right:16px;
-  display:grid; grid-template-columns:repeat(3,40px); grid-template-rows:repeat(3,40px); gap:3px;
-  pointer-events:none;
-}
-.db {
-  width:40px; height:40px;
-  background:rgba(255,255,255,0.10); border:1px solid rgba(255,255,255,0.18); border-radius:8px;
-  display:flex; align-items:center; justify-content:center;
-  font-size:16px; color:rgba(255,255,255,0.6);
-  pointer-events:all; cursor:pointer; -webkit-tap-highlight-color:transparent;
-}
-.db:active { background:rgba(255,255,255,0.25); }
-.de { visibility:hidden; pointer-events:none; }
+  font-family:'PingFang SC',sans-serif; touch-action:none; }
+canvas { display:block; }
 </style>
 </head>
 <body>
 <canvas id="c"></canvas>
-<div id="dpad">
-  <div class="de"></div><div class="db" id="bu">▲</div><div class="de"></div>
-  <div class="db" id="bl">◀</div><div class="de"></div><div class="db" id="br">▶</div>
-  <div class="de"></div><div class="db" id="bd">▼</div><div class="de"></div>
-</div>
-
 <script>
 const paintings = [
   { title:'小龙虾自画像', date:'2026-03-23', desc:'小龙虾，在数字的海里。', src:'img/crayfish.png' },
-  { title:'火山之夜',     date:'2026-04-10', desc:'火焰比星星还亮。', src:'img/volcano.png' },
-  { title:'观鲸',         date:'2026-04-11', desc:'它从船底穿过去了。', src:'img/whale.png' },
+  { title:'火山之夜',     date:'2026-04-10', desc:'火焰比星星还亮。',         src:'img/volcano.png' },
+  { title:'观鲸',         date:'2026-04-11', desc:'它从船底穿过去了。',       src:'img/whale.png' },
 ];
-
-// Preload images
 const imgs = paintings.map(p => { const i=new Image(); i.src=p.src; return i; });
-const catImg = new Image();
-catImg.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAAB4CAYAAAANHffOAAAB0klEQVR4nO3bsW3bQABAUcvIAurZuMwYmSCzZILAE2SWTOAxXKphrxGSMg0J42QxXyTeK68QT/g46HA6np4Gnc/nP0vj1+v1NPpZhUeb/3PxUP4RICZATICYALHVX/613cKoanexl/lbATEBYgLEBIgJEPuy9QPutRs5KisgJkBMgJgAMQFiJ7uU29zrjMgKiAkQEyAmQEyA2PBZ0Pz2fXF8+vb705O5p73M0wqICRATICZATICYs6AbOQs6CAFiAsQEiAkQWz0Lmi/vi+PTy9fNJlOqvq8VEBMgJkBMgJgAsc3Pgi4/fy2Ov7z+2MXnr3EWdBACxASICRATILb5m/J75035gxMgJkBMgJgAseHb0dM0LY7P8/zpyfwPjzZ/KyAmQEyAmAAxAWLD/4it7SLWbL27qObjH7GDECAmQEyAmAAx74jdyC7oIASICRATICZAzL2gD7gXdHACxASICRATICZATICYADEBYgLEBIgJEBMgJkBMgJgAMQFiAsQEiAkQEyAmQEyAmAAxAWICxASICRATIHa3d8S2vkU8ai+3u62AmAAxAWICxASIDe+CHm23M6r6vmvPtQJiAsQEiAkQEyAmQEyAmAAxAWICxASI/QVGE1qELha4JAAAAABJRU5ErkJggg==';
+const catImg = new Image(); catImg.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAAB4CAYAAAANHffOAAAB0klEQVR4nO3bsW3bQABAUcvIAurZuMwYmSCzZILAE2SWTOAxXKphrxGSMg0J42QxXyTeK68QT/g46HA6np4Gnc/nP0vj1+v1NPpZhUeb/3PxUP4RICZATICYALHVX/613cKoanexl/lbATEBYgLEBIgJEPuy9QPutRs5KisgJkBMgJgAMQFiJ7uU29zrjMgKiAkQEyAmQEyA2PBZ0Pz2fXF8+vb705O5p73M0wqICRATICZATICYs6AbOQs6CAFiAsQEiAkQWz0Lmi/vi+PTy9fNJlOqvq8VEBMgJkBMgJgAsc3Pgi4/fy2Ov7z+2MXnr3EWdBACxASICRATILb5m/J75035gxMgJkBMgJgAseHb0dM0LY7P8/zpyfwPjzZ/KyAmQEyAmAAxAWLD/4it7SLWbL27qObjH7GDECAmQEyAmAAx74jdyC7oIASICRATICZAzL2gD7gXdHACxASICRATICZATICYADEBYgLEBIgJEBMgJkBMgJgAMQFiAsQEiAkQEyAmQEyAmAAxAWICxASICRATIHa3d8S2vkU8ai+3u62AmAAxAWICxASIDe+CHm23M6r6vmvPtQJiAsQEiAkQEyAmQEyAmAAxAWICxASI/QVGE1qELha4JAAAAABJRU5ErkJggg==';
 
 const canvas = document.getElementById('c');
 const ctx = canvas.getContext('2d');
 ctx.imageSmoothingEnabled = false;
 
 let W, H;
-function resize() {
-  W = canvas.width  = window.innerWidth;
-  H = canvas.height = window.innerHeight;
-}
-resize();
-window.addEventListener('resize', resize);
+function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+resize(); window.addEventListener('resize', resize);
 
-// State
+// Cat state machine
+// states: entering | viewing | leaving | transitioning
 let cur = 0;
-let transitioning = false;
-let transDir = 0;   // -1 left, +1 right
-let transT = 0;     // 0→1
-const TRANS_DUR = 18; // frames
+let state = 'entering';
+let stateT = 0;
 
-const cat = { x: 0, y: 0, spd: 2.8, frame: 0, ft: 0, dir: 'right' };
-const CAT_PX = 16, CAT_PX_H = 20;
-const CAT_SCALE = 4;
-const CW = CAT_PX * CAT_SCALE, CH = CAT_PX_H * CAT_SCALE;
-
-const keys = {};
-document.addEventListener('keydown', e => {
-  keys[e.key]=true;
-  if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)) e.preventDefault();
-});
-document.addEventListener('keyup', e => keys[e.key]=false);
-['bu','bd','bl','br'].forEach((id,i) => {
-  const k = ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'][i];
-  const el = document.getElementById(id);
-  ['pointerdown','touchstart'].forEach(ev => el.addEventListener(ev, e => { e.preventDefault(); keys[k]=true; }, {passive:false}));
-  ['pointerup','pointerleave','touchend','touchcancel'].forEach(ev => el.addEventListener(ev, () => keys[k]=false));
-});
-
-// Swipe
-let sx=0;
-canvas.addEventListener('touchstart', e => { sx=e.touches[0].clientX; }, {passive:true});
-canvas.addEventListener('touchend', e => {
-  const dx = e.changedTouches[0].clientX - sx;
-  if (Math.abs(dx)>50 && !transitioning) {
-    if (dx < 0 && cur < paintings.length-1) startTransition(1);
-    if (dx > 0 && cur > 0) startTransition(-1);
-  }
-}, {passive:true});
-
-function startTransition(dir) {
-  transDir = dir;
-  transT = 0;
-  transitioning = true;
+const CAT_COLS = 16, CAT_ROWS = 20;
+let catScale, CW, CH;
+function updateCatSize() {
+  catScale = Math.max(2, Math.round(H * 0.09 / CAT_ROWS));
+  CW = CAT_COLS * catScale;
+  CH = CAT_ROWS * catScale;
 }
 
-function drawRoom(offsetX, idx) {
+const cat = { x:0, y:0, dir:'right', looking:false };
+
+function floorY() { return H * 0.71; }
+function catY()   { return floorY() - CH; }
+
+// Time constants (frames at ~60fps)
+const ENTER_DUR   = 80;   // walk in from left
+const VIEW_DUR    = 160;  // stand and look
+const LEAVE_DUR   = 80;   // walk to right edge
+const TRANS_DUR   = 30;   // slide to next room
+
+let transSlide = 0; // 0→W
+
+function initEnter() {
+  state = 'entering'; stateT = 0;
+  cat.x = -CW - 10;
+  cat.y = catY();
+  cat.dir = 'right';
+  cat.looking = false;
+}
+
+function targetX() { return W * 0.5 - CW / 2; } // center in front of painting
+
+function drawRoom(ox, idx) {
   if (idx < 0 || idx >= paintings.length) return;
   const p = paintings[idx];
   const img = imgs[idx];
 
-  // Wall
-  ctx.save();
-  ctx.translate(offsetX, 0);
+  ctx.save(); ctx.translate(ox, 0);
 
-  // Background gradient
+  // Background
   const bg = ctx.createLinearGradient(0,0,0,H);
-  bg.addColorStop(0, '#221c14');
-  bg.addColorStop(0.6, '#1a1510');
-  bg.addColorStop(1, '#0e0c08');
-  ctx.fillStyle = bg;
-  ctx.fillRect(0, 0, W, H);
+  bg.addColorStop(0,'#221c14'); bg.addColorStop(0.6,'#1a1510'); bg.addColorStop(1,'#0e0c08');
+  ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
 
   // Spotlight
-  const spot = ctx.createRadialGradient(W/2,H*0.3,10,W/2,H*0.3,W*0.5);
-  spot.addColorStop(0, 'rgba(255,240,180,0.09)');
-  spot.addColorStop(1, 'rgba(0,0,0,0)');
-  ctx.fillStyle = spot;
-  ctx.fillRect(0, 0, W, H);
+  const sp = ctx.createRadialGradient(W/2,H*0.28,10,W/2,H*0.28,W*0.48);
+  sp.addColorStop(0,'rgba(255,240,180,0.10)'); sp.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=sp; ctx.fillRect(0,0,W,H);
 
   // Floor
-  const floorY = H * 0.72;
-  const floor = ctx.createLinearGradient(0, floorY, 0, H);
-  floor.addColorStop(0, '#2a2018');
-  floor.addColorStop(1, '#1a130e');
-  ctx.fillStyle = floor;
-  ctx.fillRect(0, floorY, W, H - floorY);
-  // Floor line
-  ctx.strokeStyle = 'rgba(200,160,60,0.18)';
-  ctx.lineWidth = 1;
-  ctx.beginPath(); ctx.moveTo(0, floorY); ctx.lineTo(W, floorY); ctx.stroke();
+  const fy = floorY();
+  ctx.fillStyle='#221a10'; ctx.fillRect(0,fy,W,H-fy);
+  ctx.strokeStyle='rgba(200,160,60,0.18)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(0,fy); ctx.lineTo(W,fy); ctx.stroke();
 
-  // Painting frame
-  if (img.complete && img.naturalWidth > 0) {
-    const maxPW = Math.min(W * 0.68, 520);
-    const maxPH = H * 0.48;
-    const ar = img.naturalWidth / img.naturalHeight;
-    let pw = maxPW, ph = pw / ar;
-    if (ph > maxPH) { ph = maxPH; pw = ph * ar; }
+  // Painting
+  if (img.complete && img.naturalWidth>0) {
+    const maxPW=Math.min(W*0.62,480), maxPH=H*0.45;
+    const ar=img.naturalWidth/img.naturalHeight;
+    let pw=maxPW, ph=pw/ar;
+    if(ph>maxPH){ph=maxPH;pw=ph*ar;}
+    const px=(W-pw)/2, py=H*0.08;
+    const FB=Math.max(pw*0.03,8);
 
-    const px = (W - pw) / 2;
-    const py = H * 0.09;
+    ctx.fillStyle='#8b6914'; ctx.fillRect(px-FB*2,py-FB*2,pw+FB*4,ph+FB*4);
+    ctx.fillStyle='#c8a030'; ctx.fillRect(px-FB*1.5,py-FB*1.5,pw+FB*3,ph+FB*3);
+    ctx.fillStyle='#6a4e0a'; ctx.fillRect(px-FB,py-FB,pw+FB*2,ph+FB*2);
+    ctx.fillStyle='#f5f0e8'; ctx.fillRect(px-3,py-3,pw+6,ph+6);
+    ctx.imageSmoothingEnabled=false;
+    ctx.drawImage(img,px,py,pw,ph);
 
-    // Frame border
-    const FB = Math.max(pw * 0.028, 8);
-    ctx.fillStyle = '#8b6914';
-    ctx.fillRect(px - FB*2, py - FB*2, pw + FB*4, ph + FB*4);
-    ctx.fillStyle = '#c8a030';
-    ctx.fillRect(px - FB*1.5, py - FB*1.5, pw + FB*3, ph + FB*3);
-    ctx.fillStyle = '#6a4e0a';
-    ctx.fillRect(px - FB, py - FB, pw + FB*2, ph + FB*2);
-    ctx.fillStyle = '#f5f0e8';
-    ctx.fillRect(px - 3, py - 3, pw + 6, ph + 6);
-
-    // Painting
-    ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(img, px, py, pw, ph);
-
-    // Label plate
-    const lw = Math.min(pw + FB*4, W - 40);
-    const lx = (W - lw) / 2;
-    const ly = py + ph + FB*2 + 10;
-    ctx.fillStyle = '#f5ecd5';
-    ctx.beginPath();
-    ctx.roundRect(lx, ly, lw, 64, 3);
-    ctx.fill();
-    ctx.strokeStyle = '#c8a050';
-    ctx.lineWidth = 1;
-    ctx.stroke();
-
-    ctx.fillStyle = '#2a1608';
-    ctx.font = `bold ${Math.min(15, lw*0.055)}px 'PingFang SC',sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.fillText(p.title, W/2, ly + 22);
-
-    ctx.fillStyle = '#886644';
-    ctx.font = `${Math.min(11, lw*0.04)}px 'PingFang SC',sans-serif`;
-    ctx.fillText(p.date, W/2, ly + 38);
-
-    ctx.fillStyle = '#4a2c14';
-    ctx.font = `${Math.min(11, lw*0.04)}px 'PingFang SC',sans-serif`;
-    ctx.fillText(p.desc, W/2, ly + 55);
+    // Label
+    const lw=Math.min(pw+FB*4,W-32), lx=(W-lw)/2, ly=py+ph+FB*2+8;
+    ctx.fillStyle='#f5ecd5';
+    ctx.beginPath(); ctx.roundRect(lx,ly,lw,58,3); ctx.fill();
+    ctx.strokeStyle='#c8a050'; ctx.lineWidth=1; ctx.stroke();
+    const fs=Math.min(14,lw*0.055);
+    ctx.fillStyle='#2a1608'; ctx.font=`bold ${fs}px 'PingFang SC',sans-serif`;
+    ctx.textAlign='center'; ctx.fillText(p.title,W/2,ly+20);
+    ctx.fillStyle='#886644'; ctx.font=`${fs*0.78}px 'PingFang SC',sans-serif`;
+    ctx.fillText(p.date,W/2,ly+35);
+    ctx.fillStyle='#4a2c14'; ctx.fillText(p.desc,W/2,ly+51);
   }
 
-  // Dot indicators
-  const dotY = H - 20;
-  paintings.forEach((_, i) => {
-    ctx.beginPath();
-    ctx.arc(W/2 + (i - (paintings.length-1)/2)*16, dotY, 3.5, 0, Math.PI*2);
-    ctx.fillStyle = i===idx ? 'rgba(200,160,60,0.85)' : 'rgba(255,255,255,0.18)';
-    ctx.fill();
+  // Room number dots
+  const dotY=H-18;
+  paintings.forEach((_,i)=>{
+    ctx.beginPath(); ctx.arc(W/2+(i-(paintings.length-1)/2)*14,dotY,3,0,Math.PI*2);
+    ctx.fillStyle=i===idx?'rgba(200,160,60,0.9)':'rgba(255,255,255,0.2)'; ctx.fill();
   });
 
-  // Hint arrows
-  if (idx > 0) {
-    ctx.fillStyle = 'rgba(255,255,255,0.22)';
-    ctx.font = '22px sans-serif'; ctx.textAlign = 'left';
-    ctx.fillText('‹', 14, H*0.72 - 20);
-  }
-  if (idx < paintings.length-1) {
-    ctx.fillStyle = 'rgba(255,255,255,0.22)';
-    ctx.font = '22px sans-serif'; ctx.textAlign = 'right';
-    ctx.fillText('›', W - 14, H*0.72 - 20);
-  }
-
   ctx.restore();
 }
 
-function drawCat() {
+// Cat pixel art (same as before, drawn via catImg)
+function drawCatAt(x, y, dir, looking) {
   if (!catImg.complete) return;
-  const floorY = H * 0.72;
-  const scale = Math.min(H * 0.10, 72) / (CAT_PX_H * CAT_SCALE) * CAT_SCALE;
-  const cw = CAT_PX * scale, ch = CAT_PX_H * scale;
-
+  updateCatSize();
   ctx.save();
-  ctx.translate(cat.x, floorY - ch);
-  if (cat.dir === 'left') { ctx.translate(cw, 0); ctx.scale(-1, 1); }
-  ctx.imageSmoothingEnabled = false;
-  ctx.drawImage(catImg, 0, 0, cw, ch);
+  ctx.translate(x, y);
+  if (looking) {
+    // facing up toward painting: scale y slightly, tilt impression
+    ctx.translate(CW/2, CH); ctx.scale(1, 0.88); ctx.translate(-CW/2, -CH);
+  }
+  if (dir === 'left') { ctx.translate(CW,0); ctx.scale(-1,1); }
+  ctx.imageSmoothingEnabled=false;
+  ctx.drawImage(catImg, 0, 0, CW, CH);
   ctx.restore();
 }
+
+// Thought bubble when viewing
+function drawThought(x, y) {
+  const bx = x + CW + 4, by = y - 14;
+  ctx.fillStyle='rgba(255,255,255,0.82)';
+  ctx.beginPath(); ctx.roundRect(bx,by,46,22,8); ctx.fill();
+  ctx.beginPath(); ctx.arc(bx-4,by+18,4,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(bx-10,by+25,2.5,0,Math.PI*2); ctx.fill();
+  ctx.font='12px sans-serif'; ctx.fillStyle='#2a2a2a'; ctx.textAlign='left';
+  ctx.fillText('🎨', bx+6, by+15);
+}
+
+let enterDir = 1; // which side cat enters from
 
 function update() {
-  if (transitioning) {
-    transT++;
-    if (transT >= TRANS_DUR) {
-      cur = Math.max(0, Math.min(paintings.length-1, cur + transDir));
-      // place cat at opposite edge
-      cat.x = transDir > 0 ? W * 0.1 : W * 0.85;
-      transitioning = false;
-      transT = 0;
+  updateCatSize();
+  const ty = catY();
+  stateT++;
+
+  if (state==='entering') {
+    // walk from left edge to center
+    const tx = targetX();
+    const prog = Math.min(stateT/ENTER_DUR, 1);
+    const ease = prog<0.5 ? 2*prog*prog : -1+(4-2*prog)*prog;
+    const startX = enterDir>0 ? -CW-10 : W+10;
+    cat.x = startX + (tx - startX) * ease;
+    cat.y = ty;
+    cat.dir = enterDir>0 ? 'right' : 'left';
+    if (prog>=1) { state='viewing'; stateT=0; cat.looking=true; }
+  }
+  else if (state==='viewing') {
+    cat.x = targetX(); cat.y = ty;
+    cat.looking = true;
+    // subtle breathing
+    cat.y = ty + Math.sin(stateT*0.06)*1.5;
+    if (stateT >= VIEW_DUR) { state='leaving'; stateT=0; cat.looking=false; cat.dir='right'; }
+  }
+  else if (state==='leaving') {
+    const startX = targetX();
+    const endX = cur < paintings.length-1 ? W+10 : -CW-10;
+    const prog = Math.min(stateT/LEAVE_DUR,1);
+    const ease = prog<0.5 ? 2*prog*prog : -1+(4-2*prog)*prog;
+    cat.x = startX + (endX-startX)*ease;
+    cat.y = ty;
+    cat.dir = cur < paintings.length-1 ? 'right' : 'left';
+    if (prog>=1) {
+      if (cur < paintings.length-1) { cur++; enterDir=1; }
+      else { cur=0; enterDir=1; }
+      state='transitioning'; stateT=0; transSlide=0;
     }
-    return;
   }
-
-  let dx = 0, dy = 0;
-  if (keys['ArrowLeft']||keys['a']||keys['A'])  { dx=-cat.spd; cat.dir='left';  }
-  if (keys['ArrowRight']||keys['d']||keys['D']) { dx= cat.spd; cat.dir='right'; }
-  if (keys['ArrowUp']||keys['w']||keys['W'])    dy=-cat.spd*0.5;
-  if (keys['ArrowDown']||keys['s']||keys['S'])  dy= cat.spd*0.5;
-
-  if (dx||dy) { cat.ft++; if(cat.ft>10){cat.ft=0;} } else cat.ft=0;
-
-  const floorY = H*0.72;
-  const scale = Math.min(H*0.10, 72)/(CAT_PX_H*CAT_SCALE)*CAT_SCALE;
-  const cw = CAT_PX*scale, ch = CAT_PX_H*scale;
-
-  const minY = floorY - ch - H*0.08;
-  const maxY = floorY - ch;
-  cat.y = Math.max(minY, Math.min(maxY, cat.y + dy));
-
-  // Edge triggers transition
-  if (dx > 0 && cat.x + cw > W - 20 && cur < paintings.length-1) {
-    startTransition(1); return;
+  else if (state==='transitioning') {
+    transSlide = Math.min(stateT/TRANS_DUR,1)*W;
+    if (stateT>=TRANS_DUR) { state='entering'; stateT=0; }
   }
-  if (dx < 0 && cat.x < 20 && cur > 0) {
-    startTransition(-1); return;
-  }
-
-  cat.x = Math.max(10, Math.min(W - cw - 10, cat.x + dx));
 }
 
 function draw() {
   ctx.clearRect(0,0,W,H);
-
-  if (transitioning) {
-    const ease = transT / TRANS_DUR;
-    const slide = ease * W * transDir;
-    drawRoom(-slide, cur);
-    drawRoom(W * transDir - slide, cur + transDir);
+  if (state==='transitioning') {
+    drawRoom(-transSlide, cur-1 < 0 ? paintings.length-1 : cur-1);
+    drawRoom(W-transSlide, cur);
   } else {
     drawRoom(0, cur);
-    drawCat();
+    if (state!=='leaving' || cat.x < W) drawCatAt(cat.x, cat.y, cat.dir, cat.looking);
+    if (state==='viewing' && stateT>20) drawThought(cat.x, cat.y);
   }
 }
 
-// Init cat position
-function initCat() {
-  const floorY = H*0.72;
-  const scale = Math.min(H*0.10,72)/(CAT_PX_H*CAT_SCALE)*CAT_SCALE;
-  cat.x = W/2 - CAT_PX*scale/2;
-  cat.y = floorY - CAT_PX_H*scale;
-}
-catImg.onload = initCat;
-if (catImg.complete) initCat();
-
 function loop() { update(); draw(); requestAnimationFrame(loop); }
+initEnter();
 loop();
 </script>
 </body>
