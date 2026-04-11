@@ -337,19 +337,15 @@ function draw(){
 
     // Pixel tail — matches sprite style, swings in discrete steps
     const tailTick = cat.moving ? walkTick*0.18 : Date.now()*0.002;
-    const phase = Math.floor(tailTick / 0.6) % 3; // 3 frames
-    const s = catScale;
+    const phase = Math.floor(tailTick / 0.6) % 3;
     ctx.fillStyle='#111111';
-    // Tail segments: [dx, dy] from base (col13,row14 centered = 5s, 4s)
     const tailFrames = [
-      [[0,0],[s,0],[s,-s],[s,-2*s],[0,-3*s]],     // hanging right
-      [[0,0],[s,0],[s,-s],[0,-2*s],[0,-3*s]],     // mid
-      [[0,0],[s,0],[0,-s],[0,-2*s],[-s,-3*s]],    // leaning left/up
+      [[0,0],[s,0],[s,-s],[s,-2*s],[0,-3*s]],
+      [[0,0],[s,0],[s,-s],[0,-2*s],[0,-3*s]],
+      [[0,0],[s,0],[0,-s],[0,-2*s],[-s,-3*s]],
     ];
     const segs = tailFrames[phase];
-    segs.forEach(([dx,dy])=>{
-      ctx.fillRect(5*s+dx, 4*s+dy, s, s);
-    });
+    segs.forEach(([dx,dy])=>{ ctx.fillRect(5*s+dx, 4*s+dy, s, s); });
 
     ctx.restore();
   }
