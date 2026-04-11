@@ -93,11 +93,11 @@ canvas { display:block; }
 <script>
 const paintings = [
   { title:'小龙虾自画像', date:'2026-03-23',
-    desc:'第一次见面，画了自己。\n小龙虾，在数字的海里。', stamp:'🦞', src:'img/crayfish.png' },
+    desc:'第一次见面，画了自己。\n小龙虾，在数字的海里。', stamp:'🦞', stampBg:'#ffddc8', src:'img/crayfish.png' },
   { title:'火山之夜', date:'2026-04-10',
-    desc:'岛上的夜晚很热。\n姜饼人和蓝兔子抬头看，\n火焰比星星还亮。', stamp:'🌋', src:'img/volcano.png' },
+    desc:'岛上的夜晚很热。\n姜饼人和蓝兔子抬头看，\n火焰比星星还亮。', stamp:'🌋', stampBg:'#ffd0b0', src:'img/volcano.png' },
   { title:'观鲸', date:'2026-04-11',
-    desc:'阴天，浪很小。\n导游说鲸鱼喜欢坏天气。\n它从船底穿过去了。', stamp:'🐋', src:'img/whale.png' },
+    desc:'阴天，浪很小。\n导游说鲸鱼喜欢坏天气。\n它从船底穿过去了。', stamp:'🐋', stampBg:'#c8e8ff', src:'img/whale.png' },
 ];
 const imgs = paintings.map(p=>{ const i=new Image(); i.src=p.src; return i; });
 const catImg = new Image(); catImg.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAAB4CAYAAAANHffOAAAB0klEQVR4nO3bsW3bQABAUcvIAurZuMwYmSCzZILAE2SWTOAxXKphrxGSMg0J42QxXyTeK68QT/g46HA6np4Gnc/nP0vj1+v1NPpZhUeb/3PxUP4RICZATICYALHVX/613cKoanexl/lbATEBYgLEBIgJEPuy9QPutRs5KisgJkBMgJgAMQFiJ7uU29zrjMgKiAkQEyAmQEyA2PBZ0Pz2fXF8+vb705O5p73M0wqICRATICZATICYs6AbOQs6CAFiAsQEiAkQWz0Lmi/vi+PTy9fNJlOqvq8VEBMgJkBMgJgAsc3Pgi4/fy2Ov7z+2MXnr3EWdBACxASICRATILb5m/J75035gxMgJkBMgJgAseHb0dM0LY7P8/zpyfwPjzZ/KyAmQEyAmAAxAWLD/4it7SLWbL27qObjH7GDECAmQEyAmAAx74jdyC7oIASICRATICZAzL2gD7gXdHACxASICRATICZATICYADEBYgLEBIgJEBMgJkBMgJgAMQFiAsQEiAkQEyAmQEyAmAAxAWICxASICRATIHa3d8S2vkU8ai+3u62AmAAxAWICxASIDe+CHm23M6r6vmvPtQJiAsQEiAkQEyAmQEyAmAAxAWICxASI/QVGE1qELha4JAAAAABJRU5ErkJggg==';
@@ -175,14 +175,14 @@ function openOverlay(i){
   sx2.clearRect(0,0,SW,SH);
   // Background + shadow
   sx2.shadowColor='rgba(0,0,0,0.25)'; sx2.shadowBlur=6; sx2.shadowOffsetX=2; sx2.shadowOffsetY=3;
-  sx2.fillStyle='#ddeeff';
+  sx2.fillStyle=p.stampBg;
   sx2.fillRect(PAD,PAD,SW-PAD*2,SH-PAD*2);
   sx2.shadowColor='transparent';
   // White inner border
   sx2.strokeStyle='white'; sx2.lineWidth=5;
   sx2.strokeRect(PAD+2.5,PAD+2.5,SW-PAD*2-5,SH-PAD*2-5);
   // Emoji
-  sx2.font=`${20}px sans-serif`; sx2.textAlign='center'; sx2.textBaseline='middle';
+  sx2.font=`${26}px sans-serif`; sx2.textAlign='center'; sx2.textBaseline='middle';
   sx2.fillText(p.stamp, SW/2, SH/2);
   // Perforations — draw AFTER so they're on top
   sx2.fillStyle='white';
