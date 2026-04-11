@@ -339,7 +339,7 @@ function draw(){
     const bob = cat.moving ? Math.sin(walkTick*0.30)*catScale*0.7 : 0;
     const tilt = cat.moving ? Math.sin(walkTick*0.15)*0.06 : 0;
     ctx.save();
-    ctx.translate(screenCatX + CW/2, cat.y - CH/2 + bob);
+    ctx.translate(screenCatX + CW/2, cat.y - CH + bob);
     ctx.rotate(tilt);
     if(cat.dir==='left') ctx.scale(-1,1);
     ctx.imageSmoothingEnabled=false;
@@ -391,7 +391,6 @@ function update(){
   if(cat.jumping){
     cat.y += cat.jumpVy;
     cat.jumpVy += 0.8;
-    const floor = cat.onFrame ? floorY() : floorY();
     if(cat.frameIdx >= 0 && !cat.onFrame){
       const target = frameTopY(cat.frameIdx);
       if(cat.y <= target && cat.jumpVy < 0){
@@ -401,6 +400,8 @@ function update(){
     if(cat.y >= floorY()){
       cat.y = floorY(); cat.jumpVy = 0; cat.jumping = false; cat.onFrame = false; cat.frameIdx = -1;
     }
+  } else if(!cat.onFrame){
+    cat.y = floorY();
   }
 
   // Clamp cat to frame bounds when on frame
