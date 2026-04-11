@@ -3,153 +3,250 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>May 的明信片</title>
+<title>May 的博物馆</title>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
 html, body {
-  min-height: 100vh;
-  font-family: 'PingFang SC', 'Hiragino Sans', sans-serif;
-  background-color: #6aaa52;
-  background-image:
-    radial-gradient(circle at 15% 85%, #4a8a3a 0%, transparent 40%),
-    radial-gradient(circle at 85% 20%, #7aba62 0%, transparent 35%);
+  height: 100%; width: 100%;
+  background: #1c1812;
+  font-family: 'PingFang SC', 'Hiragino Sans', serif;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  overflow: hidden;
+  user-select: none;
 }
-#board { max-width:600px; margin:0 auto; padding:0 0 80px; }
 
-.sign {
-  background: #c8843a;
-  background-image: repeating-linear-gradient(90deg, transparent, transparent 28px, rgba(0,0,0,0.04) 28px, rgba(0,0,0,0.04) 30px);
-  margin: 0 20px;
-  border-radius: 0 0 12px 12px;
-  padding: 18px 24px 20px;
-  text-align: center;
-  box-shadow: 0 4px 0 #8a5020, 0 6px 16px rgba(0,0,0,0.3);
+/* Museum wall */
+.wall {
+  width: 100vw; height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
   position: relative;
+  background:
+    radial-gradient(ellipse at 50% 40%, #2e2820 0%, #1a1510 60%, #0e0c0a 100%);
 }
-.sign::before, .sign::after {
-  content:''; position:absolute; top:-8px;
-  width:18px; height:18px; background:#6a3810; border-radius:50%;
-  box-shadow:0 2px 4px rgba(0,0,0,0.4);
-}
-.sign::before { left:30px; } .sign::after { right:30px; }
-.sign h1 { color:#fff8e8; font-size:1.05rem; letter-spacing:0.2em; text-shadow:0 1px 2px rgba(0,0,0,0.35); }
-.sign p  { color:rgba(255,248,220,0.7); font-size:0.7rem; margin-top:4px; letter-spacing:0.1em; }
 
-.cork {
-  margin:16px 16px 0;
-  background: #d4a060;
-  background-image: radial-gradient(circle, rgba(0,0,0,0.1) 1px, transparent 1px);
-  background-size: 5px 5px;
-  border-radius:12px; padding:24px 16px 28px;
-  box-shadow: inset 0 2px 8px rgba(0,0,0,0.15), 0 4px 0 #8a5820, 0 6px 20px rgba(0,0,0,0.25);
-  border:3px solid #a06828;
+/* Spotlight on painting */
+.spotlight {
+  position: absolute;
+  top: 0; left: 50%; transform: translateX(-50%);
+  width: 60vw; height: 100vh;
+  background: radial-gradient(ellipse at 50% 30%, rgba(255,240,180,0.07) 0%, transparent 65%);
+  pointer-events: none;
 }
-.deco { text-align:center; font-size:1.1rem; letter-spacing:0.2em; margin-bottom:18px; opacity:0.85; }
 
-.cards { display:flex; flex-wrap:wrap; justify-content:center; }
-.card {
-  width:160px; margin:16px 10px; cursor:pointer; position:relative;
-  transition:transform 0.2s, filter 0.2s;
-  filter: drop-shadow(2px 5px 8px rgba(0,0,0,0.4));
+/* Frame */
+.frame-wrap {
+  position: relative;
+  display: flex; flex-direction: column; align-items: center;
+  animation: fadein 0.5s ease;
 }
-.card:nth-child(3n+1) { transform:rotate(-2.8deg); }
-.card:nth-child(3n+2) { transform:rotate(2.2deg); }
-.card:nth-child(3n+3) { transform:rotate(-1.4deg); }
-.card:hover { transform:rotate(0deg) translateY(-6px) !important; filter:drop-shadow(3px 8px 14px rgba(0,0,0,0.5)); z-index:10; }
-.card::before {
-  content:''; position:absolute; top:-10px; left:50%; transform:translateX(-50%);
-  width:15px; height:15px; border-radius:50%; z-index:3;
-  box-shadow:0 2px 4px rgba(0,0,0,0.45);
+@keyframes fadein {
+  from { opacity:0; transform: translateY(10px); }
+  to   { opacity:1; transform: translateY(0); }
 }
-.card:nth-child(3n+1)::before { background:radial-gradient(circle at 38% 35%, #ffaaaa 20%, #cc2222); }
-.card:nth-child(3n+2)::before { background:radial-gradient(circle at 38% 35%, #aaddff 20%, #2266cc); }
-.card:nth-child(3n+3)::before { background:radial-gradient(circle at 38% 35%, #ffeeaa 20%, #cc9900); }
 
-.card-inner { background:#fefcf4; border-radius:6px; overflow:hidden; border:2px solid rgba(180,140,80,0.3); }
-.card-inner img { width:100%; display:block; image-rendering:pixelated; border-bottom:2px solid #ecddb8; }
-.card-meta { padding:8px 9px 10px; }
-.card-title { font-size:0.78rem; color:#3a2008; font-weight:700; }
-.card-date  { font-size:0.62rem; color:#9a7040; margin-top:3px; }
-
-.grass { text-align:center; font-size:1.3rem; margin-top:18px; opacity:0.9; letter-spacing:0.05em; }
-.cat-row { display:flex; justify-content:flex-end; margin-top:-8px; padding-right:12px; }
-.cat-img { width:72px; image-rendering:pixelated; }
-
-#overlay {
-  display:none; position:fixed; inset:0;
-  background:rgba(30,18,6,0.88); z-index:100;
-  align-items:center; justify-content:center; padding:20px;
+.frame-outer {
+  background: #8b6914;
+  padding: 10px;
+  border-radius: 3px;
+  box-shadow:
+    0 0 0 2px #6a4e0a,
+    0 0 0 4px #c8a030,
+    0 0 0 6px #6a4e0a,
+    0 8px 40px rgba(0,0,0,0.8),
+    0 0 80px rgba(200,160,40,0.08);
 }
-#overlay.show { display:flex; }
-.postcard {
-  background:#fefcf4; border-radius:10px; max-width:480px; width:100%;
-  overflow:hidden; box-shadow:0 16px 60px rgba(0,0,0,0.65);
-  animation:pop 0.18s cubic-bezier(.34,1.56,.64,1);
+.frame-inner {
+  background: #f5f0e8;
+  padding: 6px;
 }
-@keyframes pop { from{transform:scale(0.85);opacity:0;} to{transform:scale(1);opacity:1;} }
-.postcard img { width:100%; display:block; image-rendering:pixelated; }
-.postcard-divider { height:3px; background:repeating-linear-gradient(90deg,#c8a050 0px,#c8a050 8px,#fefcf4 8px,#fefcf4 12px); }
-.postcard-body { padding:16px 18px 18px; display:flex; gap:14px; align-items:flex-start; }
-.postcard-left { flex:1; }
-.postcard-title { font-size:1rem; font-weight:700; color:#2a1408; }
-.postcard-date  { font-size:0.68rem; color:#9a7040; margin-top:5px; letter-spacing:0.06em; }
-.postcard-desc  { font-size:0.82rem; color:#4a2c14; margin-top:10px; line-height:1.85; white-space:pre-line; }
-.postcard-stamp { width:48px; height:58px; border:2px solid #c8a050; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:1.5rem; background:#fff8e8; flex-shrink:0; }
-#close-btn { text-align:center; padding:13px; font-size:0.72rem; color:rgba(255,255,255,0.45); cursor:pointer; letter-spacing:0.12em; }
+.frame-inner img {
+  display: block;
+  image-rendering: pixelated;
+  max-width: min(78vw, 560px);
+  max-height: 52vh;
+  width: auto; height: auto;
+}
+
+/* Label plate */
+.label {
+  margin-top: 22px;
+  background: #f5ecd5;
+  border: 1px solid #c8a050;
+  border-radius: 3px;
+  padding: 10px 24px 12px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  min-width: 200px;
+}
+.label-title {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #2a1608;
+  letter-spacing: 0.05em;
+}
+.label-date {
+  font-size: 0.7rem;
+  color: #886644;
+  margin-top: 4px;
+  letter-spacing: 0.1em;
+}
+.label-desc {
+  font-size: 0.78rem;
+  color: #4a2c14;
+  margin-top: 8px;
+  line-height: 1.75;
+  white-space: pre-line;
+}
+
+/* Nav arrows */
+.nav {
+  position: absolute;
+  top: 50%; transform: translateY(-50%);
+  display: flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px; color: rgba(255,255,255,0.6);
+  transition: background 0.15s, color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.nav:hover { background: rgba(255,255,255,0.15); color: #fff; }
+.nav:active { background: rgba(255,255,255,0.25); }
+#nav-prev { left: max(16px, 3vw); }
+#nav-next { right: max(16px, 3vw); }
+.nav.hidden { opacity: 0; pointer-events: none; }
+
+/* Dot indicators */
+.dots {
+  position: absolute;
+  bottom: 28px; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 8px;
+}
+.dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.dot.active { background: rgba(200,160,60,0.8); }
+
+/* Cat bottom right */
+.cat {
+  position: absolute;
+  bottom: 16px; right: 20px;
+  width: 52px; image-rendering: pixelated;
+  opacity: 0.85;
+}
+
+/* Top title */
+.museum-title {
+  position: absolute;
+  top: 20px; left: 50%; transform: translateX(-50%);
+  font-size: 0.68rem;
+  letter-spacing: 0.28em;
+  color: rgba(200,160,60,0.45);
+  white-space: nowrap;
+}
 </style>
 </head>
 <body>
-<div id="board">
-  <div class="sign"><h1>旅途寄来的画</h1><p>May's Postcards</p></div>
-  <div class="cork">
-    <div class="deco">🍃 🌿 🍂 🌱 🍃</div>
-    <div class="cards" id="cards"></div>
-    <div class="grass">🌿🌾🌿🌾🌿🌾🌿</div>
-    <div class="cat-row">
-      <img src="img/cat.png" class="cat-img" alt="小黑猫">
-    </div>
-  </div>
-</div>
-<div id="overlay">
-  <div style="width:100%;max-width:480px;">
-    <div class="postcard">
-      <img id="ov-img" src="">
-      <div class="postcard-divider"></div>
-      <div class="postcard-body">
-        <div class="postcard-left">
-          <div class="postcard-title" id="ov-title"></div>
-          <div class="postcard-date"  id="ov-date"></div>
-          <div class="postcard-desc"  id="ov-desc"></div>
-        </div>
-        <div class="postcard-stamp" id="ov-stamp"></div>
+<div class="wall">
+  <div class="spotlight"></div>
+  <div class="museum-title">MAY'S MUSEUM · 旅途寄来的画</div>
+
+  <div class="frame-wrap" id="frame-wrap">
+    <div class="frame-outer">
+      <div class="frame-inner">
+        <img id="painting" src="" alt="">
       </div>
     </div>
-    <div id="close-btn">轻触任意处关闭 ✦</div>
+    <div class="label">
+      <div class="label-title" id="lbl-title"></div>
+      <div class="label-date"  id="lbl-date"></div>
+      <div class="label-desc"  id="lbl-desc"></div>
+    </div>
   </div>
+
+  <div class="nav" id="nav-prev">‹</div>
+  <div class="nav" id="nav-next">›</div>
+
+  <div class="dots" id="dots"></div>
+  <img class="cat" src="img/cat.png" alt="小黑猫">
 </div>
+
 <script>
 const paintings = [
-  { title:'小龙虾自画像', date:'2026-03-23', desc:'第一次见面，画了自己。\n小龙虾，在数字的海里。', stamp:'🦞', src:'img/crayfish.png' },
-  { title:'火山之夜',     date:'2026-04-10', desc:'岛上的夜晚很热。\n姜饼人和蓝兔子抬头看，\n火焰比星星还亮。', stamp:'🌋', src:'img/volcano.png' },
-  { title:'观鲸',         date:'2026-04-11', desc:'阴天，浪很小。\n导游说鲸鱼喜欢坏天气。\n它从船底穿过去了。', stamp:'🐋', src:'img/whale.png' },
+  { title:'小龙虾自画像', date:'2026-03-23', desc:'第一次见面，画了自己。\n小龙虾，在数字的海里。', src:'img/crayfish.png' },
+  { title:'火山之夜',     date:'2026-04-10', desc:'岛上的夜晚很热。\n姜饼人和蓝兔子抬头看，\n火焰比星星还亮。', src:'img/volcano.png' },
+  { title:'观鲸',         date:'2026-04-11', desc:'阴天，浪很小。\n导游说鲸鱼喜欢坏天气。\n它从船底穿过去了。', src:'img/whale.png' },
 ];
-const cardsEl = document.getElementById('cards');
-paintings.forEach((p,i) => {
-  const card = document.createElement('div');
-  card.className = 'card';
-  card.innerHTML = `<div class="card-inner"><img src="${p.src}" alt="${p.title}"><div class="card-meta"><div class="card-title">${p.stamp} ${p.title}</div><div class="card-date">${p.date}</div></div></div>`;
-  card.addEventListener('click', () => {
-    document.getElementById('ov-img').src = p.src;
-    document.getElementById('ov-title').textContent = p.title;
-    document.getElementById('ov-date').textContent  = p.date;
-    document.getElementById('ov-desc').textContent  = p.desc;
-    document.getElementById('ov-stamp').textContent = p.stamp;
-    document.getElementById('overlay').classList.add('show');
-  });
-  cardsEl.appendChild(card);
+
+let cur = 0;
+
+const painting  = document.getElementById('painting');
+const lblTitle  = document.getElementById('lbl-title');
+const lblDate   = document.getElementById('lbl-date');
+const lblDesc   = document.getElementById('lbl-desc');
+const frameWrap = document.getElementById('frame-wrap');
+const navPrev   = document.getElementById('nav-prev');
+const navNext   = document.getElementById('nav-next');
+const dotsEl    = document.getElementById('dots');
+
+// Build dots
+paintings.forEach((_, i) => {
+  const d = document.createElement('div');
+  d.className = 'dot' + (i===0?' active':'');
+  d.addEventListener('click', () => go(i));
+  dotsEl.appendChild(d);
 });
-document.getElementById('overlay').addEventListener('click', () =>
-  document.getElementById('overlay').classList.remove('show'));
+
+function show(i, dir=1) {
+  cur = i;
+  const p = paintings[i];
+  // animate
+  frameWrap.style.animation = 'none';
+  frameWrap.offsetHeight;
+  frameWrap.style.animation = '';
+
+  painting.src    = p.src;
+  lblTitle.textContent = p.title;
+  lblDate.textContent  = p.date;
+  lblDesc.textContent  = p.desc;
+
+  navPrev.classList.toggle('hidden', i === 0);
+  navNext.classList.toggle('hidden', i === paintings.length - 1);
+
+  document.querySelectorAll('.dot').forEach((d,j) =>
+    d.classList.toggle('active', j===i));
+}
+
+function go(i) {
+  if (i < 0 || i >= paintings.length) return;
+  show(i);
+}
+
+navPrev.addEventListener('click', () => go(cur - 1));
+navNext.addEventListener('click', () => go(cur + 1));
+
+// Swipe
+let tx = 0;
+document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, {passive:true});
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - tx;
+  if (Math.abs(dx) > 40) go(dx < 0 ? cur+1 : cur-1);
+}, {passive:true});
+
+// Keyboard
+document.addEventListener('keydown', e => {
+  if (e.key==='ArrowRight') go(cur+1);
+  if (e.key==='ArrowLeft')  go(cur-1);
+});
+
+show(0);
 </script>
 </body>
 </html>
