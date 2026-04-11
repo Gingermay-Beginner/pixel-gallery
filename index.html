@@ -104,7 +104,7 @@ const paintings = [
     desc:'向导将传声装置放入水下\n雄鲸求偶的吟唱从深处传来\n"有时候十几头雄性追逐一头雌性，就像科纳的酒吧。"向导吐槽道\n\n当它的身影向我们游近\n我一边兴奋，一边悄悄担心\n这庞然大物会不会将船掀翻\n周围的喧闹被点燃，而我却紧张到无声', stamp:'🐋', stampBg:'#c8e8ff', src:'img/whale.png' },
 ];
 const imgs = paintings.map(p=>{ const i=new Image(); i.src=p.src; return i; });
-const catImg = new Image(); catImg.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAAB4CAYAAAANHffOAAAB0klEQVR4nO3bsW3bQABAUcvIAurZuMwYmSCzZILAE2SWTOAxXKphrxGSMg0J42QxXyTeK68QT/g46HA6np4Gnc/nP0vj1+v1NPpZhUeb/3PxUP4RICZATICYALHVX/613cKoanexl/lbATEBYgLEBIgJEPuy9QPutRs5KisgJkBMgJgAMQFiJ7uU29zrjMgKiAkQEyAmQEyA2PBZ0Pz2fXF8+vb705O5p73M0wqICRATICZATICYs6AbOQs6CAFiAsQEiAkQWz0Lmi/vi+PTy9fNJlOqvq8VEBMgJkBMgJgAsc3Pgi4/fy2Ov7z+2MXnr3EWdBACxASICRATILb5m/J75035gxMgJkBMgJgAseHb0dM0LY7P8/zpyfwPjzZ/KyAmQEyAmAAxAWLD/4it7SLWbL27qObjH7GDECAmQEyAmAAx74jdyC7oIASICRATICZAzL2gD7gXdHACxASICRATICZATICYADEBYgLEBIgJEBMgJkBMgJgAMQFiAsQEiAkQEyAmQEyAmAAxAWICxASICRATIHa3d8S2vkU8ai+3u62AmAAxAWICxASIDe+CHm23M6r6vmvPtQJiAsQEiAkQEyAmQEyAmAAxAWICxASI/QVGE1qELha4JAAAAABJRU5ErkJggg==';
+const catImg = new Image(); catImg.src = 'img/cat.png';
 
 const canvas = document.getElementById('c');
 const ctx = canvas.getContext('2d');
@@ -124,8 +124,8 @@ function totalWidth(){ return HALL_PAD()*2 + (paintings.length-1)*PAINTING_SPACI
 
 let cameraX = 0; // world X at center of screen
 
-const CAT_COLS=16, CAT_ROWS=20;
-let catScale=4, CW=64, CH=80;
+const CAT_COLS=20, CAT_ROWS=16, CAT_FRAMES=3;
+let catScale=4, CW=80, CH=64;
 function updateCatSize(){
   catScale = Math.max(2, Math.round(H*0.085/CAT_ROWS));
   CW=CAT_COLS*catScale; CH=CAT_ROWS*catScale;
@@ -324,28 +324,9 @@ function draw(){
     ctx.rotate(tilt);
     if(cat.dir==='left') ctx.scale(-1,1);
     ctx.imageSmoothingEnabled=false;
-    ctx.drawImage(catImg,-CW/2,-CH/2,CW,CH);
-
-    // Bigger eyes overlay
-    const s = catScale;
-    ctx.fillStyle='#f5d060';
-    ctx.beginPath(); ctx.ellipse(-3.5*s, -4.5*s, s*1.2, s*1.0, 0, 0, Math.PI*2); ctx.fill();
-    ctx.beginPath(); ctx.ellipse( 1.5*s, -4.5*s, s*1.2, s*1.0, 0, 0, Math.PI*2); ctx.fill();
-    ctx.fillStyle='#1a1a1a';
-    ctx.beginPath(); ctx.ellipse(-3.5*s, -4.5*s, s*0.55, s*0.7, 0, 0, Math.PI*2); ctx.fill();
-    ctx.beginPath(); ctx.ellipse( 1.5*s, -4.5*s, s*0.55, s*0.7, 0, 0, Math.PI*2); ctx.fill();
-
-    // Pixel tail — matches sprite style, swings in discrete steps
-    const tailTick = cat.moving ? walkTick*0.18 : Date.now()*0.002;
-    const phase = Math.floor(tailTick / 0.6) % 3;
-    ctx.fillStyle='#111111';
-    const tailFrames = [
-      [[0,0],[s,0],[s,-s],[s,-2*s],[0,-3*s]],
-      [[0,0],[s,0],[s,-s],[0,-2*s],[0,-3*s]],
-      [[0,0],[s,0],[0,-s],[0,-2*s],[-s,-3*s]],
-    ];
-    const segs = tailFrames[phase];
-    segs.forEach(([dx,dy])=>{ ctx.fillRect(5*s+dx, 4*s+dy, s, s); });
+    const frame = cat.moving ? Math.floor(walkTick/8) % CAT_FRAMES : 0;
+    ctx.drawImage(catImg, frame*CAT_COLS*catScale, 0, CAT_COLS*catScale, CAT_ROWS*catScale,
+                  -CW/2, -CH/2, CW, CH);
 
     ctx.restore();
   }
