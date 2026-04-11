@@ -317,29 +317,14 @@ function draw(){
   // === Cat ===
   {
     const screenCatX = cat.wx - cameraX + W/2 - CW/2;
-    // Bob: vertical bounce when moving
-    const bob = cat.moving ? Math.sin(walkTick*0.28)*catScale*0.6 : 0;
-    const baseY = floorY()-CH + bob;
-    // Leg swing: 4-frame cycle
-    const legPhase = cat.moving ? Math.floor(walkTick/6)%4 : 0;
+    const bob = cat.moving ? Math.sin(walkTick*0.30)*catScale*0.7 : 0;
+    const tilt = cat.moving ? Math.sin(walkTick*0.15)*0.06 : 0; // gentle sway
     ctx.save();
-    ctx.translate(screenCatX, baseY);
-    if(cat.dir==='left'){ctx.translate(CW,0);ctx.scale(-1,1);}
+    ctx.translate(screenCatX + CW/2, floorY()-CH/2 + bob);
+    ctx.rotate(tilt);
+    if(cat.dir==='left') ctx.scale(-1,1);
     ctx.imageSmoothingEnabled=false;
-    // Draw legs animated over the sprite
-    ctx.drawImage(catImg,0,0,CW,CH);
-    // Animated legs overlay
-    const s=catScale;
-    ctx.fillStyle='#111111';
-    // Front legs: pixel positions on 16×20 grid, scaled
-    // Front leg pair at grid col 6-7, back leg pair at col 9-10, bottom rows 14-16
-    const legSwing = [[-1,0],[0,1],[1,0],[0,-1]][legPhase];
-    // Front legs
-    ctx.fillRect((6)*s+(legSwing[0]*s*0.6|0), 14*s, 2*s, 3*s);
-    ctx.fillRect((8)*s+(-legSwing[0]*s*0.6|0), 14*s, 2*s, 3*s);
-    // Back legs
-    ctx.fillRect((10)*s+(-legSwing[0]*s*0.5|0), 14*s, 2*s, 3*s);
-    ctx.fillRect((12)*s+(legSwing[0]*s*0.5|0), 14*s, 2*s, 3*s);
+    ctx.drawImage(catImg,-CW/2,-CH/2,CW,CH);
     ctx.restore();
   }
 
