@@ -134,12 +134,12 @@ const cat = { wx: 0, y:0, dir:'right', spd:3.2, walkFrame:0, moving:false, onFra
 let walkTick=0;
 
 function floorY(){ return H*0.73; }
-function catFloorY(){ return floorY() + CH/2; }  // cat.y when standing on floor
+function catFloorY(){ return floorY() - CH/2; }  // cat center when feet on floor
 function frameTopY(i){
   const r=getPaintRect(i);
   if(!r) return catFloorY();
   const FB=Math.max(r.pw*0.035,9);
-  return r.py - FB*2 + CH/2;  // cat center when standing on frame top
+  return r.py - FB*2 - CH/2;  // cat center when feet on frame top
 }
 function frameLeft(i){
   const r=getPaintRect(i);
