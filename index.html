@@ -344,8 +344,9 @@ function draw(){
     if(cat.dir==='left') ctx.scale(-1,1);
     ctx.imageSmoothingEnabled=false;
     const frame = cat.moving ? Math.floor(walkTick/8) % CAT_FRAMES : 0;
-    ctx.drawImage(catImg, frame*CAT_COLS*catScale, 0, CAT_COLS*catScale, CAT_ROWS*catScale,
-                  -CW/2, -CH/2, CW, CH);
+    const srcW = catImg.naturalWidth / CAT_FRAMES;
+    const srcH = catImg.naturalHeight;
+    ctx.drawImage(catImg, frame*srcW, 0, srcW, srcH, -CW/2, -CH/2, CW, CH);
     ctx.restore();
   }
 
