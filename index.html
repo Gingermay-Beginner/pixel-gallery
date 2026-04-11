@@ -341,7 +341,7 @@ function draw(){
     ctx.save();
     ctx.translate(screenCatX + CW/2, cat.y - CH + bob);
     ctx.rotate(tilt);
-    if(cat.dir==='left') ctx.scale(-1,1);
+    if(cat.dir==='right') ctx.scale(-1,1);
     ctx.imageSmoothingEnabled=false;
     const frame = cat.moving ? Math.floor(walkTick/8) % CAT_FRAMES : 0;
     const srcW = catImg.naturalWidth / CAT_FRAMES;
