@@ -138,7 +138,7 @@ function frameTopY(i){
   const r=getPaintRect(i);
   if(!r) return floorY();
   const FB=Math.max(r.pw*0.035,9);
-  return r.py - FB*2 + CH*2/16;
+  return r.py - FB*2;
 }
 function frameLeft(i){
   const r=getPaintRect(i);
@@ -339,9 +339,8 @@ function draw(){
     const bob = cat.moving ? Math.sin(walkTick*0.30)*catScale*0.7 : 0;
     const tilt = cat.moving ? Math.sin(walkTick*0.15)*0.06 : 0;
     ctx.save();
-    // cat.y = feet position; sprite has ~2 empty rows at bottom
-    const footOffset = CH * 2/16;
-    ctx.translate(screenCatX + CW/2, cat.y - CH + footOffset + bob);
+    // cat.y = feet position
+    ctx.translate(screenCatX + CW/2, cat.y - CH + bob);
     ctx.rotate(tilt);
     if(cat.dir==='right') ctx.scale(-1,1);
     ctx.imageSmoothingEnabled=false;
