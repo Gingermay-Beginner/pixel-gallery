@@ -199,7 +199,7 @@ function getPaintRect(i){
   const ar=img.naturalWidth/img.naturalHeight;
   let pw=maxPW,ph=pw/ar; if(ph>maxPH){ph=maxPH;pw=ph*ar;}
   const wx=paintingWorldX(i)-pw/2;
-  const py=H*0.09;
+  const py=H*0.18;
   return {wx,py,pw,ph};
 }
 
