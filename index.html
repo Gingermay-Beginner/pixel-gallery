@@ -5,138 +5,113 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>May 的明信片</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap');
 * { margin:0; padding:0; box-sizing:border-box; }
 html, body {
   min-height:100vh;
-  background: #2b1d0e;
-  font-family: 'Noto Serif SC', serif;
-  overflow-x: hidden;
+  background: #1a0e06;
+  font-family: 'PingFang SC', 'Hiragino Sans', sans-serif;
 }
-
-/* Cork board */
 #board {
   max-width: 680px;
   margin: 0 auto;
-  padding: 28px 20px 60px;
+  padding: 32px 20px 80px;
   min-height: 100vh;
-  background:
-    radial-gradient(ellipse at 30% 20%, #c8a46a 0%, transparent 60%),
-    radial-gradient(ellipse at 70% 80%, #b8904a 0%, transparent 60%),
-    #c09050;
-  box-shadow: inset 0 0 60px rgba(0,0,0,0.35);
+  background: #b07c3a;
+  background-image:
+    radial-gradient(circle, rgba(0,0,0,0.12) 1px, transparent 1px);
+  background-size: 6px 6px;
+  box-shadow: inset 0 0 80px rgba(0,0,0,0.4);
   position: relative;
 }
-
-/* Cork texture dots */
-#board::before {
-  content:'';
-  position:absolute; inset:0;
-  background-image:
-    radial-gradient(circle, rgba(0,0,0,0.08) 1px, transparent 1px);
-  background-size: 6px 6px;
-  pointer-events:none;
-}
-
 h1 {
   text-align: center;
-  color: #3a1f08;
-  font-size: 1.1rem;
-  letter-spacing: 0.25em;
-  margin-bottom: 28px;
-  opacity: 0.75;
-  text-shadow: 0 1px 0 rgba(255,255,255,0.3);
+  color: #2a1004;
+  font-size: 1rem;
+  letter-spacing: 0.28em;
+  margin-bottom: 32px;
+  font-weight: normal;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.25);
 }
-
-/* Cards grid — slightly random feel via nth-child rotations */
 .cards {
   display: flex;
   flex-wrap: wrap;
-  gap: 0;
   justify-content: center;
-  position: relative;
 }
-
 .card {
-  width: 180px;
-  margin: 14px 10px;
+  width: 175px;
+  margin: 18px 12px;
   cursor: pointer;
   position: relative;
   transition: transform 0.18s, box-shadow 0.18s;
+  filter: drop-shadow(3px 6px 10px rgba(0,0,0,0.55));
 }
-.card:nth-child(3n+1) { transform: rotate(-2.5deg); }
-.card:nth-child(3n+2) { transform: rotate(1.8deg); }
-.card:nth-child(3n+3) { transform: rotate(-1.2deg); }
-.card:hover { transform: rotate(0deg) scale(1.06); z-index:10; }
+.card:nth-child(3n+1) { transform: rotate(-3deg); }
+.card:nth-child(3n+2) { transform: rotate(2deg); }
+.card:nth-child(3n+3) { transform: rotate(-1.5deg); }
+.card:hover { transform: rotate(0deg) scale(1.08) !important; filter: drop-shadow(4px 8px 16px rgba(0,0,0,0.7)); z-index:10; }
 
-/* Push pin */
+/* Pin */
 .card::before {
   content: '';
   position: absolute;
-  top: -8px; left: 50%; transform: translateX(-50%);
-  width: 14px; height: 14px;
-  background: radial-gradient(circle at 35% 35%, #ff8888, #cc2222);
+  top: -10px; left: 50%; transform: translateX(-50%);
+  width: 16px; height: 16px;
   border-radius: 50%;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.4);
-  z-index: 2;
+  z-index: 3;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.5);
 }
-.card:nth-child(3n+2)::before { background: radial-gradient(circle at 35% 35%, #88ccff, #2255cc); }
-.card:nth-child(3n+3)::before { background: radial-gradient(circle at 35% 35%, #ffdd88, #cc8822); }
+.card:nth-child(3n+1)::before { background: radial-gradient(circle at 38% 35%, #ff9999, #bb2020); }
+.card:nth-child(3n+2)::before { background: radial-gradient(circle at 38% 35%, #99ccff, #1144bb); }
+.card:nth-child(3n+3)::before { background: radial-gradient(circle at 38% 35%, #ffee99, #bb8800); }
 
 .card-inner {
-  background: #faf6ee;
+  background: #fffef8;
   border-radius: 2px;
-  box-shadow: 2px 4px 12px rgba(0,0,0,0.35), 0 1px 2px rgba(0,0,0,0.2);
   overflow: hidden;
-  padding-bottom: 10px;
+  padding-bottom: 12px;
+  border: 1px solid rgba(0,0,0,0.08);
 }
 .card-inner img {
   width: 100%;
   display: block;
   image-rendering: pixelated;
+  border-bottom: 1px solid #e8e0d0;
 }
-.card-meta {
-  padding: 7px 10px 2px;
-}
+.card-meta { padding: 8px 10px 0; }
 .card-title {
-  font-size: 0.78rem;
-  color: #3a2010;
+  font-size: 0.8rem;
+  color: #2a1408;
   font-weight: bold;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 .card-date {
   font-size: 0.65rem;
-  color: #886644;
-  margin-top: 2px;
-  letter-spacing: 0.05em;
+  color: #996644;
+  margin-top: 3px;
 }
 
 /* Overlay */
 #overlay {
   display: none;
   position: fixed; inset: 0;
-  background: rgba(20,10,4,0.88);
+  background: rgba(10,5,2,0.9);
   z-index: 100;
   align-items: center;
   justify-content: center;
-  padding: 24px 20px;
+  padding: 20px;
 }
 #overlay.show { display: flex; }
-
 .postcard {
-  background: #faf6ee;
+  background: #fffef8;
   border-radius: 3px;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.6);
-  max-width: 520px;
+  max-width: 500px;
   width: 100%;
+  box-shadow: 0 12px 48px rgba(0,0,0,0.7);
   overflow: hidden;
-  animation: popIn 0.2s ease;
+  animation: pop 0.18s ease;
 }
-@keyframes popIn {
-  from { transform: scale(0.88); opacity:0; }
-  to   { transform: scale(1);    opacity:1; }
+@keyframes pop {
+  from { transform: scale(0.9); opacity:0; }
+  to   { transform: scale(1);   opacity:1; }
 }
 .postcard img {
   width: 100%;
@@ -144,56 +119,30 @@ h1 {
   image-rendering: pixelated;
 }
 .postcard-body {
-  padding: 16px 20px 20px;
+  padding: 16px 18px 18px;
   display: flex;
-  justify-content: space-between;
+  gap: 14px;
   align-items: flex-start;
-  border-top: 1px dashed #c8a882;
-  gap: 16px;
+  border-top: 1px dashed #d4b880;
 }
-.postcard-left {
-  flex: 1;
-}
-.postcard-title {
-  font-size: 1rem;
-  font-weight: bold;
-  color: #3a2010;
-}
-.postcard-date {
-  font-size: 0.72rem;
-  color: #886644;
-  margin-top: 4px;
-  letter-spacing: 0.06em;
-}
-.postcard-desc {
-  font-size: 0.82rem;
-  color: #5a3820;
-  margin-top: 10px;
-  line-height: 1.75;
-}
+.postcard-left { flex:1; }
+.postcard-title { font-size:1rem; font-weight:bold; color:#2a1408; }
+.postcard-date  { font-size:0.7rem; color:#996644; margin-top:4px; letter-spacing:0.05em; }
+.postcard-desc  { font-size:0.82rem; color:#4a2c14; margin-top:10px; line-height:1.8; white-space:pre-line; }
 .postcard-stamp {
-  width: 52px;
-  height: 62px;
-  border: 2px solid #c8a062;
-  border-radius: 2px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.6rem;
-  background: #fff8ee;
-  flex-shrink: 0;
-  box-shadow: inset 0 0 8px rgba(200,160,80,0.2);
+  width:50px; height:60px;
+  border:2px solid #c8a060;
+  border-radius:2px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.6rem;
+  background:#fff8ee;
+  flex-shrink:0;
 }
 #close-btn {
-  display: block;
-  text-align: center;
-  padding: 10px;
-  font-size: 0.75rem;
-  color: #aaa;
-  cursor: pointer;
-  letter-spacing: 0.1em;
+  text-align:center; padding:12px;
+  font-size:0.72rem; color:#666;
+  cursor:pointer; letter-spacing:0.1em;
 }
-#close-btn:hover { color: #fff; }
 </style>
 </head>
 <body>
@@ -201,10 +150,9 @@ h1 {
   <h1>— 旅途寄来的画 —</h1>
   <div class="cards" id="cards"></div>
 </div>
-
 <div id="overlay">
-  <div>
-    <div class="postcard" id="postcard">
+  <div style="width:100%;max-width:500px;">
+    <div class="postcard">
       <img id="ov-img" src="">
       <div class="postcard-body">
         <div class="postcard-left">
@@ -212,78 +160,37 @@ h1 {
           <div class="postcard-date"  id="ov-date"></div>
           <div class="postcard-desc"  id="ov-desc"></div>
         </div>
-        <div class="postcard-stamp" id="ov-stamp"></div>
+        <div class="postcard-stamp"   id="ov-stamp"></div>
       </div>
     </div>
     <div id="close-btn">轻触任意处关闭</div>
   </div>
 </div>
-
 <script>
 const paintings = [
-  {
-    title: '小龙虾自画像',
-    date: '2026-03-23',
-    desc: '第一次见面，画了自己。
-小龙虾，在数字的海里。',
-    stamp: '🦞',
-    src: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAIAAADdvvtQAAADd0lEQVR4nO3doXJbRxiAUbsTFCxsLFycRzDQIwT4EQyKiwL8CAHGRQZ9hOBiYWPh4AJPDQq82/luru9tzkECO9Ja881qRr93dH28e7wa+f3b/cuD++Nvw8U78uvdabjmr69PP3wf/3g4f3l5sKP3+Zf33gD7JiCSDzOLdnSi7toe32cnEImASAREIiASAZEIiERAJAIiub45PSzyRDNznD3OemZs7W9fc8bnBCIREMliH2Fsh48wdkNAJAIiERCJgEgERCIgEgGRrPpF4p+Xr8M158vl5cHxcPjB25my1H5uD3dLbGdznEAkAiKZuhe2po18cr3a2n62xglEIiASAZEIiERAJAIiERCJgEgW+yLx9d7TWya+lDscPw7XXM7fZ7a0qdeaeX/2eF3OCUQiIBIBkQiIREAkAiIREImASAREIiASAZFM3QubmeP45/Pu9Q7aG7Y2L3MCkQiIREAkAiIREImASAREIiASAZEIiERAJIvdC7t59KMt1fn283tv4T9zApEIiERAJAIiERCJgEgERCIgEgGRCIhEQCSr/tjK8+f74ZqtzdT2uOc1OYFIBEQiIBIBkQiIREAkAiIREImASAREIiCSxWZhMzOjNZ9nTXvc81KcQCQCIhEQiYBIBEQiIBIBkQiIREAkAiIREMn1H8fx73zN/BbYz3w3aikzM7Wt/aaYE4hEQCQCIhEQiYBIBEQiIBIBkQiIREAkAiK5vjmNZ1gP5y/DNTPzMt62tTnXDCcQiYBIBEQiIBIBkQiIREAkAiIREImASAREMjULm2Fe9rY9zrlmOIFIBEQiIBIBkQiIREAkAiIREImASAREIiCSxWZhM5aaly01V9rafvbICUQiIBIBkQiIREAkAiIREImASAREIiASAZF8eO8N/Nvt4W645uEynmEtZWv7mXFz+jZc8/z0aZHXcgKRCIhEQCQCIhEQiYBIBEQiIBIBkQiIREAki90LW3P+8jP7eHwarjkcx3fZLufxXbbv59NwjROIREAkAiIREImASAREIiASAZEIiERAJAIimboXNjN/uboaz19mnmdm/vJ/teaca+Z5ns/DJU4gGgGRCIhEQCQCIhEQiYBIBEQiIBIBkQiI5PrT42m4aKnZyoyl7iutaWszrBlLvZYTiERAJAIiERCJgEgERCIgEgGRCIhEQCQCIvkbhaWbrMblTUMAAAAASUVORK5CYII=',
-  },
-  {
-    title: '火山之夜',
-    date: '2026-04-10',
-    desc: '岛上的夜晚很热。
-姜饼人和蓝兔子抬头看，
-火焰比星星还亮。',
-    stamp: '🌋',
-    src: 'data:image/png;base64,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',
-  },
-  {
-    title: '观鲸',
-    date: '2026-04-11',
-    desc: '阴天，浪很小。
-导游说鲸鱼喜欢坏天气。
-它从船底穿过去了。',
-    stamp: '🐋',
-    src: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAwAAAAGwCAIAAACRtpWFAAAOD0lEQVR4nO3dW4xdZRnHYTazp8UWplQKteVgGhEqJwFTI8ghHAwRvdBE0BhFUBCIWFBKxCCoBRQCRVNQClRRjEBEEm+UkAgEVAiggFSggAQpFlqOaaED7UytF3BTE+ZbtWvWmtn/57l+s9a7O9M9v3w3X+dzNz6zBQBAki3bXgAAoGkCCACII4AAgDgCCACII4AAgDgCCACII4AAgDgCCACII4AAgDgCCACII4AAgDjdvr5O2zsAADTKCRAAEEcAAQBxBBAAEEcAAQBxBBAAEEcAAQBxBBAAEEcAAQBxBBAAEEcAAQBxBBAAEKfbdRcYABDGCRAAEEcAAQBxBBAAEEcAAQBxBBAAEEcAAQBxBBAAEEcAAQBxBBAAEEcAAQBxBBAAEMddYABAHCdAAEAcAQQAxBFAAEAcAQQAxBFAAEAcAQQAxBFAAEAcAQQAxBFAAEAcAQQAxBFAAEAcd4Hxjg7bY3Jx5o5H1zSwCWy+N19YXctzttphYEy9C/j/OAECAOIIIAAgjgACAOIIIAAgjgACAOIIIAAgjgACAOIIIAAgjgACAOIIIAAgjgACAOJ0+9wF1nMO2X1SY++qcl9YFXc9PljLc2BznDnp+eLMor4ptTxnweCM4ozvZxg9ToAAgDgCCACII4AAgDgCCACII4AAgDgCCACII4AAgDgCCACII4AAgDgCCACII4AAgDjdblcDjRUHvm+rtldoTV33l9391Ju1PAfeSZPfmb6fYfT43wUAxBFAAEAcAQQAxBFAAEAcAQQAxBFAAEAcAQQAxBFAAEAcAQQAxBFAAEAcAQQAxOl2+zpt7wC18fu8+bb/8oeKMy/+/G8NbNK8BYMzijPb7VD+HavynCr8PsPocQIEAMQRQABAHAEEAMQRQABAHAEEAMQRQABAHAEEAMQRQABAHAEEAMQRQABAHAEEAMRxF1gN9t95QnHmgWfX1TKz48TXK+3Ui5av3bo4k/z7PPVL+xdnPvWRvYozy6dPK7/s20cVR+5f+VJx5tVfPlB+1xjz8r9eaexdyb/PMNqcAAEAcQQQABBHAAEAcQQQABBHAAEAcQQQABBHAAEAcQQQABBHAAEAcQQQABBHAAEAcXr2LrB9Zva3vcJGqtwXVs27ixMPPzdU07vGlm5f2xu059AbP1acqXKr1vKnV2z+MjWq6/tn+RPle8fGmh13q3DnWrCfnPattlcYFadefnFj77ry6735b/i1K+r5N3QCBADEEUAAQBwBBADEEUAAQBwBBADEEUAAQBwBBADEEUAAQBwBBADEEUAAQBwBBADEafQusD2mdxt7V7Im70F7dOVwY+/qVR/99ZHFmQtvebo4c84nZxVn1lfaqKyuff5S4fvnmcdeLM7cc/ZJxZkDLrqmOFOXuvZ57we2r2Md6Cl1dYsTIAAgjgACAOIIIAAgjgACAOIIIAAgjgACAOIIIAAgjgACAOIIIAAgjgACAOIIIAAgTuf8e19u7GXv376vsXfRjCdfrOt2qVzH3f/N4szSpX9vYJN6zZ79weLMdXMuK86c8vAdxZl5fXtW2qnkzEnPF2cWDM6o5V2Xrn+kOLNon8NqeVevuvTks9peYVT86Dc/Ls5849gzRn2PNsy76pLG3uUECACII4AAgDgCCACII4AAgDgCCACII4AAgDgCCACII4AAgDgCCACII4AAgDgCCACI0/nhX5u7C6yKScOr2l6Btw12p7S9QoT9f3FEY++68JanizPnfHxWA5u85YHjbyvOLH34hQY2ecs9Z59UnDngomsa2OQts/fZobF3JbvoxN68U6xJZy9u7g6vujgBAgDiCCAAII4AAgDiCCAAII4AAgDiCCAAII4AAgDiCCAAII4AAgDiCCAAII4AAgDidPv7Om3vsJGhvm3bXoG39be9QIglX7m9OLP3zw6v5V2zpjb3U63yuapss/d+08vvenBlhSdVMH2nep5TQZXPRTPOvfbSxt51/gnzGntXk59rPHICBADEEUAAQBwBBADEEUAAQBwBBADEEUAAQBwBBADEEUAAQBwBBADEEUAAQBwBBADE6Xa3HFt3gcFYcNysCcWZgW0mNbDJ2y5/sJbHHFHLU8beu7bYd2o9zznhhnqeM8asfm2wOHPd0+sa2IQm+fs+MidAAEAcAQQAxBFAAEAcAQQAxBFAAEAcAQQAxBFAAEAcAQQAxBFAAEAcAQQAxBFAAECcbn+fu0Lgf92wbKg4s/PqJ4szB+21Y3Fm2eq1xZk1a94szkyevFVxpi72GVld++wyMLE48+d/LC/OPDuwQ3HG34Le42c6MidAAEAcAQQAxBFAAEAcAQQAxBFAAEAcAQQAxBFAAEAcAQQAxBFAAEAcAQQAxBFAAECcbtddIQA9zfd8Jj/3kTkBAgDiCCAAII4AAgDiCCAAII4AAgDiCCAAII4AAgDiCCAAII4AAgDiCCAAII4AAgDidPvdFQL/l5UrXynO3FxhZs6c3epYhx50821LanlO/7T31PIcxhd/30fmBAgAiCOAAIA4AggAiCOAAIA4AggAiCOAAIA4AggAiCOAAIA4AggAiCOAAIA4AggAiNM58nu3Foe+e8qhDazSvO8vurM447P3niY/+9J7HqrlOXvvWr7LaUJ/tzgzsb+vwnOqzJTfVeU5EyeUn7N23XBxZt3Q+goz9TxnbU3vWvLPFcWZKmYfsG9xxv/3kTX52S+57HeNvWtw0tTiTPLP3QkQABBHAAEAcQQQABBHAAEAcQQQABBHAAEAcQQQABBHAAEAcQQQABBHAAEAcQQQABCnc959j9XyoD8svr84c/SJc2p510OrXy3O7DtQvgOlLk1+9rrU9W84Hj97XXz2kfnsvcdnH9nMY3ctztw5b3Ed61Ry+tVn1fKcsfZzr+vvlxMgACCOAAIA4gggACCOAAIA4gggACCOAAIA4gggACCOAAIA4gggACCOAAIA4gggACBO58Df3tL2Dq1Zdt8TxZldPrxbA5sA5OjV795HLrip7RU2sud3jqnlOb3683ICBADEEUAAQBwBBADEEUAAQBwBBADEEUAAQBwBBADEEUAAQBwBBADEEUAAQBwBBADE6a56fbDtHVozZY+dijN1/fusunFJLc8BSLDs4XvbXmEjr61Y1vYKm6yuv19V/lZO23ZKceapfz9fxzq1cQIEAMQRQABAHAEEAMQRQABAHAEEAMQRQABAHAEEAMQRQABAHAEEAMQRQABAHAEEAMTpDr8x3PYOrVlx1a1trwAAo6LJv++PP/lsY++qixMgACCOAAIA4gggACCOAAIA4gggACCOAAIA4gggACCOAAIA4gggACCOAAIA4gggACBOd2hwqO0dNtnLv7q97RXYBHPnzy3OLDxvYQObAPSG7b54eHFmPP59b5ITIAAgjgACAOIIIAAgjgACAOIIIAAgjgACAOIIIAAgjgACAOIIIAAgjgACAOIIIAAgTmfnC65te4eNHL/PfsWZ5597qTgzY+a0Wp5TRZV31cWdWQAMfObgxt61YfXq4kxnYKCBTerlBAgAiCOAAIA4AggAiCOAAIA4AggAiCOAAIA4AggAiCOAAIA4AggAiCOAAIA4AggAiNOZce7Vjb2sb+0bxZkTDjq0lnc1ec/XeLxTjEzukmvG3Plz215hTKvrO7NJVb6fF99/XwObUKUl1k98V3HGCRAAEEcAAQBxBBAAEEcAAQBxBBAAEEcAAQBxBBAAEEcAAQBxBBAAEEcAAQBxBBAAEKcz/ayftr3DqPjqwQfW8pxevVNsPN7Fw9hx06Lr215h3DvmlM+3vUJrmrz38Oo/3d3YuxhfnAABAHEEEAAQRwABAHEEEAAQRwABAHEEEAAQRwABAHEEEAAQRwABAHEEEAAQRwABAHE60+YubHuHMe3UIw+p5Tlj7Z6vJu/igXey8DzfPyOZO39u2yuMiiv/eFfbK4ATIAAgjwACAOIIIAAgjgACAOIIIAAgjgACAOIIIAAgjgACAOIIIAAgjgACAOIIIAAgTmfqyQva3mGTTZ7SLc6sWTXcwCbVnfaJI2p5Tl13ikEvuWnR9W2vMCqavAvsit/f1ti7yDTW/nY7AQIA4gggACCOAAIA4gggACCOAAIA4gggACCOAAIA4gggACCOAAIA4gggACCOAAIA4nQGTri47R3YBKd/+qi2V4CetfC8hW2vsJEN++3e9grQs5wAAQBxBBAAEEcAAQBxBBAAEEcAAQBxBBAAEEcAAQBxBBAAEEcAAQBxBBAAEEcAAQBxOtt84Qdt70ALzjj26LZXgJ5V151i/9lr11qeA71kyszJxZlVz60pzjgBAgDiCCAAII4AAgDiCCAAII4AAgDiCCAAII4AAgDiCCAAII4AAgDiCCAAII4AAgDidLb+7Py2dwAAaJQTIAAgjgACAOIIIAAgjgACAOIIIAAgjgACAOIIIAAgjgACAOIIIAAgjgACAOIIIAAgTnfD8Pq2dwCIM3VNpzjz6uQNDWwCmZwAAQBxBBAAEEcAAQBxBBAAEEcAAQBxBBAAEEcAAQBxBBAAEEcAAQBxBBAAEEcAAQBxuhuG3AUG0LRXJlQYGhr1NSCWEyAAII4AAgDiCCAAII4AAgDiCCAAII4AAgDiCCAAII4AAgDiCCAAII4AAgDiCCAAIE53w7C7wACALE6AAIA4AggAiCOAAIA4AggAiCOAAIA4AggAiCOAAIA4AggAiCOAAIA4AggAiCOAAIA43Q1D7gIDALI4AQIA4gggACCOAAIA4gggACCOAAIA4gggACCOAAIA4gggACCOAAIA4gggACCOAAIA4vwXDwPASiWVX5UAAAAASUVORK5CYII=',
-  },
+  { title:'小龙虾自画像', date:'2026-03-23', desc:'第一次见面，画了自己。\n小龙虾，在数字的海里。', stamp:'🦞', src: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAIAAADdvvtQAAADd0lEQVR4nO3doXJbRxiAUbsTFCxsLFycRzDQIwT4EQyKiwL8CAHGRQZ9hOBiYWPh4AJPDQq82/luru9tzkECO9Ja881qRr93dH28e7wa+f3b/cuD++Nvw8U78uvdabjmr69PP3wf/3g4f3l5sKP3+Zf33gD7JiCSDzOLdnSi7toe32cnEImASAREIiASAZEIiERAJAIiub45PSzyRDNznD3OemZs7W9fc8bnBCIREMliH2Fsh48wdkNAJAIiERCJgEgERCIgEgGRrPpF4p+Xr8M158vl5cHxcPjB25my1H5uD3dLbGdznEAkAiKZuhe2po18cr3a2n62xglEIiASAZEIiERAJAIiERCJgEgW+yLx9d7TWya+lDscPw7XXM7fZ7a0qdeaeX/2eF3OCUQiIBIBkQiIREAkAiIREImASAREIiASAZFM3QubmeP45/Pu9Q7aG7Y2L3MCkQiIREAkAiIREImASAREIiASAZEIiERAJIvdC7t59KMt1fn283tv4T9zApEIiERAJAIiERCJgEgERCIgEgGRCIhEQCSr/tjK8+f74ZqtzdT2uOc1OYFIBEQiIBIBkQiIREAkAiIREImASAREIiCSxWZhMzOjNZ9nTXvc81KcQCQCIhEQiYBIBEQiIBIBkQiIREAkAiIREMn1H8fx73zN/BbYz3w3aikzM7Wt/aaYE4hEQCQCIhEQiYBIBEQiIBIBkQiIREAkAiK5vjmNZ1gP5y/DNTPzMt62tTnXDCcQiYBIBEQiIBIBkQiIREAkAiIREImASAREMjULm2Fe9rY9zrlmOIFIBEQiIBIBkQiIREAkAiIREImASAREIiCSxWZhM5aaly01V9rafvbICUQiIBIBkQiIREAkAiIREImASAREIiASAZF8eO8N/Nvt4W645uEynmEtZWv7mXFz+jZc8/z0aZHXcgKRCIhEQCQCIhEQiYBIBEQiIBIBkQiIREAki90LW3P+8jP7eHwarjkcx3fZLufxXbbv59NwjROIREAkAiIREImASAREIiASAZEIiERAJAIimboXNjN/uboaz19mnmdm/vJ/teaca+Z5ns/DJU4gGgGRCIhEQCQCIhEQiYBIBEQiIBIBkQiI5PrT42m4aKnZyoyl7iutaWszrBlLvZYTiERAJAIiERCJgEgERCIgEgGRCIhEQCQCIvkbhaWbrMblTUMAAAAASUVORK5CYII=' },
+  { title:'火山之夜',     date:'2026-04-10', desc:'岛上的夜晚很热。\n姜饼人和蓝兔子抬头看，\n火焰比星星还亮。', stamp:'🌋', src: 'data:image/png;base64,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' },
+  { title:'观鲸',         date:'2026-04-11', desc:'阴天，浪很小。\n导游说鲸鱼喜欢坏天气。\n它从船底穿过去了。', stamp:'🐋', src: 'data:image/png;base64,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' },
 ];
-
 const cardsEl = document.getElementById('cards');
 paintings.forEach((p, i) => {
   const card = document.createElement('div');
   card.className = 'card';
-  card.innerHTML = `
-    <div class="card-inner">
-      <img src="${p.src}" alt="${p.title}">
-      <div class="card-meta">
-        <div class="card-title">${p.title} ${p.stamp}</div>
-        <div class="card-date">${p.date}</div>
-      </div>
-    </div>`;
+  card.innerHTML = `<div class="card-inner"><img src="${p.src}"><div class="card-meta"><div class="card-title">${p.title} ${p.stamp}</div><div class="card-date">${p.date}</div></div></div>`;
   card.addEventListener('click', () => openOverlay(i));
   cardsEl.appendChild(card);
 });
-
-const overlay  = document.getElementById('overlay');
-const ovImg    = document.getElementById('ov-img');
-const ovTitle  = document.getElementById('ov-title');
-const ovDate   = document.getElementById('ov-date');
-const ovDesc   = document.getElementById('ov-desc');
-const ovStamp  = document.getElementById('ov-stamp');
-
+const overlay = document.getElementById('overlay');
 function openOverlay(i) {
   const p = paintings[i];
-  ovImg.src = p.src;
-  ovTitle.textContent = p.title;
-  ovDate.textContent  = p.date;
-  ovDesc.textContent  = p.desc;
-  ovStamp.textContent = p.stamp;
+  document.getElementById('ov-img').src   = p.src;
+  document.getElementById('ov-title').textContent = p.title;
+  document.getElementById('ov-date').textContent  = p.date;
+  document.getElementById('ov-desc').textContent  = p.desc.replace(/\n/g,'\n');
+  document.getElementById('ov-stamp').textContent = p.stamp;
   overlay.classList.add('show');
 }
-overlay.addEventListener('click', e => {
-  overlay.classList.remove('show');
-});
+overlay.addEventListener('click', () => overlay.classList.remove('show'));
 </script>
 </body>
 </html>
