@@ -272,11 +272,7 @@ function draw(){
     ctx.fillStyle='#886644';
     ctx.font=`${Math.min(10,lw*0.07)}px 'PingFang SC',sans-serif`;
     ctx.fillText(paintings[i].date, sx+pw/2, ly+32);
-    if(near){
-      ctx.fillStyle='rgba(160,110,30,0.75)';
-      ctx.font=`bold 9px monospace`;
-      ctx.fillText('[ E ] 翻看', sx+pw/2, ly+46);
-    }
+
   }
 
   // === Cat ===
