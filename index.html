@@ -6,247 +6,293 @@
 <title>May 的博物馆</title>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-html, body {
-  height: 100%; width: 100%;
-  background: #1c1812;
-  font-family: 'PingFang SC', 'Hiragino Sans', serif;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  overflow: hidden;
-  user-select: none;
-}
+html,body { width:100%; height:100%; background:#111; overflow:hidden;
+  font-family:'PingFang SC',sans-serif; }
+canvas { display:block; touch-action:none; }
 
-/* Museum wall */
-.wall {
-  width: 100vw; height: 100vh;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  position: relative;
-  background:
-    radial-gradient(ellipse at 50% 40%, #2e2820 0%, #1a1510 60%, #0e0c0a 100%);
+/* D-pad */
+#dpad {
+  position:fixed; bottom:18px; right:16px;
+  display:grid; grid-template-columns:repeat(3,40px); grid-template-rows:repeat(3,40px); gap:3px;
+  pointer-events:none;
 }
-
-/* Spotlight on painting */
-.spotlight {
-  position: absolute;
-  top: 0; left: 50%; transform: translateX(-50%);
-  width: 60vw; height: 100vh;
-  background: radial-gradient(ellipse at 50% 30%, rgba(255,240,180,0.07) 0%, transparent 65%);
-  pointer-events: none;
+.db {
+  width:40px; height:40px;
+  background:rgba(255,255,255,0.10); border:1px solid rgba(255,255,255,0.18); border-radius:8px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:16px; color:rgba(255,255,255,0.6);
+  pointer-events:all; cursor:pointer; -webkit-tap-highlight-color:transparent;
 }
-
-/* Frame */
-.frame-wrap {
-  position: relative;
-  display: flex; flex-direction: column; align-items: center;
-  animation: fadein 0.5s ease;
-}
-@keyframes fadein {
-  from { opacity:0; transform: translateY(10px); }
-  to   { opacity:1; transform: translateY(0); }
-}
-
-.frame-outer {
-  background: #8b6914;
-  padding: 10px;
-  border-radius: 3px;
-  box-shadow:
-    0 0 0 2px #6a4e0a,
-    0 0 0 4px #c8a030,
-    0 0 0 6px #6a4e0a,
-    0 8px 40px rgba(0,0,0,0.8),
-    0 0 80px rgba(200,160,40,0.08);
-}
-.frame-inner {
-  background: #f5f0e8;
-  padding: 6px;
-}
-.frame-inner img {
-  display: block;
-  image-rendering: pixelated;
-  max-width: min(78vw, 560px);
-  max-height: 52vh;
-  width: auto; height: auto;
-}
-
-/* Label plate */
-.label {
-  margin-top: 22px;
-  background: #f5ecd5;
-  border: 1px solid #c8a050;
-  border-radius: 3px;
-  padding: 10px 24px 12px;
-  text-align: center;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-  min-width: 200px;
-}
-.label-title {
-  font-size: 1rem;
-  font-weight: bold;
-  color: #2a1608;
-  letter-spacing: 0.05em;
-}
-.label-date {
-  font-size: 0.7rem;
-  color: #886644;
-  margin-top: 4px;
-  letter-spacing: 0.1em;
-}
-.label-desc {
-  font-size: 0.78rem;
-  color: #4a2c14;
-  margin-top: 8px;
-  line-height: 1.75;
-  white-space: pre-line;
-}
-
-/* Nav arrows */
-.nav {
-  position: absolute;
-  top: 50%; transform: translateY(-50%);
-  display: flex; align-items: center; justify-content: center;
-  width: 44px; height: 44px;
-  background: rgba(255,255,255,0.07);
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 18px; color: rgba(255,255,255,0.6);
-  transition: background 0.15s, color 0.15s;
-  -webkit-tap-highlight-color: transparent;
-}
-.nav:hover { background: rgba(255,255,255,0.15); color: #fff; }
-.nav:active { background: rgba(255,255,255,0.25); }
-#nav-prev { left: max(16px, 3vw); }
-#nav-next { right: max(16px, 3vw); }
-.nav.hidden { opacity: 0; pointer-events: none; }
-
-/* Dot indicators */
-.dots {
-  position: absolute;
-  bottom: 28px; left: 50%; transform: translateX(-50%);
-  display: flex; gap: 8px;
-}
-.dot {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: rgba(255,255,255,0.2);
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.dot.active { background: rgba(200,160,60,0.8); }
-
-/* Cat bottom right */
-.cat {
-  position: absolute;
-  bottom: 16px; right: 20px;
-  width: 52px; image-rendering: pixelated;
-  opacity: 0.85;
-}
-
-/* Top title */
-.museum-title {
-  position: absolute;
-  top: 20px; left: 50%; transform: translateX(-50%);
-  font-size: 0.68rem;
-  letter-spacing: 0.28em;
-  color: rgba(200,160,60,0.45);
-  white-space: nowrap;
-}
+.db:active { background:rgba(255,255,255,0.25); }
+.de { visibility:hidden; pointer-events:none; }
 </style>
 </head>
 <body>
-<div class="wall">
-  <div class="spotlight"></div>
-  <div class="museum-title">MAY'S MUSEUM · 旅途寄来的画</div>
-
-  <div class="frame-wrap" id="frame-wrap">
-    <div class="frame-outer">
-      <div class="frame-inner">
-        <img id="painting" src="" alt="">
-      </div>
-    </div>
-    <div class="label">
-      <div class="label-title" id="lbl-title"></div>
-      <div class="label-date"  id="lbl-date"></div>
-      <div class="label-desc"  id="lbl-desc"></div>
-    </div>
-  </div>
-
-  <div class="nav" id="nav-prev">‹</div>
-  <div class="nav" id="nav-next">›</div>
-
-  <div class="dots" id="dots"></div>
-  <img class="cat" src="img/cat.png" alt="小黑猫">
+<canvas id="c"></canvas>
+<div id="dpad">
+  <div class="de"></div><div class="db" id="bu">▲</div><div class="de"></div>
+  <div class="db" id="bl">◀</div><div class="de"></div><div class="db" id="br">▶</div>
+  <div class="de"></div><div class="db" id="bd">▼</div><div class="de"></div>
 </div>
 
 <script>
 const paintings = [
-  { title:'小龙虾自画像', date:'2026-03-23', desc:'第一次见面，画了自己。\n小龙虾，在数字的海里。', src:'img/crayfish.png' },
-  { title:'火山之夜',     date:'2026-04-10', desc:'岛上的夜晚很热。\n姜饼人和蓝兔子抬头看，\n火焰比星星还亮。', src:'img/volcano.png' },
-  { title:'观鲸',         date:'2026-04-11', desc:'阴天，浪很小。\n导游说鲸鱼喜欢坏天气。\n它从船底穿过去了。', src:'img/whale.png' },
+  { title:'小龙虾自画像', date:'2026-03-23', desc:'小龙虾，在数字的海里。', src:'img/crayfish.png' },
+  { title:'火山之夜',     date:'2026-04-10', desc:'火焰比星星还亮。', src:'img/volcano.png' },
+  { title:'观鲸',         date:'2026-04-11', desc:'它从船底穿过去了。', src:'img/whale.png' },
 ];
 
+// Preload images
+const imgs = paintings.map(p => { const i=new Image(); i.src=p.src; return i; });
+const catImg = new Image();
+catImg.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAAB4CAYAAAANHffOAAAB0klEQVR4nO3bsW3bQABAUcvIAurZuMwYmSCzZILAE2SWTOAxXKphrxGSMg0J42QxXyTeK68QT/g46HA6np4Gnc/nP0vj1+v1NPpZhUeb/3PxUP4RICZATICYALHVX/613cKoanexl/lbATEBYgLEBIgJEPuy9QPutRs5KisgJkBMgJgAMQFiJ7uU29zrjMgKiAkQEyAmQEyA2PBZ0Pz2fXF8+vb705O5p73M0wqICRATICZATICYs6AbOQs6CAFiAsQEiAkQWz0Lmi/vi+PTy9fNJlOqvq8VEBMgJkBMgJgAsc3Pgi4/fy2Ov7z+2MXnr3EWdBACxASICRATILb5m/J75035gxMgJkBMgJgAseHb0dM0LY7P8/zpyfwPjzZ/KyAmQEyAmAAxAWLD/4it7SLWbL27qObjH7GDECAmQEyAmAAx74jdyC7oIASICRATICZAzL2gD7gXdHACxASICRATICZATICYADEBYgLEBIgJEBMgJkBMgJgAMQFiAsQEiAkQEyAmQEyAmAAxAWICxASICRATIHa3d8S2vkU8ai+3u62AmAAxAWICxASIDe+CHm23M6r6vmvPtQJiAsQEiAkQEyAmQEyAmAAxAWICxASI/QVGE1qELha4JAAAAABJRU5ErkJggg==';
+
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+ctx.imageSmoothingEnabled = false;
+
+let W, H;
+function resize() {
+  W = canvas.width  = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+// State
 let cur = 0;
+let transitioning = false;
+let transDir = 0;   // -1 left, +1 right
+let transT = 0;     // 0→1
+const TRANS_DUR = 18; // frames
 
-const painting  = document.getElementById('painting');
-const lblTitle  = document.getElementById('lbl-title');
-const lblDate   = document.getElementById('lbl-date');
-const lblDesc   = document.getElementById('lbl-desc');
-const frameWrap = document.getElementById('frame-wrap');
-const navPrev   = document.getElementById('nav-prev');
-const navNext   = document.getElementById('nav-next');
-const dotsEl    = document.getElementById('dots');
+const cat = { x: 0, y: 0, spd: 2.8, frame: 0, ft: 0, dir: 'right' };
+const CAT_PX = 16, CAT_PX_H = 20;
+const CAT_SCALE = 4;
+const CW = CAT_PX * CAT_SCALE, CH = CAT_PX_H * CAT_SCALE;
 
-// Build dots
-paintings.forEach((_, i) => {
-  const d = document.createElement('div');
-  d.className = 'dot' + (i===0?' active':'');
-  d.addEventListener('click', () => go(i));
-  dotsEl.appendChild(d);
+const keys = {};
+document.addEventListener('keydown', e => {
+  keys[e.key]=true;
+  if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)) e.preventDefault();
 });
-
-function show(i, dir=1) {
-  cur = i;
-  const p = paintings[i];
-  // animate
-  frameWrap.style.animation = 'none';
-  frameWrap.offsetHeight;
-  frameWrap.style.animation = '';
-
-  painting.src    = p.src;
-  lblTitle.textContent = p.title;
-  lblDate.textContent  = p.date;
-  lblDesc.textContent  = p.desc;
-
-  navPrev.classList.toggle('hidden', i === 0);
-  navNext.classList.toggle('hidden', i === paintings.length - 1);
-
-  document.querySelectorAll('.dot').forEach((d,j) =>
-    d.classList.toggle('active', j===i));
-}
-
-function go(i) {
-  if (i < 0 || i >= paintings.length) return;
-  show(i);
-}
-
-navPrev.addEventListener('click', () => go(cur - 1));
-navNext.addEventListener('click', () => go(cur + 1));
+document.addEventListener('keyup', e => keys[e.key]=false);
+['bu','bd','bl','br'].forEach((id,i) => {
+  const k = ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'][i];
+  const el = document.getElementById(id);
+  ['pointerdown','touchstart'].forEach(ev => el.addEventListener(ev, e => { e.preventDefault(); keys[k]=true; }, {passive:false}));
+  ['pointerup','pointerleave','touchend','touchcancel'].forEach(ev => el.addEventListener(ev, () => keys[k]=false));
+});
 
 // Swipe
-let tx = 0;
-document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, {passive:true});
-document.addEventListener('touchend', e => {
-  const dx = e.changedTouches[0].clientX - tx;
-  if (Math.abs(dx) > 40) go(dx < 0 ? cur+1 : cur-1);
+let sx=0;
+canvas.addEventListener('touchstart', e => { sx=e.touches[0].clientX; }, {passive:true});
+canvas.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - sx;
+  if (Math.abs(dx)>50 && !transitioning) {
+    if (dx < 0 && cur < paintings.length-1) startTransition(1);
+    if (dx > 0 && cur > 0) startTransition(-1);
+  }
 }, {passive:true});
 
-// Keyboard
-document.addEventListener('keydown', e => {
-  if (e.key==='ArrowRight') go(cur+1);
-  if (e.key==='ArrowLeft')  go(cur-1);
-});
+function startTransition(dir) {
+  transDir = dir;
+  transT = 0;
+  transitioning = true;
+}
 
-show(0);
+function drawRoom(offsetX, idx) {
+  if (idx < 0 || idx >= paintings.length) return;
+  const p = paintings[idx];
+  const img = imgs[idx];
+
+  // Wall
+  ctx.save();
+  ctx.translate(offsetX, 0);
+
+  // Background gradient
+  const bg = ctx.createLinearGradient(0,0,0,H);
+  bg.addColorStop(0, '#221c14');
+  bg.addColorStop(0.6, '#1a1510');
+  bg.addColorStop(1, '#0e0c08');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, W, H);
+
+  // Spotlight
+  const spot = ctx.createRadialGradient(W/2,H*0.3,10,W/2,H*0.3,W*0.5);
+  spot.addColorStop(0, 'rgba(255,240,180,0.09)');
+  spot.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = spot;
+  ctx.fillRect(0, 0, W, H);
+
+  // Floor
+  const floorY = H * 0.72;
+  const floor = ctx.createLinearGradient(0, floorY, 0, H);
+  floor.addColorStop(0, '#2a2018');
+  floor.addColorStop(1, '#1a130e');
+  ctx.fillStyle = floor;
+  ctx.fillRect(0, floorY, W, H - floorY);
+  // Floor line
+  ctx.strokeStyle = 'rgba(200,160,60,0.18)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(0, floorY); ctx.lineTo(W, floorY); ctx.stroke();
+
+  // Painting frame
+  if (img.complete && img.naturalWidth > 0) {
+    const maxPW = Math.min(W * 0.68, 520);
+    const maxPH = H * 0.48;
+    const ar = img.naturalWidth / img.naturalHeight;
+    let pw = maxPW, ph = pw / ar;
+    if (ph > maxPH) { ph = maxPH; pw = ph * ar; }
+
+    const px = (W - pw) / 2;
+    const py = H * 0.09;
+
+    // Frame border
+    const FB = Math.max(pw * 0.028, 8);
+    ctx.fillStyle = '#8b6914';
+    ctx.fillRect(px - FB*2, py - FB*2, pw + FB*4, ph + FB*4);
+    ctx.fillStyle = '#c8a030';
+    ctx.fillRect(px - FB*1.5, py - FB*1.5, pw + FB*3, ph + FB*3);
+    ctx.fillStyle = '#6a4e0a';
+    ctx.fillRect(px - FB, py - FB, pw + FB*2, ph + FB*2);
+    ctx.fillStyle = '#f5f0e8';
+    ctx.fillRect(px - 3, py - 3, pw + 6, ph + 6);
+
+    // Painting
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(img, px, py, pw, ph);
+
+    // Label plate
+    const lw = Math.min(pw + FB*4, W - 40);
+    const lx = (W - lw) / 2;
+    const ly = py + ph + FB*2 + 10;
+    ctx.fillStyle = '#f5ecd5';
+    ctx.beginPath();
+    ctx.roundRect(lx, ly, lw, 64, 3);
+    ctx.fill();
+    ctx.strokeStyle = '#c8a050';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    ctx.fillStyle = '#2a1608';
+    ctx.font = `bold ${Math.min(15, lw*0.055)}px 'PingFang SC',sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText(p.title, W/2, ly + 22);
+
+    ctx.fillStyle = '#886644';
+    ctx.font = `${Math.min(11, lw*0.04)}px 'PingFang SC',sans-serif`;
+    ctx.fillText(p.date, W/2, ly + 38);
+
+    ctx.fillStyle = '#4a2c14';
+    ctx.font = `${Math.min(11, lw*0.04)}px 'PingFang SC',sans-serif`;
+    ctx.fillText(p.desc, W/2, ly + 55);
+  }
+
+  // Dot indicators
+  const dotY = H - 20;
+  paintings.forEach((_, i) => {
+    ctx.beginPath();
+    ctx.arc(W/2 + (i - (paintings.length-1)/2)*16, dotY, 3.5, 0, Math.PI*2);
+    ctx.fillStyle = i===idx ? 'rgba(200,160,60,0.85)' : 'rgba(255,255,255,0.18)';
+    ctx.fill();
+  });
+
+  // Hint arrows
+  if (idx > 0) {
+    ctx.fillStyle = 'rgba(255,255,255,0.22)';
+    ctx.font = '22px sans-serif'; ctx.textAlign = 'left';
+    ctx.fillText('‹', 14, H*0.72 - 20);
+  }
+  if (idx < paintings.length-1) {
+    ctx.fillStyle = 'rgba(255,255,255,0.22)';
+    ctx.font = '22px sans-serif'; ctx.textAlign = 'right';
+    ctx.fillText('›', W - 14, H*0.72 - 20);
+  }
+
+  ctx.restore();
+}
+
+function drawCat() {
+  if (!catImg.complete) return;
+  const floorY = H * 0.72;
+  const scale = Math.min(H * 0.10, 72) / (CAT_PX_H * CAT_SCALE) * CAT_SCALE;
+  const cw = CAT_PX * scale, ch = CAT_PX_H * scale;
+
+  ctx.save();
+  ctx.translate(cat.x, floorY - ch);
+  if (cat.dir === 'left') { ctx.translate(cw, 0); ctx.scale(-1, 1); }
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(catImg, 0, 0, cw, ch);
+  ctx.restore();
+}
+
+function update() {
+  if (transitioning) {
+    transT++;
+    if (transT >= TRANS_DUR) {
+      cur = Math.max(0, Math.min(paintings.length-1, cur + transDir));
+      // place cat at opposite edge
+      cat.x = transDir > 0 ? W * 0.1 : W * 0.85;
+      transitioning = false;
+      transT = 0;
+    }
+    return;
+  }
+
+  let dx = 0, dy = 0;
+  if (keys['ArrowLeft']||keys['a']||keys['A'])  { dx=-cat.spd; cat.dir='left';  }
+  if (keys['ArrowRight']||keys['d']||keys['D']) { dx= cat.spd; cat.dir='right'; }
+  if (keys['ArrowUp']||keys['w']||keys['W'])    dy=-cat.spd*0.5;
+  if (keys['ArrowDown']||keys['s']||keys['S'])  dy= cat.spd*0.5;
+
+  if (dx||dy) { cat.ft++; if(cat.ft>10){cat.ft=0;} } else cat.ft=0;
+
+  const floorY = H*0.72;
+  const scale = Math.min(H*0.10, 72)/(CAT_PX_H*CAT_SCALE)*CAT_SCALE;
+  const cw = CAT_PX*scale, ch = CAT_PX_H*scale;
+
+  const minY = floorY - ch - H*0.08;
+  const maxY = floorY - ch;
+  cat.y = Math.max(minY, Math.min(maxY, cat.y + dy));
+
+  // Edge triggers transition
+  if (dx > 0 && cat.x + cw > W - 20 && cur < paintings.length-1) {
+    startTransition(1); return;
+  }
+  if (dx < 0 && cat.x < 20 && cur > 0) {
+    startTransition(-1); return;
+  }
+
+  cat.x = Math.max(10, Math.min(W - cw - 10, cat.x + dx));
+}
+
+function draw() {
+  ctx.clearRect(0,0,W,H);
+
+  if (transitioning) {
+    const ease = transT / TRANS_DUR;
+    const slide = ease * W * transDir;
+    drawRoom(-slide, cur);
+    drawRoom(W * transDir - slide, cur + transDir);
+  } else {
+    drawRoom(0, cur);
+    drawCat();
+  }
+}
+
+// Init cat position
+function initCat() {
+  const floorY = H*0.72;
+  const scale = Math.min(H*0.10,72)/(CAT_PX_H*CAT_SCALE)*CAT_SCALE;
+  cat.x = W/2 - CAT_PX*scale/2;
+  cat.y = floorY - CAT_PX_H*scale;
+}
+catImg.onload = initCat;
+if (catImg.complete) initCat();
+
+function loop() { update(); draw(); requestAnimationFrame(loop); }
+loop();
 </script>
 </body>
 </html>
