@@ -326,6 +326,15 @@ function draw(){
     ctx.imageSmoothingEnabled=false;
     ctx.drawImage(catImg,-CW/2,-CH/2,CW,CH);
 
+    // Bigger eyes overlay
+    const s = catScale;
+    ctx.fillStyle='#f5d060';
+    ctx.beginPath(); ctx.ellipse(-3.5*s, -4.5*s, s*1.2, s*1.0, 0, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse( 1.5*s, -4.5*s, s*1.2, s*1.0, 0, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle='#1a1a1a';
+    ctx.beginPath(); ctx.ellipse(-3.5*s, -4.5*s, s*0.55, s*0.7, 0, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse( 1.5*s, -4.5*s, s*0.55, s*0.7, 0, 0, Math.PI*2); ctx.fill();
+
     // Animated tail — connected to sprite tail base (col13,row14 of 16×20)
     const tailTick = cat.moving ? walkTick*0.18 : Date.now()*0.002;
     const swing = Math.sin(tailTick)*0.45 + 0.55;
