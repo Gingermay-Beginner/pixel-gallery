@@ -53,11 +53,15 @@ canvas { display:block; }
 .pc-title{font-size:0.95rem;font-weight:bold;color:#2a1408;}
 .pc-date{font-size:0.68rem;color:#886644;margin-top:3px;letter-spacing:0.08em;}
 .pc-desc{font-size:0.8rem;color:#3a1e08;margin-top:10px;line-height:1.9;white-space:pre-line;font-style:italic;}
-.pc-stamp-col{display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0;}
+.pc-stamp-col{display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0; position:relative;}
 .pc-stamp-canvas { display:block; }
-.pc-postmark{width:52px;height:26px;border:1.5px solid rgba(180,80,60,0.45);border-radius:50%;
+.pc-postmark{
+  position:absolute; bottom:-10px; right:-10px;
+  width:52px;height:26px;border:1.5px solid rgba(180,80,60,0.55);border-radius:50%;
   display:flex;align-items:center;justify-content:center;
-  font-size:0.48rem;color:rgba(180,80,60,0.55);letter-spacing:0.04em;text-align:center;font-style:italic;line-height:1.2;}
+  font-size:0.48rem;color:rgba(180,80,60,0.65);letter-spacing:0.04em;text-align:center;font-style:italic;line-height:1.2;
+  background:transparent; pointer-events:none;
+}
 #close-hint{text-align:center;padding:10px 0 0;font-size:0.68rem;color:rgba(255,255,255,0.35);letter-spacing:0.1em;}
 </style>
 </head>
