@@ -368,14 +368,16 @@ function update(){
 
   // Jump up to frame top / down to floor
   if((keys['ArrowUp']||keys['w']||keys['W']) && !cat.jumping && !cat.onFrame){
-    // find nearest painting
     let best=-1, bd=Infinity;
     for(let i=0;i<paintings.length;i++){
       const d=Math.abs(cat.wx - paintingWorldX(i));
       if(d<bd){bd=d;best=i;}
     }
     if(best>=0 && bd < PAINTING_SPACING()*0.6){
-      cat.jumpVy = -12;
+      const target = frameTopY(best);
+      const dist = cat.y - target;
+      // v² = 2*g*h → v = sqrt(2*0.8*dist)
+      cat.jumpVy = -Math.sqrt(2 * 0.8 * Math.max(dist, 60));
       cat.jumping = true;
       cat.frameIdx = best;
     }
