@@ -215,17 +215,13 @@ document.addEventListener('keyup',e=>keys[e.key]=false);
 
 canvas.addEventListener('click',e=>{
   if(overlayOpen){closeOverlay();return;}
-  // find which painting was clicked
-  const screenX = e.clientX;
-  const screenY = e.clientY;
+  // 点任意处打开最近的画
+  let best=-1, bd=Infinity;
   for(let i=0;i<paintings.length;i++){
-    const r=getPaintRect(i);
-    if(!r) continue;
-    const sx=r.wx-cameraX+W/2;
-    if(screenX>=sx && screenX<=sx+r.pw && screenY>=r.py && screenY<=r.py+r.ph){
-      openOverlay(i); return;
-    }
+    const d=Math.abs(cat.wx - paintingWorldX(i));
+    if(d<bd){bd=d;best=i;}
   }
+  if(best>=0) openOverlay(best);
 });
 
 let overlayOpen=false;
