@@ -33,11 +33,12 @@ canvas { display:block; }
 #overlay.show{display:flex;}
 .postcard-full {
   width:100%;max-width:520px;border-radius:6px;overflow:hidden;
+  background:#fef9ee;
   box-shadow:0 16px 60px rgba(0,0,0,0.7);
   animation:pop 0.22s cubic-bezier(.34,1.4,.64,1);
 }
 @keyframes pop{from{transform:scale(0.88);opacity:0;}to{transform:scale(1);opacity:1;}}
-.pc-painting{position:relative;background:#fef9ee;}
+.pc-painting{position:relative;background:#f5f0e8;}
 .pc-painting img{width:100%;display:block;image-rendering:pixelated;}
 .pc-painting::after{content:'';position:absolute;inset:0;pointer-events:none;}
 .pc-back{
