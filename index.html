@@ -216,8 +216,8 @@ function openOverlay(i){
   sx2.fillRect(PAD,PAD,SW-PAD*2,SH-PAD*2);
   sx2.shadowColor='transparent';
   // White inner border
-  sx2.strokeStyle='white'; sx2.lineWidth=5;
-  sx2.strokeRect(PAD+2.5,PAD+2.5,SW-PAD*2-5,SH-PAD*2-5);
+  sx2.strokeStyle='rgba(180,140,80,0.6)'; sx2.lineWidth=1.5;
+  sx2.strokeRect(PAD+1,PAD+1,SW-PAD*2-2,SH-PAD*2-2);
   // Emoji
   sx2.font=`${32}px sans-serif`; sx2.textAlign='center'; sx2.textBaseline='middle';
   sx2.fillText(p.stamp, SW/2, SH/2);
