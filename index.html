@@ -37,11 +37,11 @@ canvas { display:block; }
   animation:pop 0.22s cubic-bezier(.34,1.4,.64,1);
 }
 @keyframes pop{from{transform:scale(0.88);opacity:0;}to{transform:scale(1);opacity:1;}}
-.pc-painting{position:relative;background:#f5f0e8;}
+.pc-painting{position:relative;background:#fef9ee;}
 .pc-painting img{width:100%;display:block;image-rendering:pixelated;}
 .pc-painting::after{content:'';position:absolute;inset:0;pointer-events:none;}
 .pc-back{
-  background:#fef9ee;border-top:2px dashed #c8a050;
+  background:#fef9ee;border-top:2px dashed #c8a050;background-clip:padding-box;
   padding:14px 16px 16px;position:relative;
 }
 .pc-back::before{
