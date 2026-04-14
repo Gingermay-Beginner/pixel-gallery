@@ -278,7 +278,7 @@ function openOverlay(i){
     btn.style.cssText='margin-top:8px;cursor:pointer;font-size:11px;background:#f5f0e8;border:1px solid #c8b89a;border-radius:6px;padding:5px 10px;color:#6b5a3e;text-align:center;';
     let cur=0;
     btn.onclick=(e)=>{e.stopPropagation();cur=(cur+1)%2;document.getElementById('ov-img').src=cur?p.src2:p.src;};
-    document.querySelector('.pc-stamp-col').appendChild(btn);
+    document.querySelector('.pc-painting').appendChild(btn);
   }
   overlay.classList.add('show'); overlayOpen=true;
   document.getElementById('dpad').classList.add('hidden');
