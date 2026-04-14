@@ -40,8 +40,8 @@ canvas { display:block; }
 .pc-painting{position:relative;background:#f5f0e8;}
 .pc-painting img{width:100%;display:block;image-rendering:pixelated;}
 .pc-painting::after{content:'';position:absolute;inset:0;pointer-events:none;}
-#ver-toggle{position:absolute;bottom:8px;right:8px;z-index:10;}
-.pc-back{
+#ver-toggle{position:absolute;bottom:8px;right:8px;z-index:10;font-size:12px;padding:3px 7px;}
+.pc-back{position:relative;
   background:#fef9ee;border-top:3px solid #c8a050;
   padding:14px 16px 16px;position:relative;
 }
@@ -279,7 +279,7 @@ function openOverlay(i){
     btn.style.cssText='margin-top:8px;cursor:pointer;font-size:11px;background:#f5f0e8;border:1px solid #c8b89a;border-radius:6px;padding:5px 10px;color:#6b5a3e;text-align:center;';
     let cur=0;
     btn.onclick=(e)=>{e.stopPropagation();cur=(cur+1)%2;document.getElementById('ov-img').src=cur?p.src2:p.src;};
-    document.querySelector('.pc-painting').appendChild(btn);
+    document.querySelector('.pc-back').appendChild(btn);
   }
   overlay.classList.add('show'); overlayOpen=true;
   document.getElementById('dpad').classList.add('hidden');
