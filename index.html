@@ -305,9 +305,9 @@ function openOverlay(i){
   for(let row=0;row<4;row++){
     const y0=12+row*6;
     mx.beginPath();
-    for(let x=48;x<=108;x+=2){
+    for(let x=52;x<=90;x+=2){
       const y=y0+Math.sin((x-48)/3)*1.8;
-      x===48?mx.moveTo(x,y):mx.lineTo(x,y);
+      x===52?mx.moveTo(x,y):mx.lineTo(x,y);
     }
     mx.stroke();
   }
