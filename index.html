@@ -276,18 +276,15 @@ function openOverlay(i){
   const MC='rgba(100,52,28,0.75)';
   mx.clearRect(0,0,110,46);
   const CX=23, CY=23, CR=20;
-  // 圆形描边
+  // 圆形描边（单圈）
   mx.strokeStyle=MC; mx.lineWidth=1.5;
   mx.beginPath(); mx.arc(CX,CY,CR,0,Math.PI*2); mx.stroke();
-  // 内圈（双圈感）
-  mx.lineWidth=0.7;
-  mx.beginPath(); mx.arc(CX,CY,CR-3,0,Math.PI*2); mx.stroke();
-  // 上半圆弧文字：日期（在圆圈内，不压线）
+  // 上半圆弧文字：日期（字间距紧凑）
   mx.fillStyle=MC; mx.font='bold 5.5px sans-serif'; mx.textAlign='center';
   const dateStr=p.date.slice(0,7);
   const dateChars=dateStr.split('');
-  const arcR=CR-9;  // 缩进，确保在圈内
-  const arcStart=-Math.PI*0.6, arcEnd=Math.PI*0.6;
+  const arcR=CR-9;
+  const arcStart=-Math.PI*0.5, arcEnd=Math.PI*0.5;
   const arcStep=(arcEnd-arcStart)/(dateChars.length-1);
   dateChars.forEach((ch,i)=>{
     const angle=arcStart+i*arcStep - Math.PI/2;
@@ -295,18 +292,18 @@ function openOverlay(i){
     mx.save(); mx.translate(tx,ty); mx.rotate(angle+Math.PI/2);
     mx.fillText(ch,0,0); mx.restore();
   });
-  // 中央文字：May's Museum（两行，下半部分）
+  // 中央文字
   mx.font='italic 5.5px sans-serif';
   mx.fillText("May's", CX, CY+4);
   mx.fillText("Museum", CX, CY+12);
-  // 右侧波浪线（x=50~108，3行）
+  // 左侧波浪线（x=50~108，4行，向左起始）
   mx.strokeStyle=MC; mx.lineWidth=1.2;
-  for(let row=0;row<3;row++){
-    const y0=15+row*6;
+  for(let row=0;row<4;row++){
+    const y0=12+row*6;
     mx.beginPath();
-    for(let x=50;x<=108;x+=2){
-      const y=y0+Math.sin((x-50)/3)*1.8;
-      x===50?mx.moveTo(x,y):mx.lineTo(x,y);
+    for(let x=48;x<=108;x+=2){
+      const y=y0+Math.sin((x-48)/3)*1.8;
+      x===48?mx.moveTo(x,y):mx.lineTo(x,y);
     }
     mx.stroke();
   }
