@@ -305,7 +305,7 @@ function openOverlay(i){
   for(let row=0;row<4;row++){
     const y0=13+row*6;
     mx.beginPath();
-    for(let x=49;x<=80;x+=2){
+    for(let x=49;x<=87;x+=2){
       const y=y0+Math.sin((x-48)/3)*1.8;
       x===49?mx.moveTo(x,y):mx.lineTo(x,y);
     }
