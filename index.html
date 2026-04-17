@@ -296,7 +296,11 @@ function openOverlay(i){
   mx.font='italic 7px sans-serif';
   mx.fillText("May's", CX, CY+4);
   mx.fillText("Museum", CX, CY+12);
-  // 左侧波浪线（x=50~108，4行，向左起始）
+  // 波浪线：以邮戳圆心为轴顺时针旋转15度
+  mx.save();
+  mx.translate(CX, CY);
+  mx.rotate(15 * Math.PI / 180);
+  mx.translate(-CX, -CY);
   mx.strokeStyle=MC; mx.lineWidth=1.2;
   for(let row=0;row<4;row++){
     const y0=12+row*6;
@@ -307,6 +311,7 @@ function openOverlay(i){
     }
     mx.stroke();
   }
+  mx.restore();
   // 版本切换按钮
   const existBtn=document.getElementById('ver-toggle');
   if(existBtn) existBtn.remove();
