@@ -270,18 +270,34 @@ function openOverlay(i){
     sx2.beginPath(); sx2.arc(PAD,y,R,0,Math.PI*2); sx2.fill();
     sx2.beginPath(); sx2.arc(SW-PAD,y,R,0,Math.PI*2); sx2.fill();
   }
-  // 邮戳 canvas：左圆形邮戳 + 右波浪线（深棕色）
+  // 邮戳 canvas：左圆形邮戳（弧形排字）+ 右波浪线（深棕色）
   const mc = document.getElementById('ov-mark');
   const mx = mc.getContext('2d');
   const MC='rgba(100,52,28,0.75)';
   mx.clearRect(0,0,110,46);
-  // 左侧圆形邮戳（圆心 x=23）
+  const CX=23, CY=23, CR=20;
+  // 圆形描边
   mx.strokeStyle=MC; mx.lineWidth=1.5;
-  mx.beginPath(); mx.ellipse(23,23,21,21,0,0,Math.PI*2); mx.stroke();
-  mx.fillStyle=MC; mx.font='italic 6px sans-serif'; mx.textAlign='center';
-  mx.fillText(p.date.slice(0,7), 23, 19);
-  mx.fillText("May's", 23, 28);
-  mx.fillText("Museum", 23, 37);
+  mx.beginPath(); mx.arc(CX,CY,CR,0,Math.PI*2); mx.stroke();
+  // 内圈（双圈感）
+  mx.lineWidth=0.7;
+  mx.beginPath(); mx.arc(CX,CY,CR-3,0,Math.PI*2); mx.stroke();
+  // 上弧文字：日期（顶部圆弧）
+  mx.fillStyle=MC; mx.font='bold 5.5px sans-serif'; mx.textAlign='center';
+  const dateStr=p.date.slice(0,7);
+  const dateChars=dateStr.split('');
+  const arcR=CR-2, arcStart=-Math.PI*0.72, arcEnd=Math.PI*0.72;
+  const arcStep=(arcEnd-arcStart)/(dateChars.length-1);
+  dateChars.forEach((ch,i)=>{
+    const angle=arcStart+i*arcStep - Math.PI/2;
+    const tx=CX+arcR*Math.cos(angle), ty=CY+arcR*Math.sin(angle);
+    mx.save(); mx.translate(tx,ty); mx.rotate(angle+Math.PI/2);
+    mx.fillText(ch,0,0); mx.restore();
+  });
+  // 中央文字：May's Museum（两行）
+  mx.font='italic 5.5px sans-serif';
+  mx.fillText("May's", CX, CY+1);
+  mx.fillText("Museum", CX, CY+9);
   // 右侧波浪线（x=50~108，3行）
   mx.strokeStyle=MC; mx.lineWidth=1.2;
   for(let row=0;row<3;row++){
