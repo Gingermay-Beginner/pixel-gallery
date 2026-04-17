@@ -272,6 +272,21 @@ function openOverlay(i){
     sx2.beginPath(); sx2.arc(PAD,y,R,0,Math.PI*2); sx2.fill();
     sx2.beginPath(); sx2.arc(SW-PAD,y,R,0,Math.PI*2); sx2.fill();
   }
+  // 波浪消印（邮票右上角盖章感）
+  const WX=SW-PAD-2, WY=PAD+4, WW=28, WH=20;
+  sx2.save();
+  sx2.strokeStyle='rgba(80,60,40,0.45)'; sx2.lineWidth=1.2;
+  for(let row=0;row<3;row++){
+    const y0=WY+row*6;
+    sx2.beginPath();
+    let first=true;
+    for(let x=WX-WW;x<=WX;x+=2){
+      const y=y0+Math.sin((x-(WX-WW))/2.8)*2;
+      if(first){sx2.moveTo(x,y);first=false;}else{sx2.lineTo(x,y);}
+    }
+    sx2.stroke();
+  }
+  sx2.restore();
   document.getElementById('ov-mark').textContent=p.date.slice(0,7)+"\nMay's\nMuseum";
   // 版本切换按钮
   const existBtn=document.getElementById('ver-toggle');
