@@ -57,11 +57,9 @@ canvas { display:block; }
 .pc-stamp-col{display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0; position:relative;}
 .pc-stamp-canvas { display:block; }
 .pc-postmark{
-  position:absolute; bottom:-10px; right:-10px;
-  width:52px;height:26px;border:1.5px solid rgba(180,80,60,0.55);border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:0.48rem;color:rgba(180,80,60,0.65);letter-spacing:0.04em;text-align:center;font-style:italic;line-height:1.2;
+  position:absolute; bottom:-12px; right:-12px;
   background:transparent; pointer-events:none;
+  display:block;
 }
 #close-hint{text-align:center;padding:10px 0 0;font-size:0.68rem;color:rgba(255,255,255,0.35);letter-spacing:0.1em;}
 #nav-panel {
@@ -106,7 +104,7 @@ canvas { display:block; }
           </div>
           <div class="pc-stamp-col">
             <canvas class="pc-stamp-canvas" id="ov-stamp" width="76" height="88"></canvas>
-            <div class="pc-postmark" id="ov-mark"></div>
+            <canvas class="pc-postmark" id="ov-mark" width="72" height="44"></canvas>
           </div>
         </div>
       </div>
@@ -272,22 +270,25 @@ function openOverlay(i){
     sx2.beginPath(); sx2.arc(PAD,y,R,0,Math.PI*2); sx2.fill();
     sx2.beginPath(); sx2.arc(SW-PAD,y,R,0,Math.PI*2); sx2.fill();
   }
-  // 波浪消印（邮票右上角盖章感）
-  const WX=SW-PAD-2, WY=PAD+4, WW=28, WH=20;
-  sx2.save();
-  sx2.strokeStyle='rgba(80,60,40,0.45)'; sx2.lineWidth=1.2;
+  // 邮戳 canvas：波浪线 + 文字
+  const mc = document.getElementById('ov-mark');
+  const mx = mc.getContext('2d');
+  const MC='rgba(140,60,40,0.7)';
+  mx.clearRect(0,0,72,44);
+  mx.strokeStyle=MC; mx.lineWidth=1.2;
   for(let row=0;row<3;row++){
-    const y0=WY+row*6;
-    sx2.beginPath();
-    let first=true;
-    for(let x=WX-WW;x<=WX;x+=2){
-      const y=y0+Math.sin((x-(WX-WW))/2.8)*2;
-      if(first){sx2.moveTo(x,y);first=false;}else{sx2.lineTo(x,y);}
+    const y0=4+row*5;
+    mx.beginPath();
+    for(let x=0;x<=72;x+=2){
+      const y=y0+Math.sin(x/3)*1.8;
+      x===0?mx.moveTo(x,y):mx.lineTo(x,y);
     }
-    sx2.stroke();
+    mx.stroke();
   }
-  sx2.restore();
-  document.getElementById('ov-mark').textContent=p.date.slice(0,7)+"\nMay's\nMuseum";
+  mx.fillStyle=MC; mx.font='italic 7px sans-serif'; mx.textAlign='center';
+  const dateStr=p.date.slice(0,7);
+  mx.fillText(dateStr, 36, 26);
+  mx.fillText("May's Museum", 36, 35);
   // 版本切换按钮
   const existBtn=document.getElementById('ver-toggle');
   if(existBtn) existBtn.remove();
