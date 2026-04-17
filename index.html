@@ -282,11 +282,12 @@ function openOverlay(i){
   // 内圈（双圈感）
   mx.lineWidth=0.7;
   mx.beginPath(); mx.arc(CX,CY,CR-3,0,Math.PI*2); mx.stroke();
-  // 上弧文字：日期（顶部圆弧）
+  // 上半圆弧文字：日期（在圆圈内，不压线）
   mx.fillStyle=MC; mx.font='bold 5.5px sans-serif'; mx.textAlign='center';
   const dateStr=p.date.slice(0,7);
   const dateChars=dateStr.split('');
-  const arcR=CR-2, arcStart=-Math.PI*0.72, arcEnd=Math.PI*0.72;
+  const arcR=CR-6;  // 缩进，确保在圈内
+  const arcStart=-Math.PI*0.6, arcEnd=Math.PI*0.6;
   const arcStep=(arcEnd-arcStart)/(dateChars.length-1);
   dateChars.forEach((ch,i)=>{
     const angle=arcStart+i*arcStep - Math.PI/2;
@@ -294,10 +295,10 @@ function openOverlay(i){
     mx.save(); mx.translate(tx,ty); mx.rotate(angle+Math.PI/2);
     mx.fillText(ch,0,0); mx.restore();
   });
-  // 中央文字：May's Museum（两行）
+  // 中央文字：May's Museum（两行，下半部分）
   mx.font='italic 5.5px sans-serif';
-  mx.fillText("May's", CX, CY+1);
-  mx.fillText("Museum", CX, CY+9);
+  mx.fillText("May's", CX, CY+4);
+  mx.fillText("Museum", CX, CY+12);
   // 右侧波浪线（x=50~108，3行）
   mx.strokeStyle=MC; mx.lineWidth=1.2;
   for(let row=0;row<3;row++){
