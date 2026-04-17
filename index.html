@@ -275,7 +275,7 @@ function openOverlay(i){
   const mx = mc.getContext('2d');
   const MC='rgba(100,52,28,0.75)';
   mx.clearRect(0,0,110,46);
-  const CX=23, CY=23, CR=20;
+  const CX=28, CY=23, CR=20;
   // 圆形描边（单圈）
   mx.strokeStyle=MC; mx.lineWidth=1.5;
   mx.beginPath(); mx.arc(CX,CY,CR,0,Math.PI*2); mx.stroke();
@@ -293,7 +293,7 @@ function openOverlay(i){
     mx.fillText(ch,0,0); mx.restore();
   });
   // 中央文字
-  mx.font='italic 5.5px sans-serif';
+  mx.font='italic 7px sans-serif';
   mx.fillText("May's", CX, CY+4);
   mx.fillText("Museum", CX, CY+12);
   // 左侧波浪线（x=50~108，4行，向左起始）
