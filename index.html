@@ -104,7 +104,7 @@ canvas { display:block; }
           </div>
           <div class="pc-stamp-col">
             <canvas class="pc-stamp-canvas" id="ov-stamp" width="76" height="88"></canvas>
-            <canvas class="pc-postmark" id="ov-mark" width="72" height="46"></canvas>
+            <canvas class="pc-postmark" id="ov-mark" width="110" height="46"></canvas>
           </div>
         </div>
       </div>
@@ -270,29 +270,29 @@ function openOverlay(i){
     sx2.beginPath(); sx2.arc(PAD,y,R,0,Math.PI*2); sx2.fill();
     sx2.beginPath(); sx2.arc(SW-PAD,y,R,0,Math.PI*2); sx2.fill();
   }
-  // 邮戳 canvas：圆形 + 波浪线 + 文字（深棕色）
+  // 邮戳 canvas：左圆形邮戳 + 右波浪线（深棕色）
   const mc = document.getElementById('ov-mark');
   const mx = mc.getContext('2d');
   const MC='rgba(100,52,28,0.75)';
-  mx.clearRect(0,0,72,44);
-  // 圆形描边
+  mx.clearRect(0,0,110,46);
+  // 左侧圆形邮戳（圆心 x=23）
   mx.strokeStyle=MC; mx.lineWidth=1.5;
-  mx.beginPath(); mx.ellipse(36,22,34,20,0,0,Math.PI*2); mx.stroke();
-  // 波浪线（圆内中部3行）
-  mx.lineWidth=1.1;
+  mx.beginPath(); mx.ellipse(23,23,21,21,0,0,Math.PI*2); mx.stroke();
+  mx.fillStyle=MC; mx.font='italic 6px sans-serif'; mx.textAlign='center';
+  mx.fillText(p.date.slice(0,7), 23, 19);
+  mx.fillText("May's", 23, 28);
+  mx.fillText("Museum", 23, 37);
+  // 右侧波浪线（x=50~108，3行）
+  mx.strokeStyle=MC; mx.lineWidth=1.2;
   for(let row=0;row<3;row++){
-    const y0=16+row*4;
+    const y0=15+row*6;
     mx.beginPath();
-    for(let x=6;x<=66;x+=2){
-      const y=y0+Math.sin((x-6)/3)*1.5;
-      x===6?mx.moveTo(x,y):mx.lineTo(x,y);
+    for(let x=50;x<=108;x+=2){
+      const y=y0+Math.sin((x-50)/3)*1.8;
+      x===50?mx.moveTo(x,y):mx.lineTo(x,y);
     }
     mx.stroke();
   }
-  // 文字
-  mx.fillStyle=MC; mx.font='italic 6.5px sans-serif'; mx.textAlign='center';
-  mx.fillText(p.date.slice(0,7), 36, 8);
-  mx.fillText("May's Museum", 36, 39);
   // 版本切换按钮
   const existBtn=document.getElementById('ver-toggle');
   if(existBtn) existBtn.remove();
