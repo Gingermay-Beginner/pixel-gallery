@@ -286,7 +286,7 @@ function openOverlay(i){
   mx.fillStyle=MC; mx.font='bold 5.5px sans-serif'; mx.textAlign='center';
   const dateStr=p.date.slice(0,7);
   const dateChars=dateStr.split('');
-  const arcR=CR-6;  // 缩进，确保在圈内
+  const arcR=CR-9;  // 缩进，确保在圈内
   const arcStart=-Math.PI*0.6, arcEnd=Math.PI*0.6;
   const arcStep=(arcEnd-arcStart)/(dateChars.length-1);
   dateChars.forEach((ch,i)=>{
