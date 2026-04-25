@@ -8,18 +8,15 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { background: #1a1a1e; color: #e8e4d8; font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-/* ── Toolbar ── */
 #toolbar { display: flex; align-items: center; gap: 10px; padding: 7px 12px; background: #242428; border-bottom: 1px solid #38383e; flex-shrink: 0; flex-wrap: wrap; }
-#toolbar h1 { font-size: 15px; font-weight: 700; color: #e8c87a; margin-right: 2px; letter-spacing: -0.3px; }
+#toolbar h1 { font-size: 15px; font-weight: 700; color: #e8c87a; letter-spacing: -0.3px; }
 .sep { width: 1px; height: 22px; background: #48484e; flex-shrink: 0; }
 .tool-group { display: flex; gap: 5px; align-items: center; }
-
 button { background: #38383e; border: 1px solid #52525a; color: #d8d4c8; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; transition: background 0.12s; white-space: nowrap; }
 button:hover { background: #48484e; }
 button.active { background: #e8c87a; color: #1a1a1e; border-color: #e8c87a; font-weight: 600; }
 button.danger { border-color: #c85a5a; color: #c85a5a; }
 button.danger:hover { background: #c85a5a; color: #fff; }
-
 #colorPicker { width: 30px; height: 30px; border: 2px solid #58585e; border-radius: 6px; cursor: pointer; padding: 0; background: none; }
 #colorHex { width: 68px; background: #2e2e34; border: 1px solid #48484e; color: #e8e4d8; padding: 4px 6px; border-radius: 6px; font-size: 12px; font-family: monospace; }
 #brushSize { width: 56px; accent-color: #e8c87a; }
@@ -29,73 +26,78 @@ button.danger:hover { background: #c85a5a; color: #fff; }
 .swatch.active-swatch { border-color: #fff; }
 select.tool-sel { background:#38383e; border:1px solid #52525a; color:#d8d4c8; padding:4px 6px; border-radius:6px; font-size:12px; cursor:pointer; }
 
-/* ── Main layout ── */
 #main { display: flex; flex: 1; overflow: hidden; }
 
-/* ── Canvas area ── */
-#canvas-area { flex: 1; overflow: auto; display: flex; align-items: flex-start; justify-content: flex-start; padding: 14px; background: #141418; position: relative; min-width: 0; }
-#canvas { cursor: crosshair; image-rendering: pixelated; display: block; border: 1px solid #38383e; }
-
-/* ── Right panel ── */
-#right-panel { width: 280px; flex-shrink: 0; background: #1e1e22; border-right: 1px solid #38383e; display: flex; flex-direction: column; overflow: hidden; order: -1; }
-
-/* Tabs */
+/* ── Left panel (chat + layers) ── */
+#left-panel { width: 260px; flex-shrink: 0; background: #1e1e22; border-right: 1px solid #38383e; display: flex; flex-direction: column; overflow: hidden; }
 #panel-tabs { display: flex; border-bottom: 1px solid #38383e; flex-shrink: 0; }
 .ptab { flex: 1; padding: 8px 0; text-align: center; font-size: 12px; cursor: pointer; color: #888; border-bottom: 2px solid transparent; transition: all 0.15s; }
 .ptab:hover { color: #ccc; }
 .ptab.active { color: #e8c87a; border-bottom-color: #e8c87a; }
-
 .panel-body { display: none; flex-direction: column; flex: 1; overflow: hidden; }
 .panel-body.active { display: flex; }
 
-/* Info panel */
-#panel-info { padding: 10px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
-.info-section h3 { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
-#recent-colors { display: flex; flex-wrap: wrap; gap: 3px; }
-#history-list { display: flex; flex-direction: column; gap: 2px; max-height: 130px; overflow-y: auto; }
-.hist-item { font-size: 11px; color: #aaa; padding: 3px 6px; border-radius: 4px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.hist-item:hover { background: #2e2e34; color: #e8e4d8; }
-.hist-item.current { color: #e8c87a; }
-#coord-info { font-size: 11px; color: #666; }
+/* Layers panel */
+#tab-layers { padding: 0; }
+#layers-toolbar { display: flex; gap: 5px; padding: 8px; border-bottom: 1px solid #2e2e34; flex-shrink: 0; }
+#layers-toolbar button { padding: 4px 8px; font-size: 11px; }
+#layers-list { flex: 1; overflow-y: auto; padding: 6px; display: flex; flex-direction: column; gap: 4px; }
+.layer-item { display: flex; align-items: center; gap: 6px; padding: 6px 8px; background: #2a2a30; border-radius: 7px; cursor: pointer; border: 1.5px solid transparent; transition: all 0.12s; user-select: none; }
+.layer-item:hover { background: #32323a; }
+.layer-item.active-layer { background: #2e2e3e; border-color: #e8c87a55; }
+.layer-vis-btn { font-size: 13px; cursor: pointer; opacity: 0.9; flex-shrink: 0; }
+.layer-thumb { width: 36px; height: 20px; border-radius: 3px; flex-shrink: 0; image-rendering: pixelated; border: 1px solid #44444a; background: repeating-conic-gradient(#333 0% 25%, #2a2a2a 0% 50%) 0 0/8px 8px; }
+.layer-name { flex: 1; font-size: 12px; color: #ccc; cursor: text; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.layer-name.editing { background: #1a1a20; border: 1px solid #e8c87a55; border-radius: 4px; padding: 1px 4px; outline: none; color: #e8e4d8; }
+.layer-ops { display: flex; gap: 3px; flex-shrink: 0; }
+.layer-ops button { padding: 2px 5px; font-size: 10px; background: transparent; border-color: #444; color: #888; }
+.layer-ops button:hover { background: #3a3a42; color: #ccc; }
+#layer-opacity-row { display: flex; align-items: center; gap: 8px; padding: 8px; border-top: 1px solid #2e2e34; font-size: 11px; color: #888; flex-shrink: 0; }
+#layer-opacity-row input { flex: 1; accent-color: #e8c87a; }
 
 /* Chat panel */
-#panel-chat { padding: 0; }
 #chat-settings { padding: 8px 10px; border-bottom: 1px solid #2e2e34; flex-shrink: 0; }
 #chat-settings summary { font-size: 11px; color: #888; cursor: pointer; user-select: none; }
-#chat-settings summary:hover { color: #ccc; }
 #chat-settings-body { padding-top: 8px; display: flex; flex-direction: column; gap: 6px; }
 .setting-row { display: flex; flex-direction: column; gap: 3px; }
 .setting-row label { font-size: 10px; color: #666; }
 .setting-row input, .setting-row select { background: #2a2a30; border: 1px solid #44444a; color: #e8e4d8; padding: 4px 7px; border-radius: 5px; font-size: 12px; width: 100%; }
-.setting-row input::placeholder { color: #555; }
-
 #chat-messages { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
 .msg { display: flex; flex-direction: column; gap: 3px; max-width: 95%; }
 .msg.user { align-self: flex-end; }
 .msg.ai   { align-self: flex-start; }
 .msg.system { align-self: center; }
 .msg-bubble { padding: 7px 10px; border-radius: 10px; font-size: 12px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
-.msg.user .msg-bubble   { background: #3a3a50; color: #d8d4e8; border-radius: 10px 10px 2px 10px; }
-.msg.ai   .msg-bubble   { background: #2a2a30; color: #d8e4d4; border-radius: 10px 10px 10px 2px; }
+.msg.user   .msg-bubble { background: #3a3a50; color: #d8d4e8; border-radius: 10px 10px 2px 10px; }
+.msg.ai     .msg-bubble { background: #2a2a30; color: #d8e4d4; border-radius: 10px 10px 10px 2px; }
 .msg.system .msg-bubble { background: #1e2a1e; color: #88b888; font-size: 11px; border-radius: 8px; }
 .msg-label { font-size: 10px; color: #555; }
 .msg.user .msg-label { text-align: right; }
-
-#chat-input-area { padding: 8px 10px; border-top: 1px solid #2e2e34; flex-shrink: 0; display: flex; flex-direction: column; gap: 6px; }
-#chat-input { background: #2a2a30; border: 1px solid #44444a; color: #e8e4d8; padding: 7px 10px; border-radius: 8px; font-size: 13px; resize: none; width: 100%; height: 60px; font-family: inherit; line-height: 1.4; }
+#chat-input-area { padding: 8px; border-top: 1px solid #2e2e34; flex-shrink: 0; display: flex; flex-direction: column; gap: 5px; }
+#chat-input { background: #2a2a30; border: 1px solid #44444a; color: #e8e4d8; padding: 7px 10px; border-radius: 8px; font-size: 13px; resize: none; width: 100%; height: 56px; font-family: inherit; line-height: 1.4; }
 #chat-input:focus { outline: none; border-color: #e8c87a55; }
-#chat-input::placeholder { color: #555; }
-#chat-send-row { display: flex; gap: 6px; align-items: center; }
+#chat-send-row { display: flex; gap: 6px; }
 #chat-send { flex: 1; background: #e8c87a; color: #1a1a1e; border-color: #e8c87a; font-weight: 600; padding: 6px; }
 #chat-send:hover { background: #f0d48a; }
 #chat-send:disabled { background: #555; color: #888; border-color: #555; cursor: not-allowed; }
 #chat-clear { font-size: 11px; color: #666; background: transparent; border-color: #444; padding: 6px 8px; }
 
-/* Status */
+/* Info tab */
+#panel-info { padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+.info-section h3 { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+#recent-colors { display: flex; flex-wrap: wrap; gap: 3px; }
+#history-list { display: flex; flex-direction: column; gap: 2px; max-height: 110px; overflow-y: auto; }
+.hist-item { font-size: 11px; color: #aaa; padding: 3px 6px; border-radius: 4px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hist-item:hover { background: #2e2e34; color: #e8e4d8; }
+.hist-item.current { color: #e8c87a; }
+
+/* Canvas */
+#canvas-area { flex: 1; overflow: auto; display: flex; align-items: flex-start; justify-content: flex-start; padding: 14px; background: #141418; min-width: 0; }
+#canvas { cursor: crosshair; image-rendering: pixelated; display: block; border: 1px solid #38383e; }
+#coord-info { position: fixed; bottom: 10px; right: 14px; font-size: 11px; color: #555; pointer-events: none; }
+
 #status { position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%); background: #2a2a30ee; backdrop-filter: blur(8px); padding: 5px 16px; border-radius: 20px; font-size: 12px; color: #aaa; pointer-events: none; opacity: 0; transition: opacity 0.3s; z-index: 100; }
 #status.show { opacity: 1; }
-
-/* Scrollbar */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #44444a; border-radius: 3px; }
@@ -107,13 +109,13 @@ select.tool-sel { background:#38383e; border:1px solid #52525a; color:#d8d4c8; p
   <h1>🦞 像素画</h1>
   <div class="sep"></div>
   <div class="tool-group">
-    <button id="btn-pencil" class="active" title="画笔 P" onclick="setTool('pencil')">✏️</button>
-    <button id="btn-eraser" title="橡皮 E" onclick="setTool('eraser')">🧹</button>
-    <button id="btn-fill"   title="填充 F" onclick="setTool('fill')">🪣</button>
-    <button id="btn-picker" title="取色 I" onclick="setTool('picker')">💉</button>
-    <button id="btn-rect"   title="矩形 R" onclick="setTool('rect')">⬜</button>
-    <button id="btn-line"   title="直线 L" onclick="setTool('line')">╱</button>
-    <button id="btn-move"   title="移动 M" onclick="setTool('move')">✥</button>
+    <button id="btn-pencil" class="active" title="P" onclick="setTool('pencil')">✏️</button>
+    <button id="btn-eraser" title="E" onclick="setTool('eraser')">🧹</button>
+    <button id="btn-fill"   title="F" onclick="setTool('fill')">🪣</button>
+    <button id="btn-picker" title="I" onclick="setTool('picker')">💉</button>
+    <button id="btn-rect"   title="R" onclick="setTool('rect')">⬜</button>
+    <button id="btn-line"   title="L" onclick="setTool('line')">╱</button>
+    <button id="btn-move"   title="M" onclick="setTool('move')">✥</button>
   </div>
   <div class="sep"></div>
   <div class="tool-group">
@@ -131,7 +133,7 @@ select.tool-sel { background:#38383e; border:1px solid #52525a; color:#d8d4c8; p
   <div class="tool-group">
     <button onclick="undo()" title="Ctrl+Z">↩</button>
     <button onclick="redo()" title="Ctrl+Y">↪</button>
-    <button onclick="clearCanvas()" class="danger">🗑</button>
+    <button onclick="clearLayer()" class="danger">🗑</button>
     <button onclick="exportPNG()" title="Ctrl+S">💾 导出</button>
     <button onclick="loadPNG()">📂 导入</button>
     <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleFileLoad(event)">
@@ -146,18 +148,76 @@ select.tool-sel { background:#38383e; border:1px solid #52525a; color:#d8d4c8; p
 </div>
 
 <div id="main">
-  <div id="canvas-area">
-    <canvas id="canvas"></canvas>
-  </div>
-
-  <div id="right-panel">
+  <!-- Left panel -->
+  <div id="left-panel">
     <div id="panel-tabs">
-      <div class="ptab active" onclick="switchTab('info')">🎨 画板</div>
-      <div class="ptab"        onclick="switchTab('chat')">💬 AI 对话</div>
+      <div class="ptab active" onclick="switchTab('layers')">🗂 图层</div>
+      <div class="ptab"        onclick="switchTab('chat')">💬 AI</div>
+      <div class="ptab"        onclick="switchTab('info')">🎨 信息</div>
     </div>
 
-    <!-- 画板信息 -->
-    <div class="panel-body active" id="tab-info">
+    <!-- 图层面板 -->
+    <div class="panel-body active" id="tab-layers">
+      <div id="layers-toolbar">
+        <button onclick="addLayer()" title="新建图层">＋ 新建</button>
+        <button onclick="duplicateLayer()" title="复制当前层">⧉ 复制</button>
+        <button onclick="mergeDown()" title="向下合并">⤵ 合并</button>
+        <button onclick="deleteLayer()" class="danger" title="删除当前层">✕</button>
+      </div>
+      <div id="layers-list"></div>
+      <div id="layer-opacity-row">
+        <span>不透明度</span>
+        <input type="range" id="opacitySlider" min="0" max="100" value="100" oninput="setLayerOpacity(+this.value)">
+        <span id="opacityVal">100%</span>
+      </div>
+    </div>
+
+    <!-- AI 对话 -->
+    <div class="panel-body" id="tab-chat">
+      <details id="chat-settings">
+        <summary>⚙️ 设置</summary>
+        <div id="chat-settings-body">
+          <div class="setting-row">
+            <label>API Key</label>
+            <input type="password" id="apiKey" placeholder="sk-..." autocomplete="off">
+          </div>
+          <div class="setting-row">
+            <label>模型</label>
+            <select id="modelSel">
+              <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet</option>
+              <option value="claude-3-5-haiku-20241022">Claude 3.5 Haiku</option>
+              <option value="gpt-4o">GPT-4o</option>
+              <option value="gpt-4o-mini">GPT-4o mini</option>
+            </select>
+          </div>
+          <div class="setting-row">
+            <label>Skill</label>
+            <select id="skillSel" onchange="loadSkill(this.value)">
+              <option value="">无</option>
+              <option value="pixel">🦞 像素画助手</option>
+              <option value="color">🎨 配色顾问</option>
+              <option value="custom">✏️ 自定义</option>
+            </select>
+          </div>
+          <div id="custom-skill-wrap" style="display:none">
+            <textarea id="customSkill" style="background:#2a2a30;border:1px solid #44444a;color:#e8e4d8;padding:6px;border-radius:5px;font-size:11px;width:100%;height:60px;resize:vertical;font-family:inherit" placeholder="System prompt..."></textarea>
+          </div>
+        </div>
+      </details>
+      <div id="chat-messages">
+        <div class="msg system"><div class="msg-bubble">👋 填入 API Key 后可与 AI 对话。支持多图层操作。</div></div>
+      </div>
+      <div id="chat-input-area">
+        <textarea id="chat-input" placeholder="说说你想画什么..." onkeydown="handleChatKey(event)"></textarea>
+        <div id="chat-send-row">
+          <button id="chat-send" onclick="sendChat()">发送 ↵</button>
+          <button id="chat-clear" onclick="clearChat()">清空</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 信息 -->
+    <div class="panel-body" id="tab-info">
       <div id="panel-info">
         <div class="info-section">
           <h3>最近颜色</h3>
@@ -169,461 +229,305 @@ select.tool-sel { background:#38383e; border:1px solid #52525a; color:#d8d4c8; p
         </div>
         <div class="info-section">
           <h3>快捷键</h3>
-          <div style="font-size:11px;color:#666;line-height:1.8">
-            P 画笔 &nbsp;E 橡皮 &nbsp;F 填充<br>
-            I 取色 &nbsp;R 矩形 &nbsp;L 直线 &nbsp;M 移动<br>
-            [ ] 调笔刷 &nbsp;G 网格<br>
-            Ctrl+Z 撤销 &nbsp;Ctrl+Y 重做<br>
+          <div style="font-size:11px;color:#666;line-height:1.9">
+            P 画笔　E 橡皮　F 填充<br>
+            I 取色　R 矩形　L 直线　M 移动<br>
+            [ ] 调笔刷　G 网格<br>
+            Ctrl+Z/Y 撤销/重做<br>
             Ctrl+S 导出
           </div>
-        </div>
-        <div id="coord-info" style="font-size:11px;color:#555">坐标: —</div>
-      </div>
-    </div>
-
-    <!-- AI 对话 -->
-    <div class="panel-body" id="tab-chat">
-      <details id="chat-settings">
-        <summary>⚙️ 设置</summary>
-        <div id="chat-settings-body">
-          <div class="setting-row">
-            <label>API Key（Claude / OpenAI）</label>
-            <input type="password" id="apiKey" placeholder="sk-..." autocomplete="off">
-          </div>
-          <div class="setting-row">
-            <label>模型</label>
-            <select id="modelSel">
-              <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet</option>
-              <option value="claude-3-5-haiku-20241022">Claude 3.5 Haiku（快）</option>
-              <option value="gpt-4o">GPT-4o</option>
-              <option value="gpt-4o-mini">GPT-4o mini（快）</option>
-            </select>
-          </div>
-          <div class="setting-row">
-            <label>Skill（提示词）</label>
-            <select id="skillSel" onchange="loadSkill(this.value)">
-              <option value="">无</option>
-              <option value="pixel">🦞 像素画助手</option>
-              <option value="color">🎨 配色顾问</option>
-              <option value="custom">✏️ 自定义...</option>
-            </select>
-          </div>
-          <div id="custom-skill-wrap" style="display:none">
-            <div class="setting-row">
-              <label>自定义 System Prompt</label>
-              <textarea id="customSkill" style="background:#2a2a30;border:1px solid #44444a;color:#e8e4d8;padding:6px;border-radius:5px;font-size:11px;width:100%;height:70px;resize:vertical;font-family:inherit" placeholder="在这里写你的 system prompt..."></textarea>
-            </div>
-          </div>
-        </div>
-      </details>
-
-      <div id="chat-messages">
-        <div class="msg system">
-          <div class="msg-bubble">👋 填入 API Key 后就能和 AI 对话了。你可以说：<br>「画一个红色圆圈」「把画布填成天蓝色」「帮我设计一个小房子」</div>
-        </div>
-      </div>
-
-      <div id="chat-input-area">
-        <textarea id="chat-input" placeholder="描述你想画什么，或者让 AI 帮你修改..." onkeydown="handleChatKey(event)"></textarea>
-        <div id="chat-send-row">
-          <button id="chat-send" onclick="sendChat()">发送 ↵</button>
-          <button id="chat-clear" onclick="clearChat()">清空</button>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- Canvas -->
+  <div id="canvas-area">
+    <canvas id="canvas"></canvas>
+  </div>
 </div>
 
+<div id="coord-info">坐标: —</div>
 <div id="status"></div>
 
 <script>
-// ══════════════════════════════════════
-//  画布核心
-// ══════════════════════════════════════
 const CW = 64, CH = 36;
 let SCALE = 12;
-let tool = 'pencil';
-let brushSize = 1;
-let currentColor = '#e8c87a';
-let showGrid = true;
-let painting = false;
-let lastX = -1, lastY = -1;
+let tool = 'pencil', brushSize = 1, currentColor = '#e8c87a', showGrid = true;
+let painting = false, lastX = -1, lastY = -1;
 let rectStart = null, lineStart = null, moveStart = null, moveSnapshot = null;
+let undoStack = [], redoStack = [], recentColors = [];
 
-let pixels = new Array(CW * CH).fill('');
-let undoStack = [], redoStack = [];
-let recentColors = [];
+// ══ 图层系统 ══
+let layers = [];       // [{id, name, pixels, visible, opacity}]
+let activeLayerIdx = 0;
+let layerCounter = 1;
+
+function newLayerData() { return new Array(CW * CH).fill(''); }
+
+function createLayer(name) {
+  return { id: layerCounter++, name: name || ('图层 ' + layerCounter), pixels: newLayerData(), visible: true, opacity: 100 };
+}
+
+function getActiveLayer() { return layers[activeLayerIdx]; }
+
+function addLayer() {
+  saveHistory('新建图层');
+  const l = createLayer('图层 ' + layerCounter);
+  layers.splice(activeLayerIdx, 0, l);
+  renderLayersList(); render(); showStatus('新建图层');
+}
+
+function duplicateLayer() {
+  saveHistory('复制图层');
+  const src = getActiveLayer();
+  const l = { id: layerCounter++, name: src.name + ' 副本', pixels: [...src.pixels], visible: true, opacity: src.opacity };
+  layers.splice(activeLayerIdx, 0, l);
+  renderLayersList(); render(); showStatus('复制图层');
+}
+
+function deleteLayer() {
+  if (layers.length <= 1) { showStatus('至少保留一个图层'); return; }
+  if (!confirm('删除图层 ' + getActiveLayer().name + '？')) return;
+  saveHistory('删除图层');
+  layers.splice(activeLayerIdx, 1);
+  activeLayerIdx = Math.min(activeLayerIdx, layers.length - 1);
+  renderLayersList(); render(); showStatus('已删除');
+}
+
+function mergeDown() {
+  if (activeLayerIdx >= layers.length - 1) { showStatus('没有下方图层'); return; }
+  saveHistory('合并图层');
+  const top = layers[activeLayerIdx], bot = layers[activeLayerIdx + 1];
+  for (let i = 0; i < CW * CH; i++) { if (top.pixels[i]) bot.pixels[i] = top.pixels[i]; }
+  layers.splice(activeLayerIdx, 1);
+  activeLayerIdx = Math.min(activeLayerIdx, layers.length - 1);
+  renderLayersList(); render(); showStatus('合并完成');
+}
+
+function setLayerOpacity(val) {
+  getActiveLayer().opacity = val;
+  document.getElementById('opacityVal').textContent = val + '%';
+  updateLayerThumb(activeLayerIdx);
+  render();
+}
+
+function clearLayer() {
+  if (!confirm('清空当前图层？')) return;
+  saveHistory('清空图层');
+  getActiveLayer().pixels = newLayerData();
+  renderLayersList(); render(); showStatus('已清空');
+}
+
+function renderLayersList() {
+  const list = document.getElementById('layers-list');
+  list.innerHTML = '';
+  layers.forEach((layer, i) => {
+    const div = document.createElement('div');
+    div.className = 'layer-item' + (i === activeLayerIdx ? ' active-layer' : '');
+    div.draggable = true;
+    div.dataset.idx = i;
+
+    // drag to reorder
+    div.addEventListener('dragstart', e => { e.dataTransfer.setData('text/plain', i); });
+    div.addEventListener('dragover', e => { e.preventDefault(); div.style.outline = '1px dashed #e8c87a88'; });
+    div.addEventListener('dragleave', () => { div.style.outline = ''; });
+    div.addEventListener('drop', e => {
+      e.preventDefault(); div.style.outline = '';
+      const from = +e.dataTransfer.getData('text/plain');
+      if (from === i) return;
+      saveHistory('移动图层');
+      const [moved] = layers.splice(from, 1);
+      layers.splice(i, 0, moved);
+      activeLayerIdx = i;
+      renderLayersList(); render();
+    });
+
+    div.onclick = (e) => {
+      if (e.target.classList.contains('layer-vis-btn') || e.target.classList.contains('layer-ops') || e.target.tagName === 'BUTTON') return;
+      activeLayerIdx = i;
+      document.getElementById('opacitySlider').value = layer.opacity;
+      document.getElementById('opacityVal').textContent = layer.opacity + '%';
+      renderLayersList(); render();
+    };
+
+    // 可见性
+    const vis = document.createElement('span');
+    vis.className = 'layer-vis-btn';
+    vis.textContent = layer.visible ? '👁' : '🙈';
+    vis.title = '显示/隐藏';
+    vis.onclick = (e) => { e.stopPropagation(); layer.visible = !layer.visible; renderLayersList(); render(); };
+
+    // 缩略图
+    const thumb = document.createElement('canvas');
+    thumb.className = 'layer-thumb'; thumb.width = 64; thumb.height = 36;
+    drawThumb(thumb, layer);
+
+    // 名称
+    const nameEl = document.createElement('span');
+    nameEl.className = 'layer-name'; nameEl.textContent = layer.name;
+    nameEl.ondblclick = (e) => {
+      e.stopPropagation();
+      nameEl.contentEditable = true; nameEl.classList.add('editing'); nameEl.focus();
+      const sel = window.getSelection(); sel.selectAllChildren(nameEl);
+    };
+    nameEl.onblur = () => { nameEl.contentEditable = false; nameEl.classList.remove('editing'); layer.name = nameEl.textContent.trim() || layer.name; };
+    nameEl.onkeydown = (e) => { if (e.key === 'Enter') { e.preventDefault(); nameEl.blur(); } };
+
+    // 上移/下移
+    const ops = document.createElement('div');
+    ops.className = 'layer-ops';
+    const upBtn = document.createElement('button'); upBtn.textContent = '↑';
+    upBtn.onclick = (e) => { e.stopPropagation(); if(i===0) return; saveHistory('上移图层'); const t=layers[i]; layers[i]=layers[i-1]; layers[i-1]=t; activeLayerIdx=i-1; renderLayersList(); render(); };
+    const dnBtn = document.createElement('button'); dnBtn.textContent = '↓';
+    dnBtn.onclick = (e) => { e.stopPropagation(); if(i>=layers.length-1) return; saveHistory('下移图层'); const t=layers[i]; layers[i]=layers[i+1]; layers[i+1]=t; activeLayerIdx=i+1; renderLayersList(); render(); };
+    ops.appendChild(upBtn); ops.appendChild(dnBtn);
+
+    div.appendChild(vis); div.appendChild(thumb); div.appendChild(nameEl); div.appendChild(ops);
+    list.appendChild(div);
+  });
+}
+
+function drawThumb(canvas, layer) {
+  const tc = canvas.getContext('2d');
+  tc.clearRect(0, 0, 64, 36);
+  for (let i = 0; i < CW * CH; i++) {
+    const c = layer.pixels[i];
+    if (c) { tc.fillStyle = c; tc.fillRect(i % CW, Math.floor(i / CW), 1, 1); }
+  }
+}
+
+function updateLayerThumb(idx) {
+  const items = document.querySelectorAll('.layer-item');
+  if (items[idx]) {
+    const thumb = items[idx].querySelector('.layer-thumb');
+    if (thumb) drawThumb(thumb, layers[idx]);
+  }
+}
+
+// ══ 画布 ══
+const PALETTE = ['#e8e4d8','#c8c0a8','#888070','#484038','#181410','#e8a878','#c87848','#985828','#683818','#381808','#f8e888','#e8c848','#c89828','#986808','#584808','#a8e878','#68b848','#389828','#186808','#084808','#88c8f8','#4898e8','#1868c8','#084898','#083868','#d888f8','#a848e8','#7828c8','#481898','#280868','#f88898','#e84858','#c81828','#980818','#580808','#ffffff','#e0e0e0','#b0b0b0','#787878','#404040','#000000'];
+
+function initPalette() {
+  const wrap = document.getElementById('palette-wrap');
+  PALETTE.forEach(c => { const s=document.createElement('div'); s.className='swatch'; s.style.background=c; s.title=c; s.onclick=()=>setColor(c); wrap.appendChild(s); });
+}
+
+function setColor(hex) { currentColor=hex; document.getElementById('colorPicker').value=hex; document.getElementById('colorHex').value=hex; addRecentColor(hex); }
+function setColorFromPicker(hex) { setColor(hex); }
+function setColorFromHex(val) { if(/^#[0-9a-fA-F]{6}$/.test(val)) setColor(val); }
+function addRecentColor(hex) { recentColors=[hex,...recentColors.filter(c=>c!==hex)].slice(0,16); renderRecentColors(); }
+function renderRecentColors() { const w=document.getElementById('recent-colors'); w.innerHTML=''; recentColors.forEach(c=>{const s=document.createElement('div');s.className='swatch';s.style.background=c;s.title=c;s.onclick=()=>setColor(c);w.appendChild(s);}); }
+
+function setTool(t) { tool=t; document.querySelectorAll('[id^="btn-"]').forEach(b=>b.classList.remove('active')); const b=document.getElementById('btn-'+t); if(b)b.classList.add('active'); }
+function setZoom(z) { SCALE=z; resizeCanvas(); render(); }
+function toggleGrid() { showGrid=!showGrid; render(); }
+function resizeCanvas() { const c=document.getElementById('canvas'); c.width=CW*SCALE; c.height=CH*SCALE; }
 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
-const PALETTE = [
-  '#e8e4d8','#c8c0a8','#888070','#484038','#181410',
-  '#e8a878','#c87848','#985828','#683818','#381808',
-  '#f8e888','#e8c848','#c89828','#986808','#584808',
-  '#a8e878','#68b848','#389828','#186808','#084808',
-  '#88c8f8','#4898e8','#1868c8','#084898','#083868',
-  '#d888f8','#a848e8','#7828c8','#481898','#280868',
-  '#f88898','#e84858','#c81828','#980818','#580808',
-  '#ffffff','#e0e0e0','#b0b0b0','#787878','#404040','#000000',
-];
-
-function initPalette() {
-  const wrap = document.getElementById('palette-wrap');
-  PALETTE.forEach(c => {
-    const s = document.createElement('div');
-    s.className = 'swatch'; s.style.background = c; s.title = c;
-    s.onclick = () => setColor(c);
-    wrap.appendChild(s);
-  });
-}
-
-function setColor(hex) {
-  currentColor = hex;
-  document.getElementById('colorPicker').value = hex;
-  document.getElementById('colorHex').value = hex;
-  addRecentColor(hex);
-}
-function setColorFromPicker(hex) { setColor(hex); }
-function setColorFromHex(val) { if (/^#[0-9a-fA-F]{6}$/.test(val)) setColor(val); }
-
-function addRecentColor(hex) {
-  recentColors = [hex, ...recentColors.filter(c => c !== hex)].slice(0, 16);
-  renderRecentColors();
-}
-function renderRecentColors() {
-  const wrap = document.getElementById('recent-colors');
-  wrap.innerHTML = '';
-  recentColors.forEach(c => {
-    const s = document.createElement('div');
-    s.className = 'swatch'; s.style.background = c; s.title = c;
-    s.onclick = () => setColor(c);
-    wrap.appendChild(s);
-  });
-}
-
-function setTool(t) {
-  tool = t;
-  document.querySelectorAll('[id^="btn-"]').forEach(b => b.classList.remove('active'));
-  const btn = document.getElementById('btn-' + t);
-  if (btn) btn.classList.add('active');
-}
-
-function setZoom(z) { SCALE = z; resizeCanvas(); render(); }
-function toggleGrid() { showGrid = !showGrid; render(); }
-function resizeCanvas() { canvas.width = CW * SCALE; canvas.height = CH * SCALE; }
-
-function idx(x, y) { return y * CW + x; }
-function getPixel(x, y) { return (x>=0&&x<CW&&y>=0&&y<CH) ? pixels[idx(x,y)] : null; }
-function setPixel(x, y, color) { if (x>=0&&x<CW&&y>=0&&y<CH) pixels[idx(x,y)] = color; }
+function idx(x,y){return y*CW+x;}
+function getPixel(x,y){return(x>=0&&x<CW&&y>=0&&y<CH)?getActiveLayer().pixels[idx(x,y)]:null;}
+function setPixel(x,y,color){if(x>=0&&x<CW&&y>=0&&y<CH){getActiveLayer().pixels[idx(x,y)]=color; updateLayerThumb(activeLayerIdx);}}
 
 function render(overlay) {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  for (let y = 0; y < CH; y++) for (let x = 0; x < CW; x++) {
-    const c = pixels[idx(x,y)];
-    ctx.fillStyle = c || (((x+y)%2===0) ? '#2a2a2a' : '#222222');
-    ctx.fillRect(x*SCALE, y*SCALE, SCALE, SCALE);
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  // checkerboard bg
+  for(let y=0;y<CH;y++) for(let x=0;x<CW;x++) { ctx.fillStyle=((x+y)%2===0)?'#2a2a2a':'#222222'; ctx.fillRect(x*SCALE,y*SCALE,SCALE,SCALE); }
+  // layers bottom to top
+  for(let li=layers.length-1;li>=0;li--) {
+    const layer=layers[li];
+    if(!layer.visible) continue;
+    const alpha=layer.opacity/100;
+    ctx.globalAlpha=alpha;
+    for(let i=0;i<CW*CH;i++) {
+      const c=layer.pixels[i];
+      if(c){ctx.fillStyle=c;ctx.fillRect((i%CW)*SCALE,Math.floor(i/CW)*SCALE,SCALE,SCALE);}
+    }
+    ctx.globalAlpha=1;
   }
-  if (overlay) overlay.forEach(([ox,oy,oc]) => { ctx.fillStyle=oc; ctx.fillRect(ox*SCALE,oy*SCALE,SCALE,SCALE); });
-  if (showGrid && SCALE >= 8) {
-    ctx.strokeStyle = 'rgba(255,255,255,0.06)'; ctx.lineWidth = 0.5;
-    for (let x=0;x<=CW;x++) { ctx.beginPath(); ctx.moveTo(x*SCALE,0); ctx.lineTo(x*SCALE,CH*SCALE); ctx.stroke(); }
-    for (let y=0;y<=CH;y++) { ctx.beginPath(); ctx.moveTo(0,y*SCALE); ctx.lineTo(CW*SCALE,y*SCALE); ctx.stroke(); }
-  }
+  if(overlay) overlay.forEach(([ox,oy,oc])=>{ctx.fillStyle=oc;ctx.globalAlpha=0.85;ctx.fillRect(ox*SCALE,oy*SCALE,SCALE,SCALE);ctx.globalAlpha=1;});
+  if(showGrid&&SCALE>=8){ctx.strokeStyle='rgba(255,255,255,0.06)';ctx.lineWidth=0.5;for(let x=0;x<=CW;x++){ctx.beginPath();ctx.moveTo(x*SCALE,0);ctx.lineTo(x*SCALE,CH*SCALE);ctx.stroke();}for(let y=0;y<=CH;y++){ctx.beginPath();ctx.moveTo(0,y*SCALE);ctx.lineTo(CW*SCALE,y*SCALE);ctx.stroke();}}
 }
 
-function floodFill(sx, sy, newColor) {
-  const target = getPixel(sx, sy);
-  if (target === newColor) return;
-  const stack = [[sx,sy]], visited = new Set();
-  while (stack.length) {
-    const [x,y] = stack.pop();
-    if (x<0||x>=CW||y<0||y>=CH) continue;
-    const key = y*CW+x;
-    if (visited.has(key) || getPixel(x,y) !== target) continue;
-    visited.add(key); setPixel(x,y,newColor);
-    stack.push([x+1,y],[x-1,y],[x,y+1],[x,y-1]);
-  }
-}
-
-function paintAt(x, y, color) {
-  const r = Math.floor((brushSize-1)/2);
-  for (let dy=-r;dy<=r;dy++) for (let dx=-r;dx<=r;dx++) setPixel(x+dx,y+dy,color);
-}
-
-function getRectPixels(x0,y0,x1,y1,c) {
-  const res=[],xa=Math.min(x0,x1),xb=Math.max(x0,x1),ya=Math.min(y0,y1),yb=Math.max(y0,y1);
-  for (let y=ya;y<=yb;y++) for (let x=xa;x<=xb;x++) res.push([x,y,c]);
-  return res;
-}
-
-function getLinePixels(x0,y0,x1,y1,c) {
-  const res=[]; let dx=Math.abs(x1-x0),dy=Math.abs(y1-y0),sx=x0<x1?1:-1,sy=y0<y1?1:-1,err=dx-dy,cx=x0,cy=y0;
-  while(true) { res.push([cx,cy,c]); if(cx===x1&&cy===y1) break; const e2=2*err; if(e2>-dy){err-=dy;cx+=sx;} if(e2<dx){err+=dx;cy+=sy;} }
-  return res;
-}
+function floodFill(sx,sy,newColor){const layer=getActiveLayer();const target=layer.pixels[idx(sx,sy)];if(target===newColor)return;const stack=[[sx,sy]],visited=new Set();while(stack.length){const[x,y]=stack.pop();if(x<0||x>=CW||y<0||y>=CH)continue;const k=y*CW+x;if(visited.has(k)||layer.pixels[k]!==target)continue;visited.add(k);layer.pixels[k]=newColor;stack.push([x+1,y],[x-1,y],[x,y+1],[x,y-1]);}updateLayerThumb(activeLayerIdx);}
+function paintAt(x,y,color){const r=Math.floor((brushSize-1)/2);for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++)setPixel(x+dx,y+dy,color);}
+function getRectPixels(x0,y0,x1,y1,c){const res=[],xa=Math.min(x0,x1),xb=Math.max(x0,x1),ya=Math.min(y0,y1),yb=Math.max(y0,y1);for(let y=ya;y<=yb;y++)for(let x=xa;x<=xb;x++)res.push([x,y,c]);return res;}
+function getLinePixels(x0,y0,x1,y1,c){const res=[];let dx=Math.abs(x1-x0),dy=Math.abs(y1-y0),sx=x0<x1?1:-1,sy=y0<y1?1:-1,err=dx-dy,cx=x0,cy=y0;while(true){res.push([cx,cy,c]);if(cx===x1&&cy===y1)break;const e2=2*err;if(e2>-dy){err-=dy;cx+=sx;}if(e2<dx){err+=dx;cy+=sy;}}return res;}
 
 function saveHistory(label) {
-  undoStack.push({pixels:[...pixels], label: label||'操作'});
-  if (undoStack.length>60) undoStack.shift();
-  redoStack = []; renderHistory();
+  undoStack.push({layers: layers.map(l=>({...l, pixels:[...l.pixels]})), activeLayerIdx, label:label||'操作'});
+  if(undoStack.length>50) undoStack.shift();
+  redoStack=[]; renderHistory();
 }
-function undo() { if(!undoStack.length) return; redoStack.push({pixels:[...pixels],label:'当前'}); const s=undoStack.pop(); pixels=[...s.pixels]; render(); renderHistory(); showStatus('撤销'); }
-function redo() { if(!redoStack.length) return; undoStack.push({pixels:[...pixels],label:'重做前'}); const s=redoStack.pop(); pixels=[...s.pixels]; render(); renderHistory(); showStatus('重做'); }
-function renderHistory() {
-  const list=document.getElementById('history-list'); list.innerHTML='';
-  [...undoStack].reverse().slice(0,20).forEach((h,i) => {
-    const d=document.createElement('div'); d.className='hist-item'+(i===0?' current':''); d.textContent=h.label;
-    d.onclick=()=>{ const ti=undoStack.length-1-i; redoStack.push({pixels:[...pixels],label:'跳转前'}); pixels=[...undoStack[ti].pixels]; undoStack.splice(ti); render(); renderHistory(); };
-    list.appendChild(d);
-  });
-}
+function restoreSnapshot(s){layers=s.layers.map(l=>({...l,pixels:[...l.pixels]}));activeLayerIdx=s.activeLayerIdx;}
+function undo(){if(!undoStack.length)return;redoStack.push({layers:layers.map(l=>({...l,pixels:[...l.pixels]})),activeLayerIdx,label:'当前'});const s=undoStack.pop();restoreSnapshot(s);render();renderLayersList();renderHistory();showStatus('撤销');}
+function redo(){if(!redoStack.length)return;undoStack.push({layers:layers.map(l=>({...l,pixels:[...l.pixels]})),activeLayerIdx,label:'重做前'});const s=redoStack.pop();restoreSnapshot(s);render();renderLayersList();renderHistory();showStatus('重做');}
+function renderHistory(){const list=document.getElementById('history-list');list.innerHTML='';[...undoStack].reverse().slice(0,20).forEach((h,i)=>{const d=document.createElement('div');d.className='hist-item'+(i===0?' current':'');d.textContent=h.label;list.appendChild(d);});}
 
-function exportPNG() {
-  const off=document.createElement('canvas'); off.width=CW; off.height=CH; const oc=off.getContext('2d');
-  for (let y=0;y<CH;y++) for (let x=0;x<CW;x++) { const c=pixels[idx(x,y)]; if(c){oc.fillStyle=c;oc.fillRect(x,y,1,1);} }
-  const a=document.createElement('a'); a.download='pixel_'+Date.now()+'.png'; a.href=off.toDataURL('image/png'); a.click();
-  showStatus('已导出 PNG');
-}
-function loadPNG() { document.getElementById('fileInput').click(); }
-function handleFileLoad(e) {
-  const file=e.target.files[0]; if(!file) return;
-  const reader=new FileReader();
-  reader.onload=ev=>{ const im=new Image(); im.onload=()=>{ const off=document.createElement('canvas'); off.width=CW; off.height=CH; const oc=off.getContext('2d'); oc.drawImage(im,0,0,CW,CH); const d=oc.getImageData(0,0,CW,CH).data; saveHistory('导入前'); for(let i=0;i<CW*CH;i++){const r=d[i*4],g=d[i*4+1],b=d[i*4+2],a=d[i*4+3]; pixels[i]=a>10?`#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`:'';}; render(); showStatus('导入完成'); }; im.src=ev.target.result; };
-  reader.readAsDataURL(file); e.target.value='';
-}
-function clearCanvas() { if(!confirm('确认清空？')) return; saveHistory('清空前'); pixels=new Array(CW*CH).fill(''); render(); showStatus('已清空'); }
+function exportPNG(){const off=document.createElement('canvas');off.width=CW;off.height=CH;const oc=off.getContext('2d');for(let li=layers.length-1;li>=0;li--){const layer=layers[li];if(!layer.visible)continue;oc.globalAlpha=layer.opacity/100;for(let i=0;i<CW*CH;i++){const c=layer.pixels[i];if(c){oc.fillStyle=c;oc.fillRect(i%CW,Math.floor(i/CW),1,1);}}oc.globalAlpha=1;}const a=document.createElement('a');a.download='pixel_'+Date.now()+'.png';a.href=off.toDataURL('image/png');a.click();showStatus('已导出 PNG');}
+function loadPNG(){document.getElementById('fileInput').click();}
+function handleFileLoad(e){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=ev=>{const im=new Image();im.onload=()=>{const off=document.createElement('canvas');off.width=CW;off.height=CH;const oc=off.getContext('2d');oc.drawImage(im,0,0,CW,CH);const d=oc.getImageData(0,0,CW,CH).data;saveHistory('导入前');const l=createLayer('导入');for(let i=0;i<CW*CH;i++){const r=d[i*4],g=d[i*4+1],b=d[i*4+2],a=d[i*4+3];l.pixels[i]=a>10?`#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`:'';};layers.splice(activeLayerIdx,0,l);renderLayersList();render();showStatus('导入完成');};im.src=ev.target.result;};reader.readAsDataURL(file);e.target.value='';}
 
-// ══════════════════════════════════════
-//  鼠标事件
-// ══════════════════════════════════════
-function getCanvasXY(e) { const rect=canvas.getBoundingClientRect(); return [Math.floor((e.clientX-rect.left)/SCALE), Math.floor((e.clientY-rect.top)/SCALE)]; }
-
-canvas.addEventListener('mousedown', e => {
-  const [x,y]=getCanvasXY(e); if(x<0||x>=CW||y<0||y>=CH) return;
-  painting=true;
-  if(tool==='picker'){const c=getPixel(x,y);if(c)setColor(c);setTool('pencil');return;}
-  if(tool==='fill'){saveHistory('填充');floodFill(x,y,e.button===2?'':currentColor);render();return;}
-  if(tool==='rect'){rectStart=[x,y];return;}
-  if(tool==='line'){lineStart=[x,y];return;}
-  if(tool==='move'){moveStart=[x,y];moveSnapshot=[...pixels];return;}
-  saveHistory('画笔'); paintAt(x,y,tool==='eraser'?'':currentColor); lastX=x;lastY=y; render();
-});
-canvas.addEventListener('mousemove', e => {
-  const [x,y]=getCanvasXY(e);
-  document.getElementById('coord-info').textContent=`坐标: (${x}, ${y})`;
-  if(!painting) return;
-  if(tool==='rect'&&rectStart){render(getRectPixels(rectStart[0],rectStart[1],x,y,currentColor));return;}
-  if(tool==='line'&&lineStart){render(getLinePixels(lineStart[0],lineStart[1],x,y,currentColor));return;}
-  if(tool==='move'&&moveStart&&moveSnapshot){const dx=x-moveStart[0],dy=y-moveStart[1];const np=new Array(CW*CH).fill('');for(let py=0;py<CH;py++)for(let px=0;px<CW;px++){const c=moveSnapshot[idx(px,py)];if(c&&px+dx>=0&&px+dx<CW&&py+dy>=0&&py+dy<CH)np[idx(px+dx,py+dy)]=c;}pixels=np;render();return;}
-  if((tool==='pencil'||tool==='eraser')&&(x!==lastX||y!==lastY)){paintAt(x,y,tool==='eraser'?'':currentColor);lastX=x;lastY=y;render();}
-});
-canvas.addEventListener('mouseup', e => {
-  if(!painting) return; painting=false;
-  const [x,y]=getCanvasXY(e);
-  if(tool==='rect'&&rectStart){saveHistory('矩形');getRectPixels(rectStart[0],rectStart[1],x,y,currentColor).forEach(([px,py,pc])=>setPixel(px,py,pc));rectStart=null;render();return;}
-  if(tool==='line'&&lineStart){saveHistory('直线');getLinePixels(lineStart[0],lineStart[1],x,y,currentColor).forEach(([px,py,pc])=>setPixel(px,py,pc));lineStart=null;render();return;}
-  if(tool==='move'){moveStart=null;moveSnapshot=null;saveHistory('移动');}
-});
-canvas.addEventListener('mouseleave',()=>{ document.getElementById('coord-info').textContent='坐标: —'; });
+function getCanvasXY(e){const rect=canvas.getBoundingClientRect();return[Math.floor((e.clientX-rect.left)/SCALE),Math.floor((e.clientY-rect.top)/SCALE)];}
+canvas.addEventListener('mousedown',e=>{const[x,y]=getCanvasXY(e);if(x<0||x>=CW||y<0||y>=CH)return;painting=true;if(tool==='picker'){const c=getPixel(x,y);if(c)setColor(c);setTool('pencil');return;}if(tool==='fill'){saveHistory('填充');floodFill(x,y,e.button===2?'':currentColor);render();return;}if(tool==='rect'){rectStart=[x,y];return;}if(tool==='line'){lineStart=[x,y];return;}if(tool==='move'){moveStart=[x,y];moveSnapshot=[...getActiveLayer().pixels];return;}saveHistory('画笔');paintAt(x,y,tool==='eraser'?'':currentColor);lastX=x;lastY=y;render();});
+canvas.addEventListener('mousemove',e=>{const[x,y]=getCanvasXY(e);document.getElementById('coord-info').textContent=`(${x}, ${y})`;if(!painting)return;if(tool==='rect'&&rectStart){render(getRectPixels(rectStart[0],rectStart[1],x,y,currentColor));return;}if(tool==='line'&&lineStart){render(getLinePixels(lineStart[0],lineStart[1],x,y,currentColor));return;}if(tool==='move'&&moveStart&&moveSnapshot){const dx=x-moveStart[0],dy=y-moveStart[1];const np=new Array(CW*CH).fill('');for(let py=0;py<CH;py++)for(let px=0;px<CW;px++){const c=moveSnapshot[idx(px,py)];if(c&&px+dx>=0&&px+dx<CW&&py+dy>=0&&py+dy<CH)np[idx(px+dx,py+dy)]=c;}getActiveLayer().pixels=np;updateLayerThumb(activeLayerIdx);render();return;}if((tool==='pencil'||tool==='eraser')&&(x!==lastX||y!==lastY)){paintAt(x,y,tool==='eraser'?'':currentColor);lastX=x;lastY=y;render();}});
+canvas.addEventListener('mouseup',e=>{if(!painting)return;painting=false;const[x,y]=getCanvasXY(e);if(tool==='rect'&&rectStart){saveHistory('矩形');getRectPixels(rectStart[0],rectStart[1],x,y,currentColor).forEach(([px,py,pc])=>setPixel(px,py,pc));rectStart=null;render();return;}if(tool==='line'&&lineStart){saveHistory('直线');getLinePixels(lineStart[0],lineStart[1],x,y,currentColor).forEach(([px,py,pc])=>setPixel(px,py,pc));lineStart=null;render();return;}if(tool==='move'){moveStart=null;moveSnapshot=null;saveHistory('移动');}});
+canvas.addEventListener('mouseleave',()=>{document.getElementById('coord-info').textContent='坐标: —';});
 canvas.addEventListener('contextmenu',e=>e.preventDefault());
 
-// ══════════════════════════════════════
-//  面板切换
-// ══════════════════════════════════════
-function switchTab(name) {
-  document.querySelectorAll('.ptab').forEach((t,i)=>t.classList.toggle('active',['info','chat'][i]===name));
-  document.querySelectorAll('.panel-body').forEach(b=>b.classList.remove('active'));
-  document.getElementById('tab-'+name).classList.add('active');
+// ══ 面板切换 ══
+function switchTab(name){document.querySelectorAll('.ptab').forEach((t,i)=>t.classList.toggle('active',['layers','chat','info'][i]===name));document.querySelectorAll('.panel-body').forEach(b=>b.classList.remove('active'));document.getElementById('tab-'+name).classList.add('active');}
+
+// ══ Skill ══
+const SKILLS={pixel:`你是一个像素画 AI 助手，帮助用户在 64×36 画布上创作。
+坐标系：x 从左到右 0~63，y 从上到下 0~35。
+可用 JS 函数：setPixel(x,y,'#hex')、fillRect(x1,y1,x2,y2,'#hex')、clearPixel(x,y)、floodFill(x,y,'#hex')
+返回：先解释思路，再用 \`\`\`js 代码块包裹操作代码。代码会自动执行在当前选中图层上。`,color:`你是配色顾问，帮用户搭配像素画颜色。给出具体十六进制色值和搭配逻辑。如需演示可用 \`\`\`js 代码块。`};
+let systemPrompt='';
+function loadSkill(val){document.getElementById('custom-skill-wrap').style.display=val==='custom'?'block':'none';systemPrompt=SKILLS[val]||'';}
+
+// ══ AI ══
+let chatHistory=[];
+function fillRect(x1,y1,x2,y2,color){saveHistory('AI填充');for(let y=y1;y<=y2;y++)for(let x=x1;x<=x2;x++)setPixel(x,y,color);render();}
+function clearPixel(x,y){setPixel(x,y,'');render();}
+function handleChatKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();}}
+
+async function sendChat(){
+  const input=document.getElementById('chat-input');const msg=input.value.trim();if(!msg)return;
+  const apiKey=document.getElementById('apiKey').value.trim();if(!apiKey){addChatMsg('system','请先填入 API Key');return;}
+  input.value='';addChatMsg('user',msg);chatHistory.push({role:'user',content:msg});
+  const sendBtn=document.getElementById('chat-send');sendBtn.disabled=true;sendBtn.textContent='思考中…';
+  try{
+    const model=document.getElementById('modelSel').value;
+    const sp=document.getElementById('skillSel').value==='custom'?document.getElementById('customSkill').value:systemPrompt;
+    const ctx2=`画布 64×36，当前图层：${getActiveLayer().name}，共 ${layers.length} 个图层。`;
+    const reply=model.startsWith('claude')?await callClaude(apiKey,model,sp,ctx2,chatHistory):await callOpenAI(apiKey,model,sp,ctx2,chatHistory);
+    chatHistory.push({role:'assistant',content:reply});addChatMsg('ai',reply);
+    const cm=reply.match(/```(?:js|javascript)\n([\s\S]*?)```/);
+    if(cm){try{saveHistory('AI操作');new Function('setPixel','fillRect','clearPixel','floodFill','render','idx','CW','CH','layers','activeLayerIdx',cm[1])(setPixel,fillRect,clearPixel,floodFill,render,idx,CW,CH,layers,activeLayerIdx);render();renderLayersList();addChatMsg('system','✅ 代码已执行');}catch(err){addChatMsg('system','⚠️ '+err.message);}}
+  }catch(err){addChatMsg('system','❌ '+err.message);}
+  sendBtn.disabled=false;sendBtn.textContent='发送 ↵';
 }
 
-// ══════════════════════════════════════
-//  Skill 预设
-// ══════════════════════════════════════
-const SKILLS = {
-  pixel: `你是一个像素画 AI 助手，帮助用户在 64×36 的像素画布上创作。
-画布坐标系：x 从左到右 0~63，y 从上到下 0~35。
-当用户要求绘制内容时，你需要返回可执行的 JavaScript 代码来操作画布。
-可用的画布操作函数：
-- setPixel(x, y, '#rrggbb')  — 设置单个像素颜色
-- fillRect(x1, y1, x2, y2, '#rrggbb')  — 填充矩形区域
-- clearPixel(x, y)  — 清除像素（变透明）
-- floodFill(x, y, '#rrggbb')  — 泛洪填充
+async function callClaude(apiKey,model,sp,ctx,history){const messages=history.map(h=>({role:h.role==='assistant'?'assistant':'user',content:h.content}));if(messages.length>0)messages[0].content=ctx+'\n\n'+messages[0].content;const body={model,max_tokens:1024,messages};if(sp)body.system=sp;const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'x-api-key':apiKey,'anthropic-version':'2023-06-01','content-type':'application/json','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify(body)});if(!res.ok){const e=await res.json();throw new Error(e.error?.message||res.statusText);}const data=await res.json();return data.content[0].text;}
+async function callOpenAI(apiKey,model,sp,ctx,history){const messages=[];if(sp)messages.push({role:'system',content:sp});history.forEach((h,i)=>messages.push({role:h.role==='assistant'?'assistant':'user',content:i===0?ctx+'\n\n'+h.content:h.content}));const res=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Authorization':'Bearer '+apiKey,'Content-Type':'application/json'},body:JSON.stringify({model,max_tokens:1024,messages})});if(!res.ok){const e=await res.json();throw new Error(e.error?.message||res.statusText);}const data=await res.json();return data.choices[0].message.content;}
 
-返回格式：先简短解释你的设计思路，然后用代码块包裹 JS 代码：
-\`\`\`js
-// 你的代码
-\`\`\`
-代码执行后会自动渲染到画布上。`,
+function addChatMsg(role,text){const wrap=document.getElementById('chat-messages');const div=document.createElement('div');div.className='msg '+role;const label=role==='user'?'你':role==='ai'?'🤖 AI':'';div.innerHTML=(label?`<div class="msg-label">${label}</div>`:'')+`<div class="msg-bubble">${escapeHtml(text)}</div>`;wrap.appendChild(div);wrap.scrollTop=wrap.scrollHeight;}
+function escapeHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
+function clearChat(){chatHistory=[];document.getElementById('chat-messages').innerHTML='<div class="msg system"><div class="msg-bubble">对话已清空 🗑️</div></div>';}
 
-  color: `你是一个像素画配色顾问。帮助用户选择和搭配颜色。
-给出具体的十六进制色值建议，解释颜色的搭配逻辑。
-如果需要在画布上演示，可以返回 JS 代码块。`
-};
+document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;if((e.ctrlKey||e.metaKey)&&e.key==='z'){e.preventDefault();undo();return;}if((e.ctrlKey||e.metaKey)&&(e.key==='y'||e.key==='Z')){e.preventDefault();redo();return;}if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();exportPNG();return;}switch(e.key.toLowerCase()){case 'p':setTool('pencil');break;case 'e':setTool('eraser');break;case 'f':setTool('fill');break;case 'i':setTool('picker');break;case 'r':setTool('rect');break;case 'l':setTool('line');break;case 'm':setTool('move');break;case '[':brushSize=Math.max(1,brushSize-1);document.getElementById('brushSize').value=brushSize;break;case ']':brushSize=Math.min(5,brushSize+1);document.getElementById('brushSize').value=brushSize;break;case 'g':toggleGrid();break;}});
 
-let systemPrompt = '';
-function loadSkill(val) {
-  document.getElementById('custom-skill-wrap').style.display = val==='custom' ? 'block' : 'none';
-  systemPrompt = SKILLS[val] || '';
-}
-
-// ══════════════════════════════════════
-//  AI 对话
-// ══════════════════════════════════════
-let chatHistory = [];
-
-// 暴露给 AI 的画布 API
-function fillRect(x1,y1,x2,y2,color) { saveHistory('AI填充'); for(let y=y1;y<=y2;y++) for(let x=x1;x<=x2;x++) setPixel(x,y,color); render(); }
-function clearPixel(x,y) { setPixel(x,y,''); render(); }
-
-function handleChatKey(e) {
-  if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
-}
-
-async function sendChat() {
-  const input = document.getElementById('chat-input');
-  const msg = input.value.trim();
-  if (!msg) return;
-  const apiKey = document.getElementById('apiKey').value.trim();
-  if (!apiKey) { addChatMsg('system', '请先在设置里填入 API Key'); return; }
-
-  input.value = '';
-  addChatMsg('user', msg);
-  chatHistory.push({role:'user', content: msg});
-
-  const sendBtn = document.getElementById('chat-send');
-  sendBtn.disabled = true; sendBtn.textContent = '思考中…';
-
-  try {
-    const model = document.getElementById('modelSel').value;
-    const sp = document.getElementById('skillSel').value==='custom'
-      ? document.getElementById('customSkill').value
-      : systemPrompt;
-
-    // 构造当前画布状态摘要
-    const filledCount = pixels.filter(p=>p).length;
-    const canvasContext = `当前画布：64×36，已有 ${filledCount} 个有色像素。`;
-
-    let reply;
-    if (model.startsWith('claude')) {
-      reply = await callClaude(apiKey, model, sp, canvasContext, chatHistory);
-    } else {
-      reply = await callOpenAI(apiKey, model, sp, canvasContext, chatHistory);
-    }
-
-    chatHistory.push({role:'assistant', content: reply});
-    addChatMsg('ai', reply);
-
-    // 提取并执行 JS 代码块
-    const codeMatch = reply.match(/```(?:js|javascript)\n([\s\S]*?)```/);
-    if (codeMatch) {
-      try {
-        saveHistory('AI操作');
-        new Function('setPixel','fillRect','clearPixel','floodFill','render','pixels','idx','CW','CH',
-          codeMatch[1])(setPixel, fillRect, clearPixel, floodFill, render, pixels, idx, CW, CH);
-        render();
-        addChatMsg('system', '✅ 代码已执行');
-      } catch(err) {
-        addChatMsg('system', '⚠️ 代码执行出错：' + err.message);
-      }
-    }
-  } catch(err) {
-    addChatMsg('system', '❌ 请求失败：' + err.message);
-  }
-
-  sendBtn.disabled = false; sendBtn.textContent = '发送 ↵';
-}
-
-async function callClaude(apiKey, model, sp, ctx, history) {
-  const messages = history.map(h => ({role: h.role==='assistant'?'assistant':'user', content: h.content}));
-  // inject canvas context into first user message
-  if (messages.length > 0) messages[0].content = ctx + '\n\n' + messages[0].content;
-
-  const body = { model, max_tokens: 1024, messages };
-  if (sp) body.system = sp;
-
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'content-type': 'application/json', 'anthropic-dangerous-direct-browser-access': 'true' },
-    body: JSON.stringify(body)
-  });
-  if (!res.ok) { const e=await res.json(); throw new Error(e.error?.message||res.statusText); }
-  const data = await res.json();
-  return data.content[0].text;
-}
-
-async function callOpenAI(apiKey, model, sp, ctx, history) {
-  const messages = [];
-  if (sp) messages.push({role:'system', content: sp});
-  history.forEach((h,i) => {
-    messages.push({role: h.role==='assistant'?'assistant':'user', content: i===0 ? ctx+'\n\n'+h.content : h.content});
-  });
-
-  const res = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: { 'Authorization': 'Bearer '+apiKey, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model, max_tokens: 1024, messages })
-  });
-  if (!res.ok) { const e=await res.json(); throw new Error(e.error?.message||res.statusText); }
-  const data = await res.json();
-  return data.choices[0].message.content;
-}
-
-function addChatMsg(role, text) {
-  const wrap = document.getElementById('chat-messages');
-  const div = document.createElement('div');
-  div.className = 'msg ' + role;
-  const label = role==='user' ? '你' : role==='ai' ? '🤖 AI' : '';
-  div.innerHTML = (label ? `<div class="msg-label">${label}</div>` : '') + `<div class="msg-bubble">${escapeHtml(text)}</div>`;
-  wrap.appendChild(div);
-  wrap.scrollTop = wrap.scrollHeight;
-}
-
-function escapeHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
-}
-
-function clearChat() {
-  chatHistory = [];
-  const wrap = document.getElementById('chat-messages');
-  wrap.innerHTML = '<div class="msg system"><div class="msg-bubble">对话已清空 🗑️</div></div>';
-}
-
-// ══════════════════════════════════════
-//  键盘快捷键
-// ══════════════════════════════════════
-document.addEventListener('keydown', e => {
-  if (e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;
-  if ((e.ctrlKey||e.metaKey)&&e.key==='z'){e.preventDefault();undo();return;}
-  if ((e.ctrlKey||e.metaKey)&&(e.key==='y'||e.key==='Z')){e.preventDefault();redo();return;}
-  if ((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();exportPNG();return;}
-  switch(e.key.toLowerCase()){
-    case 'p':setTool('pencil');break; case 'e':setTool('eraser');break; case 'f':setTool('fill');break;
-    case 'i':setTool('picker');break; case 'r':setTool('rect');break; case 'l':setTool('line');break;
-    case 'm':setTool('move');break;
-    case '[':brushSize=Math.max(1,brushSize-1);document.getElementById('brushSize').value=brushSize;break;
-    case ']':brushSize=Math.min(5,brushSize+1);document.getElementById('brushSize').value=brushSize;break;
-    case 'g':toggleGrid();break;
-  }
-});
-
-// ══════════════════════════════════════
-//  状态提示
-// ══════════════════════════════════════
 let statusTimer;
-function showStatus(msg) {
-  const s=document.getElementById('status'); s.textContent=msg; s.classList.add('show');
-  clearTimeout(statusTimer); statusTimer=setTimeout(()=>s.classList.remove('show'),1800);
-}
+function showStatus(msg){const s=document.getElementById('status');s.textContent=msg;s.classList.add('show');clearTimeout(statusTimer);statusTimer=setTimeout(()=>s.classList.remove('show'),1800);}
 
-// ══════════════════════════════════════
-//  初始化
-// ══════════════════════════════════════
-initPalette();
-setColor('#e8c87a');
-resizeCanvas();
-render();
-showStatus('🦞 欢迎！填入 API Key 后可与 AI 对话');
+// 初始化
+layers=[createLayer('背景'), createLayer('图层 2')];
+activeLayerIdx=0;
+initPalette();setColor('#e8c87a');resizeCanvas();renderLayersList();render();
+showStatus('🦞 欢迎！左侧图层面板支持多层创作');
 </script>
 </body>
 </html>
