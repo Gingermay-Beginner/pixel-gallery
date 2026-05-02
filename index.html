@@ -53,7 +53,7 @@ canvas { display:block; }
 .pc-text{flex:1;}
 .pc-title{font-size:0.95rem;font-weight:bold;color:#2a1408;}
 .pc-date{font-size:0.68rem;color:#886644;margin-top:3px;letter-spacing:0.08em;}
-.pc-desc{font-size:0.8rem;color:#3a1e08;margin-top:10px;line-height:1.9;white-space:pre-line;font-style:italic;padding-right:60px;}
+.pc-desc{white-space:pre-line;font-size:0.8rem;color:#3a1e08;margin-top:10px;line-height:1.9;white-space:pre-line;font-style:italic;padding-right:60px;}
 .pc-stamp-col{display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0; position:relative;}
 .pc-stamp-canvas { display:block; }
 .pc-postmark{
@@ -297,7 +297,7 @@ function openOverlay(i){
   document.getElementById('ov-img').src=p.src;
   document.getElementById('ov-title').textContent=p.title;
   document.getElementById('ov-date').textContent=p.date;
-  document.getElementById('ov-desc').textContent=p.desc;
+  document.getElementById('ov-desc').textContent=p.caption||p.desc||'';
   // Draw stamp on canvas
   const sc = document.getElementById('ov-stamp');
   const sx2 = sc.getContext('2d');
