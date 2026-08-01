@@ -27,15 +27,27 @@ canvas { display:block; }
 
 #overlay {
   display:none;position:fixed;inset:0;z-index:20;
-  align-items:center;justify-content:center;padding:16px;
+  overflow-y:auto;
   background:rgba(20,12,4,0.92);backdrop-filter:blur(4px);
+  scroll-snap-type:y mandatory;
+  -webkit-overflow-scrolling:touch;
 }
-#overlay.show{display:flex;}
-#feed-inner{display:none;}
-.ov-nav-hint{
-  position:absolute;bottom:20px;left:50%;transform:translateX(-50%);
-  color:rgba(255,255,255,0.3);font-size:11px;letter-spacing:0.12em;
-  pointer-events:none;text-align:center;line-height:2;
+#overlay.show{display:block;}
+#feed-inner{
+  display:flex;flex-direction:column;align-items:center;
+}
+.feed-slot{
+  width:100%;min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  padding:20px 16px;box-sizing:border-box;
+  scroll-snap-align:center;
+}
+.feed-slot .postcard-full{width:100%;max-width:520px;}
+#feed-close-btn{
+  position:fixed;top:16px;right:16px;z-index:30;
+  color:rgba(255,255,255,0.45);font-size:13px;cursor:pointer;
+  padding:6px 14px;background:rgba(0,0,0,0.45);border-radius:20px;
+  letter-spacing:0.08em;
 }
 .postcard-full {
   width:100%;max-width:520px;border-radius:6px;overflow:hidden;
@@ -98,25 +110,8 @@ canvas { display:block; }
   <div class="de"></div><div class="db" id="bd">▼</div><div class="de"></div>
 </div>
 <div id="overlay">
-  <div style="width:100%;max-width:520px;position:relative;">
-    <div class="postcard-full">
-      <div class="pc-painting"><img id="ov-img" src="" style="width:100%;display:block;image-rendering:pixelated;"></div>
-      <div class="pc-back">
-        <div class="pc-back-inner">
-          <div class="pc-text">
-            <div class="pc-title" id="ov-title"></div>
-            <div class="pc-date" id="ov-date"></div>
-            <div class="pc-desc" id="ov-desc"></div>
-          </div>
-          <div class="pc-stamp-col">
-            <canvas id="ov-stamp" width="76" height="88" class="pc-stamp-canvas"></canvas>
-            <canvas id="ov-mark" width="110" height="46" class="pc-postmark"></canvas>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="ov-nav-hint">↑ ↓ 滚动切换 &nbsp;·&nbsp; ESC 关闭</div>
+  <div id="feed-close-btn" onclick="closeOverlay()">✕ 关闭</div>
+  <div id="feed-inner"></div>
   </div>
 </div>
 
@@ -315,8 +310,18 @@ document.addEventListener('keydown',e=>{
   if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)) e.preventDefault();
   if((e.key==='e'||e.key==='E')&&!overlayOpen) tryOpenNearest();
   if(e.key==='Escape'&&overlayOpen) closeOverlay();
-  if(overlayOpen&&(e.key==='ArrowDown'||e.key==='ArrowRight')) openOverlay((currentOverlayIndex+1)%paintings.length);
-  if(overlayOpen&&(e.key==='ArrowUp'||e.key==='ArrowLeft')) openOverlay((currentOverlayIndex-1+paintings.length)%paintings.length);
+  if(overlayOpen&&(e.key==='ArrowDown'||e.key==='ArrowRight')){
+    e.preventDefault();
+    currentOverlayIndex=(currentOverlayIndex+1)%paintings.length;
+    const el=document.getElementById('slot-'+currentOverlayIndex);
+    if(el) el.scrollIntoView({behavior:'smooth',block:'center'});
+  }
+  if(overlayOpen&&(e.key==='ArrowUp'||e.key==='ArrowLeft')){
+    e.preventDefault();
+    currentOverlayIndex=(currentOverlayIndex-1+paintings.length)%paintings.length;
+    const el=document.getElementById('slot-'+currentOverlayIndex);
+    if(el) el.scrollIntoView({behavior:'smooth',block:'center'});
+  }
 });
 document.addEventListener('keyup',e=>keys[e.key]=false);
 ['bu','bd','bl','br'].forEach((id,i)=>{
@@ -343,6 +348,7 @@ canvas.addEventListener('click',e=>{
 
 let overlayOpen=false;
 let currentOverlayIndex=-1;
+let feedBuilt=false;
 const overlay=document.getElementById('overlay');
 
 function buildStampCanvas(canvas, p){
@@ -382,29 +388,62 @@ function buildMarkCanvas(canvas, p){
 }
 
 
-function openOverlay(i){
-  currentOverlayIndex=i;
-  const p=paintings[i];
-  document.getElementById('ov-img').src=p.src;
-  document.getElementById('ov-title').textContent=p.title;
-  document.getElementById('ov-date').textContent=p.date;
-  document.getElementById('ov-desc').textContent=p.caption||p.desc||'';
-  // stamp
-  const sc=document.getElementById('ov-stamp');
-  buildStampCanvas(sc,p);
-  const mc=document.getElementById('ov-mark');
-  buildMarkCanvas(mc,p);
-  // ver toggle
-  const existBtn=document.getElementById('ver-toggle');if(existBtn)existBtn.remove();
+function buildCard(p, idx){
+  const slot=document.createElement('div');
+  slot.className='feed-slot';
+  slot.id='slot-'+idx;
+  const card=document.createElement('div');
+  card.className='postcard-full';
+
+  const pcPaint=document.createElement('div');pcPaint.className='pc-painting';
+  const img=document.createElement('img');
+  img.src=p.src;img.style.cssText='width:100%;display:block;image-rendering:pixelated;';
+  pcPaint.appendChild(img);
+
+  const pcBack=document.createElement('div');pcBack.className='pc-back';
+  const inner=document.createElement('div');inner.className='pc-back-inner';
+  const pcText=document.createElement('div');pcText.className='pc-text';
+  const title=document.createElement('div');title.className='pc-title';title.textContent=p.title;
+  const date=document.createElement('div');date.className='pc-date';date.textContent=p.date;
+  const desc=document.createElement('div');desc.className='pc-desc';desc.textContent=p.caption||p.desc||'';
+  pcText.appendChild(title);pcText.appendChild(date);pcText.appendChild(desc);
+
+  const stampCol=document.createElement('div');stampCol.className='pc-stamp-col';
+  const sc=document.createElement('canvas');sc.width=76;sc.height=88;sc.className='pc-stamp-canvas';
+  const mc=document.createElement('canvas');mc.width=110;mc.height=46;mc.className='pc-postmark';
+  stampCol.appendChild(sc);stampCol.appendChild(mc);
+
+  inner.appendChild(pcText);inner.appendChild(stampCol);
+  pcBack.appendChild(inner);
+
   if(p.src2){
-    const btn=document.createElement('div');btn.id='ver-toggle';
+    const btn=document.createElement('div');
     btn.style.cssText='margin-top:8px;cursor:pointer;font-size:11px;background:#f5f0e8;border:1px solid #c8b89a;border-radius:6px;padding:5px 10px;color:#6b5a3e;text-align:center;';
     btn.textContent='🔄 切换版本';let cur=0;
-    btn.onclick=(e)=>{e.stopPropagation();cur=(cur+1)%2;document.getElementById('ov-img').src=cur?p.src2:p.src;};
-    document.querySelector('.pc-back').appendChild(btn);
+    btn.onclick=()=>{cur=(cur+1)%2;img.src=cur?p.src2:p.src;};
+    pcBack.appendChild(btn);
   }
+
+  card.appendChild(pcPaint);card.appendChild(pcBack);
+  slot.appendChild(card);
+
+  requestAnimationFrame(()=>{buildStampCanvas(sc,p);buildMarkCanvas(mc,p);});
+  return slot;
+}
+
+function openOverlay(i){
+  if(!feedBuilt){
+    feedBuilt=true;
+    const feed=document.getElementById('feed-inner');
+    paintings.forEach((p,idx)=> feed.appendChild(buildCard(p,idx)));
+  }
+  currentOverlayIndex=i;
   overlay.classList.add('show'); overlayOpen=true;
   document.getElementById('dpad').classList.add('hidden');
+  setTimeout(()=>{
+    const el=document.getElementById('slot-'+i);
+    if(el) el.scrollIntoView({behavior:'instant',block:'center'});
+  },50);
 }
 function tryOpenNearest(){
   let best=-1, bd=Infinity;
@@ -416,14 +455,10 @@ function tryOpenNearest(){
 }
 function closeOverlay(){
   overlay.classList.remove('show'); overlayOpen=false;
+  feedBuilt=false;
+  document.getElementById('feed-inner').innerHTML='';
   document.getElementById('dpad').classList.remove('hidden');
 }
-overlay.addEventListener('wheel',e=>{
-  e.preventDefault();
-  if(!overlayOpen) return;
-  if(e.deltaY>0) openOverlay((currentOverlayIndex+1)%paintings.length);
-  else openOverlay((currentOverlayIndex-1+paintings.length)%paintings.length);
-},{passive:false});
 overlay.addEventListener('click',e=>{
   if(e.target===overlay||e.target.id==='close-hint') closeOverlay();
 });
