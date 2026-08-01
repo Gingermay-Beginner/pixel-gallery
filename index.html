@@ -43,12 +43,7 @@ canvas { display:block; }
   scroll-snap-align:center;
 }
 .feed-slot .postcard-full{width:100%;max-width:520px;}
-.feed-arrow{
-  text-align:center;color:rgba(255,255,255,0.25);font-size:18px;
-  padding:8px 0;cursor:pointer;user-select:none;letter-spacing:0.1em;
-  transition:color 0.2s;
-}
-.feed-arrow:hover{color:rgba(255,255,255,0.6);}
+
 #feed-close-btn{
   position:fixed;top:16px;right:16px;z-index:30;
   color:#fff;font-size:14px;font-weight:bold;cursor:pointer;
@@ -432,25 +427,17 @@ function buildCard(p, idx){
   }
 
   card.appendChild(pcPaint);card.appendChild(pcBack);
-  const arrowUp=document.createElement('div');
-  arrowUp.className='feed-arrow';
-  arrowUp.textContent='︿';
-  arrowUp.onclick=()=>{
-    const prev=(idx-1+paintings.length)%paintings.length;
-    document.getElementById('slot-'+prev).scrollIntoView({behavior:'smooth',block:'center'});
-    currentOverlayIndex=prev;
+  const mkArrow=(symbol, targetIdx)=>{
+    const wrap=document.createElement('div');
+    wrap.style.cssText='display:flex;justify-content:center;padding:6px 0;';
+    const btn=document.createElement('div');
+    btn.className='db';btn.textContent=symbol;
+    btn.onclick=(e)=>{e.stopPropagation();document.getElementById('slot-'+targetIdx).scrollIntoView({behavior:'smooth',block:'center'});currentOverlayIndex=targetIdx;};
+    wrap.appendChild(btn);return wrap;
   };
-  const arrowDown=document.createElement('div');
-  arrowDown.className='feed-arrow';
-  arrowDown.textContent='﹀';
-  arrowDown.onclick=()=>{
-    const next=(idx+1)%paintings.length;
-    document.getElementById('slot-'+next).scrollIntoView({behavior:'smooth',block:'center'});
-    currentOverlayIndex=next;
-  };
-  slot.appendChild(arrowUp);
+  slot.appendChild(mkArrow('▲',(idx-1+paintings.length)%paintings.length));
   slot.appendChild(card);
-  slot.appendChild(arrowDown);
+  slot.appendChild(mkArrow('▼',(idx+1)%paintings.length));
 
   requestAnimationFrame(()=>{buildStampCanvas(sc,p);buildMarkCanvas(mc,p);});
   return slot;
