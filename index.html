@@ -308,6 +308,14 @@ document.addEventListener('keydown',e=>{
   if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)) e.preventDefault();
   if((e.key==='e'||e.key==='E')&&!overlayOpen) tryOpenNearest();
   if(e.key==='Escape'&&overlayOpen) closeOverlay();
+  if(overlayOpen&&(e.key==='ArrowRight'||e.key==='ArrowDown')){
+    e.stopPropagation();
+    openOverlay((currentOverlayIndex+1)%paintings.length);
+  }
+  if(overlayOpen&&(e.key==='ArrowLeft'||e.key==='ArrowUp')){
+    e.stopPropagation();
+    openOverlay((currentOverlayIndex-1+paintings.length)%paintings.length);
+  }
 });
 document.addEventListener('keyup',e=>keys[e.key]=false);
 ['bu','bd','bl','br'].forEach((id,i)=>{
@@ -332,9 +340,9 @@ canvas.addEventListener('click',e=>{
   }
 });
 
-let overlayOpen=false;
+let overlayOpen=false; let currentOverlayIndex=-1;
 const overlay=document.getElementById('overlay');
-function openOverlay(i){
+function openOverlay(i){ currentOverlayIndex=i;
   const p=paintings[i];
   document.getElementById('ov-img').src=p.src;
   document.getElementById('ov-title').textContent=p.title;
@@ -448,6 +456,19 @@ function closeOverlay(){
   overlay.classList.remove('show'); overlayOpen=false;
   document.getElementById('dpad').classList.remove('hidden');
 }
+overlay.addEventListener('wheel',e=>{
+  e.preventDefault();
+  if(!overlayOpen) return;
+  if(e.deltaY>0){
+    // scroll down → next painting
+    const next=(currentOverlayIndex+1)%paintings.length;
+    openOverlay(next);
+  } else {
+    // scroll up → prev painting
+    const prev=(currentOverlayIndex-1+paintings.length)%paintings.length;
+    openOverlay(prev);
+  }
+},{passive:false});
 overlay.addEventListener('click',e=>{
   if(e.target===overlay||e.target.id==='close-hint') closeOverlay();
 });
