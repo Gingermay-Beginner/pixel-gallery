@@ -518,8 +518,6 @@ function openOverlay(i){
   overlay.classList.add('show'); overlayOpen=true;
   document.getElementById('feed-close-btn').style.display='block';
   document.getElementById('dpad').classList.add('hidden');
-  // lift canvas so cat floats above overlay bg
-  document.getElementById('c').style.zIndex='21';
   setTimeout(()=>{
     const el=document.getElementById('slot-'+i);
     if(el) el.scrollIntoView({behavior:'instant',block:'center'});
@@ -573,7 +571,6 @@ function closeOverlay(){
   feedBuilt=false; langEN=false;
   document.getElementById('feed-inner').innerHTML='';
   document.getElementById('dpad').classList.remove('hidden');
-  document.getElementById('c').style.zIndex='0';
 }
 overlay.addEventListener('click',e=>{
   if(e.target===overlay||e.target.id==='close-hint') closeOverlay();
