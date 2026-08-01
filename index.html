@@ -421,11 +421,14 @@ function openOverlay(i){
   buildFeed();
   overlay.classList.add('show'); overlayOpen=true;
   document.getElementById('dpad').classList.add('hidden');
-  // scroll to item
-  requestAnimationFrame(()=>{
+  // scroll to item after paint
+  setTimeout(()=>{
     const el=document.getElementById('feed-item-'+i);
-    if(el) el.scrollIntoView({behavior:'smooth',block:'center'});
-  });
+    if(el){
+      const top=el.offsetTop;
+      overlay.scrollTop=top - overlay.clientHeight/2 + el.clientHeight/2;
+    }
+  }, 80);
 }
 function tryOpenNearest(){
   let best=-1, bd=Infinity;
@@ -440,7 +443,7 @@ function closeOverlay(){
   document.getElementById('dpad').classList.remove('hidden');
   const cb=document.getElementById('feed-close');if(cb)cb.remove();
   feedBuilt=false;
-  document.getElementById('feed-inner').innerHTML='';
+  const fi=document.getElementById('feed-inner'); if(fi) fi.innerHTML='';
 }
 overlay.addEventListener('click',e=>{
   if(e.target===overlay||e.target.id==='close-hint') closeOverlay();
