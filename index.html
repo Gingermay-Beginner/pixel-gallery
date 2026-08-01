@@ -693,16 +693,7 @@ function draw(){
 }
 
 function update(){
-  if(overlayOpen){
-    // random wander while feed is open
-    if(Math.random()<0.015){
-      cat.vx=(Math.random()-0.5)*1.2;
-    }
-    cat.wx+=cat.vx;
-    cat.wx=Math.max(0,Math.min(totalWidth,cat.wx));
-    cat.vx*=0.92;
-    return;
-  }
+  if(overlayOpen) return;
   updateCatSize();
   let dx=0;
   if(keys['ArrowLeft']||keys['a']||keys['A'])  {dx=-cat.spd;cat.dir='left';}
