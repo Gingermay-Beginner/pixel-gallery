@@ -27,10 +27,17 @@ canvas { display:block; }
 
 #overlay {
   display:none;position:fixed;inset:0;z-index:20;
-  align-items:center;justify-content:center;padding:16px;
-  background:rgba(30,18,8,0.82);backdrop-filter:blur(4px);
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+  background:rgba(20,12,4,0.92);backdrop-filter:blur(4px);
+  padding:40px 16px 80px;
+  scroll-behavior:smooth;
 }
-#overlay.show{display:flex;}
+#overlay.show{display:block;}
+#feed-inner{
+  display:flex;flex-direction:column;align-items:center;gap:48px;
+  max-width:520px;margin:0 auto;
+}
+.feed-item{ width:100%; }
 .postcard-full {
   width:100%;max-width:520px;border-radius:6px;overflow:hidden;
   box-shadow:0 16px 60px rgba(0,0,0,0.7);
@@ -92,24 +99,7 @@ canvas { display:block; }
   <div class="de"></div><div class="db" id="bd">▼</div><div class="de"></div>
 </div>
 <div id="overlay">
-  <div style="width:100%;max-width:520px;">
-    <div class="postcard-full">
-      <div class="pc-painting"><img id="ov-img" src=""></div>
-      <div class="pc-back">
-        <div class="pc-back-inner">
-          <div class="pc-text">
-            <div class="pc-title" id="ov-title"></div>
-            <div class="pc-date"  id="ov-date"></div>
-            <div class="pc-desc"  id="ov-desc"></div>
-          </div>
-          <div class="pc-stamp-col">
-            <canvas class="pc-stamp-canvas" id="ov-stamp" width="76" height="88"></canvas>
-            <canvas class="pc-postmark" id="ov-mark" width="110" height="46"></canvas>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div id="close-hint">轻触任意处关闭 ✦</div>
+  <div id="feed-inner"></div>
   </div>
 </div>
 
@@ -308,14 +298,6 @@ document.addEventListener('keydown',e=>{
   if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)) e.preventDefault();
   if((e.key==='e'||e.key==='E')&&!overlayOpen) tryOpenNearest();
   if(e.key==='Escape'&&overlayOpen) closeOverlay();
-  if(overlayOpen&&(e.key==='ArrowRight'||e.key==='ArrowDown')){
-    e.stopPropagation();
-    openOverlay((currentOverlayIndex+1)%paintings.length);
-  }
-  if(overlayOpen&&(e.key==='ArrowLeft'||e.key==='ArrowUp')){
-    e.stopPropagation();
-    openOverlay((currentOverlayIndex-1+paintings.length)%paintings.length);
-  }
 });
 document.addEventListener('keyup',e=>keys[e.key]=false);
 ['bu','bd','bl','br'].forEach((id,i)=>{
@@ -340,109 +322,110 @@ canvas.addEventListener('click',e=>{
   }
 });
 
-let overlayOpen=false; let currentOverlayIndex=-1;
+let overlayOpen=false;
+let feedBuilt=false;
 const overlay=document.getElementById('overlay');
-function openOverlay(i){ currentOverlayIndex=i;
-  const p=paintings[i];
-  document.getElementById('ov-img').src=p.src;
-  document.getElementById('ov-title').textContent=p.title;
-  document.getElementById('ov-date').textContent=p.date;
-  document.getElementById('ov-desc').textContent=p.caption||p.desc||'';
-  // Draw stamp on canvas
-  const sc = document.getElementById('ov-stamp');
-  const sx2 = sc.getContext('2d');
-  const SW=76, SH=88, PAD=6, R=3, GAP=8;
+
+function buildStampCanvas(canvas, p){
+  const sx2=canvas.getContext('2d');
+  const SW=76,SH=88,PAD=6,R=3,GAP=8;
   sx2.clearRect(0,0,SW,SH);
-  // Background + shadow
-  sx2.shadowColor='rgba(0,0,0,0.25)'; sx2.shadowBlur=6; sx2.shadowOffsetX=2; sx2.shadowOffsetY=3;
-  sx2.fillStyle=p.stampBg;
-  sx2.fillRect(PAD,PAD,SW-PAD*2,SH-PAD*2);
+  sx2.shadowColor='rgba(0,0,0,0.25)';sx2.shadowBlur=6;sx2.shadowOffsetX=2;sx2.shadowOffsetY=3;
+  sx2.fillStyle=p.stampBg;sx2.fillRect(PAD,PAD,SW-PAD*2,SH-PAD*2);
   sx2.shadowColor='transparent';
-  // White inner border
-  sx2.strokeStyle='white'; sx2.lineWidth=5;
+  sx2.strokeStyle='white';sx2.lineWidth=5;
   sx2.strokeRect(PAD+2.5,PAD+2.5,SW-PAD*2-5,SH-PAD*2-5);
-  // Emoji
-  sx2.font=`${32}px sans-serif`; sx2.textAlign='center'; sx2.textBaseline='middle';
-  sx2.fillText(p.stamp, SW/2, SH/2);
-  // Perforations — draw AFTER so they're on top
+  sx2.font='32px sans-serif';sx2.textAlign='center';sx2.textBaseline='middle';
+  sx2.fillText(p.stamp,SW/2,SH/2);
   sx2.fillStyle='white';
-  function dots(x0,y0,dx,dy,n){
-    for(let i=0;i<n;i++){
-      sx2.beginPath();
-      sx2.arc(x0+dx*i, y0+dy*i, R, 0, Math.PI*2);
-      sx2.fill();
-    }
-  }
-  const cols = Math.floor((SW-PAD*2)/GAP)+1;
-  const rows = Math.floor((SH-PAD*2)/GAP)+1;
-  // top & bottom
-  for(let i=0;i<cols;i++){
-    const x=PAD+i*GAP; if(x>SW-PAD) break;
-    sx2.beginPath(); sx2.arc(x,PAD,R,0,Math.PI*2); sx2.fill();
-    sx2.beginPath(); sx2.arc(x,SH-PAD,R,0,Math.PI*2); sx2.fill();
-  }
-  // left & right
-  for(let i=1;i<rows-1;i++){
-    const y=PAD+i*GAP; if(y>SH-PAD) break;
-    sx2.beginPath(); sx2.arc(PAD,y,R,0,Math.PI*2); sx2.fill();
-    sx2.beginPath(); sx2.arc(SW-PAD,y,R,0,Math.PI*2); sx2.fill();
-  }
-  // 邮戳 canvas：左圆形邮戳（弧形排字）+ 右波浪线（深棕色）
-  const mc = document.getElementById('ov-mark');
-  const mx = mc.getContext('2d');
+  const cols=Math.floor((SW-PAD*2)/GAP)+1;
+  const rows=Math.floor((SH-PAD*2)/GAP)+1;
+  for(let i=0;i<cols;i++){const x=PAD+i*GAP;if(x>SW-PAD)break;sx2.beginPath();sx2.arc(x,PAD,R,0,Math.PI*2);sx2.fill();sx2.beginPath();sx2.arc(x,SH-PAD,R,0,Math.PI*2);sx2.fill();}
+  for(let i=1;i<rows-1;i++){const y=PAD+i*GAP;if(y>SH-PAD)break;sx2.beginPath();sx2.arc(PAD,y,R,0,Math.PI*2);sx2.fill();sx2.beginPath();sx2.arc(SW-PAD,y,R,0,Math.PI*2);sx2.fill();}
+}
+
+function buildMarkCanvas(canvas, p){
+  const mx=canvas.getContext('2d');
   const MC='rgba(100,52,28,0.75)';
   mx.clearRect(0,0,110,46);
-  const CX=28, CY=23, CR=20;
-  // 圆形描边（单圈）
-  mx.strokeStyle=MC; mx.lineWidth=1.5;
-  mx.beginPath(); mx.arc(CX,CY,CR,0,Math.PI*2); mx.stroke();
-  // 上半圆弧文字：日期（字间距紧凑）
-  mx.fillStyle=MC; mx.font='bold 5.5px sans-serif'; mx.textAlign='center';
-  const dateStr=p.date.slice(0,7);
-  const dateChars=dateStr.split('');
-  const arcR=CR-8;
-  const arcStart=-Math.PI*0.42, arcEnd=Math.PI*0.42;
+  const CX=28,CY=23,CR=20;
+  mx.strokeStyle=MC;mx.lineWidth=1.5;mx.beginPath();mx.arc(CX,CY,CR,0,Math.PI*2);mx.stroke();
+  mx.fillStyle=MC;mx.font='bold 5.5px sans-serif';mx.textAlign='center';
+  const dateStr=p.date.slice(0,7);const dateChars=dateStr.split('');
+  const arcR=CR-8,arcStart=-Math.PI*0.42,arcEnd=Math.PI*0.42;
   const arcStep=(arcEnd-arcStart)/(dateChars.length-1);
-  dateChars.forEach((ch,i)=>{
-    const angle=arcStart+i*arcStep - Math.PI/2;
-    const tx=CX+arcR*Math.cos(angle), ty=CY+arcR*Math.sin(angle);
-    mx.save(); mx.translate(tx,ty); mx.rotate(angle+Math.PI/2);
-    mx.fillText(ch,0,0); mx.restore();
-  });
-  // 中央文字
-  mx.font='italic 7px sans-serif';
-  mx.fillText("May's", CX, CY+4);
-  mx.fillText("Museum", CX, CY+12);
-  // 波浪线：以邮戳圆心为轴顺时针旋转15度
-  mx.save();
-  mx.translate(CX, CY);
-  mx.rotate(15 * Math.PI / 180);
-  mx.translate(-CX, -CY);
-  mx.strokeStyle=MC; mx.lineWidth=1.2;
-  for(let row=0;row<4;row++){
-    const y0=15+row*6;
-    mx.beginPath();
-    for(let x=46;x<=84;x+=2){
-      const y=y0+Math.sin((x-48)/3)*1.8;
-      x===46?mx.moveTo(x,y):mx.lineTo(x,y);
-    }
-    mx.stroke();
-  }
+  dateChars.forEach((ch,i)=>{const angle=arcStart+i*arcStep-Math.PI/2;const tx=CX+arcR*Math.cos(angle),ty=CY+arcR*Math.sin(angle);mx.save();mx.translate(tx,ty);mx.rotate(angle+Math.PI/2);mx.fillText(ch,0,0);mx.restore();});
+  mx.font='italic 7px sans-serif';mx.fillText("May's",CX,CY+4);mx.fillText("Museum",CX,CY+12);
+  mx.save();mx.translate(CX,CY);mx.rotate(15*Math.PI/180);mx.translate(-CX,-CY);
+  mx.strokeStyle=MC;mx.lineWidth=1.2;
+  for(let row=0;row<4;row++){const y0=15+row*6;mx.beginPath();for(let x=46;x<=84;x+=2){const y=y0+Math.sin((x-48)/3)*1.8;x===46?mx.moveTo(x,y):mx.lineTo(x,y);}mx.stroke();}
   mx.restore();
-  // 版本切换按钮
-  const existBtn=document.getElementById('ver-toggle');
-  if(existBtn) existBtn.remove();
-  if(p.src2){
-    const btn=document.createElement('div');
-    btn.id='ver-toggle';
-    btn.innerHTML='🔄'; btn.title='切换版本'; btn.style.fontSize='18px';
-    btn.style.cssText='margin-top:8px;cursor:pointer;font-size:11px;background:#f5f0e8;border:1px solid #c8b89a;border-radius:6px;padding:5px 10px;color:#6b5a3e;text-align:center;';
-    let cur=0;
-    btn.onclick=(e)=>{e.stopPropagation();cur=(cur+1)%2;document.getElementById('ov-img').src=cur?p.src2:p.src;};
-    document.querySelector('.pc-back').appendChild(btn);
-  }
+}
+
+function buildFeed(){
+  if(feedBuilt) return;
+  feedBuilt=true;
+  const feed=document.getElementById('feed-inner');
+  // close button at top
+  const closeBtn=document.createElement('div');
+  closeBtn.id='feed-close';
+  closeBtn.textContent='✕  关闭';
+  closeBtn.style.cssText='position:fixed;top:16px;right:16px;z-index:30;color:rgba(255,255,255,0.5);font-size:13px;cursor:pointer;padding:6px 12px;background:rgba(0,0,0,0.4);border-radius:20px;letter-spacing:0.08em;';
+  closeBtn.onclick=closeOverlay;
+  document.body.appendChild(closeBtn);
+
+  paintings.forEach((p,idx)=>{
+    const item=document.createElement('div');
+    item.className='feed-item postcard-full';
+    item.id='feed-item-'+idx;
+
+    // painting
+    const pcPaint=document.createElement('div');pcPaint.className='pc-painting';
+    const img=document.createElement('img');img.src=p.src;img.style.cssText='width:100%;display:block;image-rendering:pixelated;';
+    pcPaint.appendChild(img);
+
+    // back
+    const pcBack=document.createElement('div');pcBack.className='pc-back';
+    const inner=document.createElement('div');inner.className='pc-back-inner';
+    const pcText=document.createElement('div');pcText.className='pc-text';
+    const title=document.createElement('div');title.className='pc-title';title.textContent=p.title;
+    const date=document.createElement('div');date.className='pc-date';date.textContent=p.date;
+    const desc=document.createElement('div');desc.className='pc-desc';desc.textContent=p.caption||p.desc||'';
+    pcText.appendChild(title);pcText.appendChild(date);pcText.appendChild(desc);
+
+    const stampCol=document.createElement('div');stampCol.className='pc-stamp-col';
+    const stampCanvas=document.createElement('canvas');stampCanvas.width=76;stampCanvas.height=88;stampCanvas.className='pc-stamp-canvas';
+    const markCanvas=document.createElement('canvas');markCanvas.width=110;markCanvas.height=46;markCanvas.className='pc-postmark';
+    stampCol.appendChild(stampCanvas);stampCol.appendChild(markCanvas);
+
+    inner.appendChild(pcText);inner.appendChild(stampCol);
+    pcBack.appendChild(inner);
+
+    if(p.src2){
+      const btn=document.createElement('div');
+      btn.style.cssText='margin-top:8px;cursor:pointer;font-size:11px;background:#f5f0e8;border:1px solid #c8b89a;border-radius:6px;padding:5px 10px;color:#6b5a3e;text-align:center;';
+      btn.textContent='🔄 切换版本';let cur=0;
+      btn.onclick=()=>{cur=(cur+1)%2;img.src=cur?p.src2:p.src;};
+      pcBack.appendChild(btn);
+    }
+
+    item.appendChild(pcPaint);item.appendChild(pcBack);
+    feed.appendChild(item);
+
+    // draw stamp after append (canvas needs to be in DOM for some browsers)
+    requestAnimationFrame(()=>{buildStampCanvas(stampCanvas,p);buildMarkCanvas(markCanvas,p);});
+  });
+}
+
+function openOverlay(i){
+  buildFeed();
   overlay.classList.add('show'); overlayOpen=true;
   document.getElementById('dpad').classList.add('hidden');
+  // scroll to item
+  requestAnimationFrame(()=>{
+    const el=document.getElementById('feed-item-'+i);
+    if(el) el.scrollIntoView({behavior:'smooth',block:'center'});
+  });
 }
 function tryOpenNearest(){
   let best=-1, bd=Infinity;
@@ -455,20 +438,10 @@ function tryOpenNearest(){
 function closeOverlay(){
   overlay.classList.remove('show'); overlayOpen=false;
   document.getElementById('dpad').classList.remove('hidden');
+  const cb=document.getElementById('feed-close');if(cb)cb.remove();
+  feedBuilt=false;
+  document.getElementById('feed-inner').innerHTML='';
 }
-overlay.addEventListener('wheel',e=>{
-  e.preventDefault();
-  if(!overlayOpen) return;
-  if(e.deltaY>0){
-    // scroll down → next painting
-    const next=(currentOverlayIndex+1)%paintings.length;
-    openOverlay(next);
-  } else {
-    // scroll up → prev painting
-    const prev=(currentOverlayIndex-1+paintings.length)%paintings.length;
-    openOverlay(prev);
-  }
-},{passive:false});
 overlay.addEventListener('click',e=>{
   if(e.target===overlay||e.target.id==='close-hint') closeOverlay();
 });
