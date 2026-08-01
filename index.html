@@ -484,7 +484,9 @@ function closeOverlay(){
   document.getElementById('dpad').classList.remove('hidden');
 }
 overlay.addEventListener('click',e=>{
-  if(e.target===overlay||e.target.id==='close-hint') closeOverlay();
+  // close if clicking overlay bg, feed-inner bg, or feed-slot bg (outside card)
+  const t=e.target;
+  if(t===overlay||t.id==='feed-inner'||t.classList.contains('feed-slot')) closeOverlay();
 });
 
 function getPaintRect(i){
