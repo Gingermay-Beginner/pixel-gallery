@@ -124,6 +124,7 @@ canvas { display:block; }
 <div id="overlay">
   <div id="feed-close-btn" onclick="closeOverlay()">✕ 关闭</div>
   <div id="lang-toggle" onclick="toggleLang()">EN</div>
+  <div id="lang-toggle-main" onclick="toggleLangMain()" style="position:fixed;bottom:16px;left:16px;z-index:15;color:#fff;font-size:13px;font-weight:bold;cursor:pointer;padding:7px 14px;background:rgba(80,50,20,0.85);border-radius:20px;border:1px solid rgba(200,160,80,0.5);box-shadow:0 2px 12px rgba(0,0,0,0.4);">EN</div>
   <div id="feed-inner"></div>
   </div>
 </div>
@@ -538,6 +539,22 @@ function tryOpenNearest(){
   if(bd < PAINTING_SPACING()*0.5) openOverlay(best);
 }
 let langEN=false;
+let langMainEN=false;
+function toggleLangMain(){
+  langMainEN=!langMainEN;
+  document.getElementById('lang-toggle-main').textContent=langMainEN?'中文':'EN';
+  // rebuild nav panel if open
+  const nav=document.getElementById('nav-panel');
+  if(nav.classList.contains('open')){
+    nav.innerHTML='';
+    paintings.forEach((p,i)=>{
+      const el=document.createElement('div');el.className='nav-item';
+      el.textContent=p.stamp+' '+(langMainEN?(p.titleEn||p.title):p.title);
+      el.onclick=()=>{teleportTo(i);nav.classList.remove('open');};
+      nav.appendChild(el);
+    });
+  }
+}
 function toggleLang(){
   langEN=!langEN;
   document.getElementById('lang-toggle').textContent=langEN?'中文':'EN';
@@ -636,7 +653,7 @@ function draw(){
 
     ctx.fillStyle='#2a1408';
     ctx.font=`bold ${Math.min(12,lw*0.085)}px 'PingFang SC',sans-serif`;
-    ctx.textAlign='center'; ctx.fillText(paintings[i].title, sx+pw/2, ly+13);
+    ctx.textAlign='center'; ctx.fillText(langMainEN?(paintings[i].titleEn||paintings[i].title):paintings[i].title, sx+pw/2, ly+13);
     ctx.fillStyle='#886644';
     ctx.font=`${Math.min(9,lw*0.065)}px 'PingFang SC',sans-serif`;
     ctx.fillText(paintings[i].date, sx+pw/2, ly+25);
@@ -792,7 +809,7 @@ const navPanel = document.getElementById('nav-panel');
 paintings.forEach((p,i)=>{
   const el=document.createElement('div');
   el.className='nav-item';
-  el.textContent=p.stamp+' '+p.title;
+  el.textContent=p.stamp+' '+(langMainEN?(p.titleEn||p.title):p.title);
   el.addEventListener('click',()=>{
     cat.wx = paintingWorldX(i);
     navPanel.classList.remove('open');
