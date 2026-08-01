@@ -568,9 +568,11 @@ function toggleLang(){
 }
 function closeOverlay(){
   overlay.classList.remove('show'); overlayOpen=false;
-  feedBuilt=false; langEN=false;
+  feedBuilt=false;
   document.getElementById('feed-inner').innerHTML='';
   document.getElementById('dpad').classList.remove('hidden');
+  // restore canvas after overlay
+  setTimeout(()=>{ resize(); }, 50);
 }
 overlay.addEventListener('click',e=>{
   if(e.target===overlay||e.target.id==='close-hint') closeOverlay();
