@@ -571,8 +571,10 @@ function closeOverlay(){
   feedBuilt=false;
   document.getElementById('feed-inner').innerHTML='';
   document.getElementById('dpad').classList.remove('hidden');
-  // restore canvas after overlay
-  setTimeout(()=>{ resize(); }, 50);
+  // reset cat to current painting so gallery is visible
+  cat.wx = paintingWorldX(currentOverlayIndex >= 0 ? currentOverlayIndex : 0);
+  cat.y = catFloorY();
+  cameraX = cat.wx;
 }
 overlay.addEventListener('click',e=>{
   if(e.target===overlay||e.target.id==='close-hint') closeOverlay();
