@@ -650,7 +650,7 @@ function draw(){
     const titleFontSize=12;
     ctx.font=`bold ${titleFontSize}px 'PingFang SC',sans-serif`;
     const titleW=ctx.measureText(titleText).width;
-    const lw=Math.min(Math.max(titleW+24, 60), pw*0.95);
+    const lw=Math.min(Math.max(titleW+24, 90), pw*0.95);
     const lx=sx+pw/2-lw/2, ly=py+ph+FB*2+6;
     ctx.fillStyle='#f5ecd5';
     ctx.beginPath(); ctx.roundRect(lx,ly,lw,30,3); ctx.fill();
