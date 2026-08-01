@@ -28,7 +28,7 @@ canvas { display:block; }
 #overlay {
   display:none;position:fixed;inset:0;z-index:20;
   overflow-y:auto;
-  background:rgba(20,12,4,0.92);backdrop-filter:blur(4px);
+  background:rgba(20,12,4,0.85);backdrop-filter:blur(2px);
   scroll-snap-type:y mandatory;
   -webkit-overflow-scrolling:touch;
 }
@@ -465,6 +465,8 @@ function openOverlay(i){
   currentOverlayIndex=i;
   overlay.classList.add('show'); overlayOpen=true;
   document.getElementById('dpad').classList.add('hidden');
+  // lift canvas so cat floats above overlay bg
+  document.getElementById('c').style.zIndex='21';
   setTimeout(()=>{
     const el=document.getElementById('slot-'+i);
     if(el) el.scrollIntoView({behavior:'instant',block:'center'});
@@ -483,6 +485,7 @@ function closeOverlay(){
   feedBuilt=false;
   document.getElementById('feed-inner').innerHTML='';
   document.getElementById('dpad').classList.remove('hidden');
+  document.getElementById('c').style.zIndex='0';
 }
 overlay.addEventListener('click',e=>{
   if(e.target===overlay||e.target.id==='close-hint') closeOverlay();
@@ -597,7 +600,16 @@ function draw(){
 }
 
 function update(){
-  if(overlayOpen) return;
+  if(overlayOpen){
+    // random wander while feed is open
+    if(Math.random()<0.015){
+      cat.vx=(Math.random()-0.5)*1.2;
+    }
+    cat.wx+=cat.vx;
+    cat.wx=Math.max(0,Math.min(totalWidth,cat.wx));
+    cat.vx*=0.92;
+    return;
+  }
   updateCatSize();
   let dx=0;
   if(keys['ArrowLeft']||keys['a']||keys['A'])  {dx=-cat.spd;cat.dir='left';}
