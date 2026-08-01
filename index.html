@@ -524,6 +524,7 @@ function openOverlay(i){
   currentOverlayIndex=i;
   overlay.classList.add('show'); overlayOpen=true;
   document.getElementById('lang-toggle').style.display='block';
+  document.getElementById('lang-toggle-main').style.display='none';
   document.getElementById('dpad').classList.add('hidden');
   // lift canvas so cat floats above overlay bg
   document.getElementById('c').style.zIndex='21';
@@ -571,6 +572,7 @@ function closeOverlay(){
   overlay.classList.remove('show'); overlayOpen=false;
   feedBuilt=false; langEN=false;
   document.getElementById('lang-toggle').style.display='none';
+  document.getElementById('lang-toggle-main').style.display='block';
   document.getElementById('lang-toggle').textContent='EN';
   document.getElementById('feed-inner').innerHTML='';
   document.getElementById('dpad').classList.remove('hidden');
