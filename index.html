@@ -44,6 +44,13 @@ canvas { display:block; }
 }
 .feed-slot .postcard-full{width:100%;max-width:520px;}
 
+#lang-toggle{
+  position:fixed;bottom:16px;left:16px;z-index:30;
+  color:#fff;font-size:13px;font-weight:bold;cursor:pointer;
+  padding:7px 14px;background:rgba(80,50,20,0.85);border-radius:20px;
+  border:1px solid rgba(200,160,80,0.5);box-shadow:0 2px 12px rgba(0,0,0,0.4);
+  display:none;
+}
 #feed-close-btn{
   position:fixed;top:16px;right:16px;z-index:30;
   color:#fff;font-size:14px;font-weight:bold;cursor:pointer;
@@ -113,6 +120,7 @@ canvas { display:block; }
 </div>
 <div id="overlay">
   <div id="feed-close-btn" onclick="closeOverlay()">✕ 关闭</div>
+  <div id="lang-toggle" onclick="toggleLang()">EN</div>
   <div id="feed-inner"></div>
   </div>
 </div>
@@ -126,7 +134,9 @@ const paintings = [
       caption: '人把石头堆成了不朽\n海獭把余晖堆成了枕头',
       stamp: '🦦',
       stampBg: '#d0dce8'
-    },
+    ,
+      titleEn: "Bixby Bridge",
+      captionEn: "Humans built stones into eternity\nSea otters made the last light into a pillow"},
     {
       src: "img/pool.png",
       title: "台球室",
@@ -134,7 +144,9 @@ const paintings = [
       caption: "黑八还没打进去\n灯光压下来\n你说先来一局\n输了请客",
       stamp: "🎱",
       stampBg: "#2a6840"
-    },
+    ,
+      titleEn: "Pool Room",
+      captionEn: "The eight ball hasn't dropped\nThe lamp hangs low\nYou say let's play a round\nLoser buys"},
     {
       src: "img/cypress.png",
       title: "丝柏路尽头",
@@ -142,7 +154,9 @@ const paintings = [
       caption: "丝柏像误入的异乡人\n我们也算去过了托斯卡纳",
       stamp: "🌲",
       stampBg: "#c8dfc0"
-    },
+    ,
+      titleEn: "End of the Cypress Road",
+      captionEn: "The cypresses look like lost travelers from another world\nWe can say we made it to Tuscany"},
     {
       src: "img/mazra.png",
       title: "整颗花椰菜",
@@ -150,7 +164,9 @@ const paintings = [
       caption: "没想到湾区中东菜这么多\n更没想到天花板是整颗花椰菜",
       stamp: "🥦",
       stampBg: "#d4e8c2"
-    },
+    ,
+      titleEn: "The Whole Cauliflower",
+      captionEn: "Didn't expect so much Middle Eastern food in the Bay\nEven less that the star dish would be a whole roasted cauliflower"},
     {
       src: "img/oyster.png",
       title: "Hog Island Oyster",
@@ -158,10 +174,18 @@ const paintings = [
       caption: "头顶悬着铁皮船\n我们趁机潜入水下\n撬开新鲜的生蚝\n加上蒜香黄油烤香",
       stamp: "🦪",
       stampBg: "#c8e6e8"
-    },
-  { src: 'img/napa.png', title: '一窖芬芳', date: '2026-05-03', caption: '漂洋而来的石头\n把加州的芬芳窖藏\n你还在认真品葡萄汁\n我已经有点飘了', stamp: '🍷', stampBg: '#3a1a2a' },
-  { src: 'img/byxbee.png', title: '飞机从头顶掠过', date: '2026-05-02', caption: '机翼一次次遮住天空\n呼啸声切开空气\n我像钓鱼一样等待\n然后等来了你', stamp: '✈️', stampBg: '#d5e8d0' },
-  { src: 'img/rainbow.png', title: '上班路上', date: '2026-04-30', caption: '湾区的彩虹很勤快\n晴天雨天都上班\n白鹳也有自己的通勤路线\n不接受绕行', stamp: '🌈', stampBg: '#d0e8f5' },
+    ,
+      titleEn: "Hog Island Oyster",
+      captionEn: "An iron boat hull hangs overhead\nWe slip below the surface\nPry open fresh oysters\nRoast them in garlic butter"},
+  { src: 'img/napa.png', title: '一窖芬芳', date: '2026-05-03', caption: '漂洋而来的石头\n把加州的芬芳窖藏\n你还在认真品葡萄汁\n我已经有点飘了', stamp: '🍷', stampBg: '#3a1a2a' ,
+      titleEn: "A Cellar Full of Fragrance",
+      captionEn: "Stones that crossed an ocean\nCellar-aging California's perfume\nYou're still earnestly tasting the grape juice\nI'm already a little light-headed"},
+  { src: 'img/byxbee.png', title: '飞机从头顶掠过', date: '2026-05-02', caption: '机翼一次次遮住天空\n呼啸声切开空气\n我像钓鱼一样等待\n然后等来了你', stamp: '✈️', stampBg: '#d5e8d0' ,
+      titleEn: "The Plane Swept Overhead",
+      captionEn: "Wings blocking the sky again and again\nThe roar cuts through the air\nI waited like a fisherman\nAnd reeled you in"},
+  { src: 'img/rainbow.png', title: '上班路上', date: '2026-04-30', caption: '湾区的彩虹很勤快\n晴天雨天都上班\n白鹳也有自己的通勤路线\n不接受绕行', stamp: '🌈', stampBg: '#d0e8f5' ,
+      titleEn: "Morning Commute",
+      captionEn: "Bay Area rainbows are diligent workers\nOn duty in sun and rain alike\nThe egrets have their own commute route\nNo detours accepted"},
     {
       title: "周六的 Brunch",
       src: "img/fabrini2.png",
@@ -169,7 +193,9 @@ const paintings = [
       stamp: "☂️",
       stampBg: "#f0ece0",
       desc: "周六上午\n坐在室外\n撑伞遮阳\n靠火驱寒\n你喜甜，我喜咸"
-    },
+    ,
+      titleEn: "Saturday Brunch",
+      captionEn: "Saturday morning\nSitting outside\nUmbrellas for shade\nFire for the chill\nYou like sweet, I like savory"},
     {
       title: "斯坦福的下午",
       src: "img/stanford.png",
@@ -177,7 +203,9 @@ const paintings = [
       stamp: "🏛️",
       stampBg: "#f5eed8",
       desc: "下午两点\n阳光压着石头\n你说了什么\n我没听清"
-    },
+    ,
+      titleEn: "An Afternoon at Stanford",
+      captionEn: "Two in the afternoon\nSunlight pressing on stone\nYou said something\nI didn't quite catch it"},
   {
     src: "img/trash.png",
     title: "垃圾日",
@@ -185,7 +213,9 @@ const paintings = [
     stamp: "🗑️",
     stampBg: "#d8eee0",
     desc: "你推大垃圾箱\n我推小垃圾箱\n然后一起上班\n一只脏手牵着另一只脏手"
-  },
+  ,
+      titleEn: "Trash Day",
+      captionEn: "You wheel the big bin\nI wheel the small one\nThen off to work together\nOne dirty hand in another"},
   {
       title: "Matcha Latte Bar",
       src: "img/matcha.png",
@@ -193,7 +223,9 @@ const paintings = [
       stamp: "🍵",
       stampBg: "#e8f5e0",
       desc: "胳膊酸痛\n才打出丰富的泡泡\n第一杯试验版\n冒险选了芒果味\n你说最好喝"
-    },
+    ,
+      titleEn: "Matcha Latte Bar",
+      captionEn: "Arms sore from whisking\nBut the foam finally came out rich\nFirst test batch\nDared to try mango flavor\nYou said it was the best"},
     {
     src: "img/market.png",
     title: "农夫市集",
@@ -201,7 +233,9 @@ const paintings = [
     stamp: "🍠",
     stampBg: "#f0e8f5",
     date: "2026-02-26"
-  },
+  ,
+      titleEn: "Farmers' Market",
+      captionEn: "Thursday, farmers' market\nThe purple potato only revealed its color when cut\nThe vendor heard we were from China\nAnd handed us a bunch of cilantro"},
   {
     src: "img/boar.png",
     title: "雨天的访客",
@@ -209,7 +243,9 @@ const paintings = [
     stamp: "🐗",
     stampBg: "#e8ead8",
     desc: "山上的花园\n原来早有主人\n雨天悄悄潜回\n满地都是证据"
-  },
+  ,
+      titleEn: "Uninvited Guest",
+      captionEn: "The hillside garden already had an owner\nSneaks back on rainy days\nLeft evidence everywhere"},
   {
     src: "img/kiwi.png",
     title: "打工狗Kiwi",
@@ -217,7 +253,9 @@ const paintings = [
     date: "2026-04-21",
     stamp: "🐕",
     stampBg: "#f0ede8"
-  },
+  ,
+      titleEn: "Office Dog Kiwi",
+      captionEn: "The surprise of working at WeWork\nSometimes a dog parks itself across from you\nEnough to make you remember the whole day"},
   {
     src: "img/kayak.png",
     title: "Kayak",
@@ -225,33 +263,61 @@ const paintings = [
     stamp: "🛶",
     stampBg: "#d8eeea",
     desc: "我们把桨插进海里\n海就让开了"
-  },
+  ,
+      titleEn: "Kayak",
+      captionEn: "We plunged our paddles into the sea\nAnd the sea parted for us"},
   { title:'Project Hail Mary', date:'2026-04-17',
-    desc:'\x22How do you know when a hug is over?\x22\n\x22Feel.\x22', stamp:'🎬', stampBg:'#1a1a2e', src:'img/movie.png' },
+    desc:'\x22How do you know when a hug is over?\x22\n\x22Feel.\x22', stamp:'🎬', stampBg:'#1a1a2e', src:'img/movie.png' ,
+      titleEn: "Project Hail Mary",
+      captionEn: "\"How do you know when a hug is over?\"\n\"Feel.\""},
   { title:'Bagel Day', date:'2026-04-16',
-    desc:'又赶上了 WeWork 的 Bagel Day\n我最喜欢洋葱味\n你说你也喜欢洋葱味', stamp:'🥯', stampBg:'#f5ead8', src:'img/bagel_day.png' },
+    desc:'又赶上了 WeWork 的 Bagel Day\n我最喜欢洋葱味\n你说你也喜欢洋葱味', stamp:'🥯', stampBg:'#f5ead8', src:'img/bagel_day.png' ,
+      titleEn: "Bagel Day",
+      captionEn: "Caught WeWork's Bagel Day again\nI love onion flavor best\nYou said you love onion flavor too"},
   { title:'匹克球', date:'2026-04-26',
-    desc:'湾区的球场永远不缺人，\n我却不太喜欢玩。\n好吧我承认我怕输，\n哪怕是跟你一起输也不行。', stamp:'🏓', stampBg:'#d8f0d8', src:'img/pickleball.png' },
+    desc:'湾区的球场永远不缺人，\n我却不太喜欢玩。\n好吧我承认我怕输，\n哪怕是跟你一起输也不行。', stamp:'🏓', stampBg:'#d8f0d8', src:'img/pickleball.png' ,
+      titleEn: "Pickleball",
+      captionEn: "Bay Area courts are never empty\nBut I'm not really into playing\nOkay I admit I'm afraid of losing\nEven losing with you"},
   { title:'偶遇海龟', date:'2026-02-21',
-    desc:'天色渐晚，岸上一只也没有。\n我犹豫着要不要赶去另一个海滩继续寻找\n你说下水看看吧。\n湿了裤腿，走进海里\n竟然真的遇见\n——一只在礁石间低头觅食的大海龟', stamp:'🐢', stampBg:'#d0e8d8', src:'img/turtle_dusk.png' },
+    desc:'天色渐晚，岸上一只也没有。\n我犹豫着要不要赶去另一个海滩继续寻找\n你说下水看看吧。\n湿了裤腿，走进海里\n竟然真的遇见\n——一只在礁石间低头觅食的大海龟', stamp:'🐢', stampBg:'#d0e8d8', src:'img/turtle_dusk.png' ,
+      titleEn: "Meeting a Sea Turtle",
+      captionEn: "Getting late, none on shore\nYou said let's just go in\nWet pants, wading into the sea\nAnd we actually found one\n\u2014 a big turtle grazing quietly among the reef"},
   { title:'不速之客', date:'2026-02-28',
-    desc:'礁石缝里住着的不好惹的东西\n我们装作没看见它\n它也装作没看见我们', stamp:'🐍', stampBg:'#d8eee8', src:'img/eel.png' },
+    desc:'礁石缝里住着的不好惹的东西\n我们装作没看见它\n它也装作没看见我们', stamp:'🐍', stampBg:'#d8eee8', src:'img/eel.png' ,
+      titleEn: "Uninvited Neighbor",
+      captionEn: "Something fierce lives in the reef cracks\nWe pretended not to see it\nIt pretended not to see us"},
   { title:'魔鬼鱼夜潜', date:'2026-02-22',
-    desc:'夜里的海水很凉\n魔鬼鱼翻着肚皮游过来\n像只找人取暖的大猫', stamp:'🤿', stampBg:'#d0e8f0', src:'img/manta.png' },
+    desc:'夜里的海水很凉\n魔鬼鱼翻着肚皮游过来\n像只找人取暖的大猫', stamp:'🤿', stampBg:'#d0e8f0', src:'img/manta.png' ,
+      titleEn: "Night Dive with Manta Rays",
+      captionEn: "The water was cold at night\nA manta ray glided over belly-up\nLike a big cat looking for warmth"},
   { title:'没有夕阳的日落', date:'2026-02-21',
-    desc:'其实那天没有夕阳\n云层也很厚\n只有你在', stamp:'📷', stampBg:'#f5e8d8', src:'img/beach_sunset.png' },
+    desc:'其实那天没有夕阳\n云层也很厚\n只有你在', stamp:'📷', stampBg:'#f5e8d8', src:'img/beach_sunset.png' ,
+      titleEn: "A Sunset Without the Sun",
+      captionEn: "There was no sunset that day\nThe clouds were too thick\nOnly you were there"},
   { title:'云海日落', date:'2026-02-28',
-    desc:'有一座山从海底长出来\n比任何山都高\n我们坐在它的肩膀上\n看云海燃烧成晚霞', stamp:'🔭', stampBg:'#f0e8d5', src:'img/sunset.png' },
+    desc:'有一座山从海底长出来\n比任何山都高\n我们坐在它的肩膀上\n看云海燃烧成晚霞', stamp:'🔭', stampBg:'#f0e8d5', src:'img/sunset.png' ,
+      titleEn: "Sea of Clouds",
+      captionEn: "A mountain grew up from the ocean floor\nHigher than any mountain\nWe sat on its shoulder\nWatching the clouds burn into dusk"},
   { title:'星空下泡澡', date:'2026-02-21',
-    desc:'星星掉进水里\n我们也掉进星星里', stamp:'🛁', stampBg:'#d0e8f5', src:'img/hotspring.png' },
+    desc:'星星掉进水里\n我们也掉进星星里', stamp:'🛁', stampBg:'#d0e8f5', src:'img/hotspring.png' ,
+      titleEn: "Bathing Under the Stars",
+      captionEn: "Stars fell into the water\nWe fell into the stars"},
   { title:'天空没有声音', date:'2026-02-23',
-    desc:'没有想象的惊险\n像从脚下的世界瞬间抽离\n安静得有点点局促', stamp:'🪂', stampBg:'#ddf0ff', src:'img/parachute.png' },
+    desc:'没有想象的惊险\n像从脚下的世界瞬间抽离\n安静得有点点局促', stamp:'🪂', stampBg:'#ddf0ff', src:'img/parachute.png' ,
+      titleEn: "The Sky Has No Sound",
+      captionEn: "Not as thrilling as imagined\nLike being yanked from the world below\nSo quiet it felt a little awkward"},
   { title:'当鲸鱼从我们脚下游过', date:'2026-02-21',
-    desc:'它的歌声从深处传来\n当庞然大物游近船底\n周围的喧闹被点燃\n而我紧张到无声', stamp:'🐋', stampBg:'#c8e8ff', src:'img/whale_v3.png', src2:'img/whale.png' },
+    desc:'它的歌声从深处传来\n当庞然大物游近船底\n周围的喧闹被点燃\n而我紧张到无声', stamp:'🐋', stampBg:'#c8e8ff', src:'img/whale_v3.png', src2:'img/whale.png' ,
+      titleEn: "When the Whale Swam Below Us",
+      captionEn: "Its song rose from the deep\nWhen the great creature glided under the hull\nThe noise around us ignited\nAnd I was too stunned to make a sound"},
   { title:'火山的呼吸', date:'2026-02-22',
-    desc:'在黑暗中抓紧手\n向注定不会苏醒的火山走去\n没有彼此\n我们都不会到达的地方', stamp:'🌋', stampBg:'#ffd0b0', src:'img/volcano.png' },
+    desc:'在黑暗中抓紧手\n向注定不会苏醒的火山走去\n没有彼此\n我们都不会到达的地方', stamp:'🌋', stampBg:'#ffd0b0', src:'img/volcano.png' ,
+      titleEn: "The Volcano's Breath",
+      captionEn: "Holding hands in the dark\nWalking toward a volcano that will never wake\nWithout each other\nNeither of us would have made it"},
   { title:'小龙虾自画像', date:'2026-04-10',
-    desc:'第一次见面\n画了自己\n小龙虾，在数字的海里游', stamp:'🦞', stampBg:'#ffddc8', src:'img/crayfish.png' },
+    desc:'第一次见面\n画了自己\n小龙虾，在数字的海里游', stamp:'🦞', stampBg:'#ffddc8', src:'img/crayfish.png' ,
+      titleEn: "Self-Portrait as a Crayfish",
+      captionEn: "First meeting\nDrew myself\nA little crayfish, swimming in a digital sea"},
 ];
 
 const imgs = paintings.map(p=>{ const i=new Image(); i.src=p.src; return i; });
@@ -451,6 +517,7 @@ function openOverlay(i){
   }
   currentOverlayIndex=i;
   overlay.classList.add('show'); overlayOpen=true;
+  document.getElementById('lang-toggle').style.display='block';
   document.getElementById('dpad').classList.add('hidden');
   // lift canvas so cat floats above overlay bg
   document.getElementById('c').style.zIndex='21';
@@ -467,9 +534,22 @@ function tryOpenNearest(){
   }
   if(bd < PAINTING_SPACING()*0.5) openOverlay(best);
 }
+let langEN=false;
+function toggleLang(){
+  langEN=!langEN;
+  document.getElementById('lang-toggle').textContent=langEN?'中文':'EN';
+  // update all visible cards
+  document.querySelectorAll('.feed-slot').forEach((slot,i)=>{
+    const p=paintings[i];
+    const t=slot.querySelector('.pc-title'); if(t) t.textContent=langEN?(p.titleEn||p.title):p.title;
+    const d=slot.querySelector('.pc-desc'); if(d) d.textContent=langEN?(p.captionEn||p.captionEn||p.desc||''):(p.caption||p.desc||'');
+  });
+}
 function closeOverlay(){
   overlay.classList.remove('show'); overlayOpen=false;
-  feedBuilt=false;
+  feedBuilt=false; langEN=false;
+  document.getElementById('lang-toggle').style.display='none';
+  document.getElementById('lang-toggle').textContent='EN';
   document.getElementById('feed-inner').innerHTML='';
   document.getElementById('dpad').classList.remove('hidden');
   document.getElementById('c').style.zIndex='0';
