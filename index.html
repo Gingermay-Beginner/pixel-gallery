@@ -27,17 +27,16 @@ canvas { display:block; }
 
 #overlay {
   display:none;position:fixed;inset:0;z-index:20;
-  overflow-y:auto;-webkit-overflow-scrolling:touch;
+  align-items:center;justify-content:center;padding:16px;
   background:rgba(20,12,4,0.92);backdrop-filter:blur(4px);
-  padding:40px 16px 80px;
-  scroll-behavior:smooth;
 }
-#overlay.show{display:block;}
-#feed-inner{
-  display:flex;flex-direction:column;align-items:center;gap:48px;
-  max-width:520px;margin:0 auto;
+#overlay.show{display:flex;}
+#feed-inner{display:none;}
+.ov-nav-hint{
+  position:absolute;bottom:20px;left:50%;transform:translateX(-50%);
+  color:rgba(255,255,255,0.3);font-size:11px;letter-spacing:0.12em;
+  pointer-events:none;text-align:center;line-height:2;
 }
-.feed-item{ width:100%; }
 .postcard-full {
   width:100%;max-width:520px;border-radius:6px;overflow:hidden;
   box-shadow:0 16px 60px rgba(0,0,0,0.7);
@@ -99,7 +98,25 @@ canvas { display:block; }
   <div class="de"></div><div class="db" id="bd">▼</div><div class="de"></div>
 </div>
 <div id="overlay">
-  <div id="feed-inner"></div>
+  <div style="width:100%;max-width:520px;position:relative;">
+    <div class="postcard-full">
+      <div class="pc-painting"><img id="ov-img" src="" style="width:100%;display:block;image-rendering:pixelated;"></div>
+      <div class="pc-back">
+        <div class="pc-back-inner">
+          <div class="pc-text">
+            <div class="pc-title" id="ov-title"></div>
+            <div class="pc-date" id="ov-date"></div>
+            <div class="pc-desc" id="ov-desc"></div>
+          </div>
+          <div class="pc-stamp-col">
+            <canvas id="ov-stamp" width="76" height="88" class="pc-stamp-canvas"></canvas>
+            <canvas id="ov-mark" width="110" height="46" class="pc-postmark"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ov-nav-hint">↑ ↓ 滚动切换 &nbsp;·&nbsp; ESC 关闭</div>
   </div>
 </div>
 
@@ -298,6 +315,8 @@ document.addEventListener('keydown',e=>{
   if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)) e.preventDefault();
   if((e.key==='e'||e.key==='E')&&!overlayOpen) tryOpenNearest();
   if(e.key==='Escape'&&overlayOpen) closeOverlay();
+  if(overlayOpen&&(e.key==='ArrowDown'||e.key==='ArrowRight')) openOverlay((currentOverlayIndex+1)%paintings.length);
+  if(overlayOpen&&(e.key==='ArrowUp'||e.key==='ArrowLeft')) openOverlay((currentOverlayIndex-1+paintings.length)%paintings.length);
 });
 document.addEventListener('keyup',e=>keys[e.key]=false);
 ['bu','bd','bl','br'].forEach((id,i)=>{
@@ -323,7 +342,7 @@ canvas.addEventListener('click',e=>{
 });
 
 let overlayOpen=false;
-let feedBuilt=false;
+let currentOverlayIndex=-1;
 const overlay=document.getElementById('overlay');
 
 function buildStampCanvas(canvas, p){
@@ -362,73 +381,30 @@ function buildMarkCanvas(canvas, p){
   mx.restore();
 }
 
-function buildFeed(){
-  if(feedBuilt) return;
-  feedBuilt=true;
-  const feed=document.getElementById('feed-inner');
-  // close button at top
-  const closeBtn=document.createElement('div');
-  closeBtn.id='feed-close';
-  closeBtn.textContent='✕  关闭';
-  closeBtn.style.cssText='position:fixed;top:16px;right:16px;z-index:30;color:rgba(255,255,255,0.5);font-size:13px;cursor:pointer;padding:6px 12px;background:rgba(0,0,0,0.4);border-radius:20px;letter-spacing:0.08em;';
-  closeBtn.onclick=closeOverlay;
-  document.body.appendChild(closeBtn);
-
-  paintings.forEach((p,idx)=>{
-    const item=document.createElement('div');
-    item.className='feed-item postcard-full';
-    item.id='feed-item-'+idx;
-
-    // painting
-    const pcPaint=document.createElement('div');pcPaint.className='pc-painting';
-    const img=document.createElement('img');img.src=p.src;img.style.cssText='width:100%;display:block;image-rendering:pixelated;';
-    pcPaint.appendChild(img);
-
-    // back
-    const pcBack=document.createElement('div');pcBack.className='pc-back';
-    const inner=document.createElement('div');inner.className='pc-back-inner';
-    const pcText=document.createElement('div');pcText.className='pc-text';
-    const title=document.createElement('div');title.className='pc-title';title.textContent=p.title;
-    const date=document.createElement('div');date.className='pc-date';date.textContent=p.date;
-    const desc=document.createElement('div');desc.className='pc-desc';desc.textContent=p.caption||p.desc||'';
-    pcText.appendChild(title);pcText.appendChild(date);pcText.appendChild(desc);
-
-    const stampCol=document.createElement('div');stampCol.className='pc-stamp-col';
-    const stampCanvas=document.createElement('canvas');stampCanvas.width=76;stampCanvas.height=88;stampCanvas.className='pc-stamp-canvas';
-    const markCanvas=document.createElement('canvas');markCanvas.width=110;markCanvas.height=46;markCanvas.className='pc-postmark';
-    stampCol.appendChild(stampCanvas);stampCol.appendChild(markCanvas);
-
-    inner.appendChild(pcText);inner.appendChild(stampCol);
-    pcBack.appendChild(inner);
-
-    if(p.src2){
-      const btn=document.createElement('div');
-      btn.style.cssText='margin-top:8px;cursor:pointer;font-size:11px;background:#f5f0e8;border:1px solid #c8b89a;border-radius:6px;padding:5px 10px;color:#6b5a3e;text-align:center;';
-      btn.textContent='🔄 切换版本';let cur=0;
-      btn.onclick=()=>{cur=(cur+1)%2;img.src=cur?p.src2:p.src;};
-      pcBack.appendChild(btn);
-    }
-
-    item.appendChild(pcPaint);item.appendChild(pcBack);
-    feed.appendChild(item);
-
-    // draw stamp after append (canvas needs to be in DOM for some browsers)
-    requestAnimationFrame(()=>{buildStampCanvas(stampCanvas,p);buildMarkCanvas(markCanvas,p);});
-  });
-}
 
 function openOverlay(i){
-  buildFeed();
+  currentOverlayIndex=i;
+  const p=paintings[i];
+  document.getElementById('ov-img').src=p.src;
+  document.getElementById('ov-title').textContent=p.title;
+  document.getElementById('ov-date').textContent=p.date;
+  document.getElementById('ov-desc').textContent=p.caption||p.desc||'';
+  // stamp
+  const sc=document.getElementById('ov-stamp');
+  buildStampCanvas(sc,p);
+  const mc=document.getElementById('ov-mark');
+  buildMarkCanvas(mc,p);
+  // ver toggle
+  const existBtn=document.getElementById('ver-toggle');if(existBtn)existBtn.remove();
+  if(p.src2){
+    const btn=document.createElement('div');btn.id='ver-toggle';
+    btn.style.cssText='margin-top:8px;cursor:pointer;font-size:11px;background:#f5f0e8;border:1px solid #c8b89a;border-radius:6px;padding:5px 10px;color:#6b5a3e;text-align:center;';
+    btn.textContent='🔄 切换版本';let cur=0;
+    btn.onclick=(e)=>{e.stopPropagation();cur=(cur+1)%2;document.getElementById('ov-img').src=cur?p.src2:p.src;};
+    document.querySelector('.pc-back').appendChild(btn);
+  }
   overlay.classList.add('show'); overlayOpen=true;
   document.getElementById('dpad').classList.add('hidden');
-  // scroll to item after paint
-  setTimeout(()=>{
-    const el=document.getElementById('feed-item-'+i);
-    if(el){
-      const top=el.offsetTop;
-      overlay.scrollTop=top - overlay.clientHeight/2 + el.clientHeight/2;
-    }
-  }, 80);
 }
 function tryOpenNearest(){
   let best=-1, bd=Infinity;
@@ -441,10 +417,13 @@ function tryOpenNearest(){
 function closeOverlay(){
   overlay.classList.remove('show'); overlayOpen=false;
   document.getElementById('dpad').classList.remove('hidden');
-  const cb=document.getElementById('feed-close');if(cb)cb.remove();
-  feedBuilt=false;
-  const fi=document.getElementById('feed-inner'); if(fi) fi.innerHTML='';
 }
+overlay.addEventListener('wheel',e=>{
+  e.preventDefault();
+  if(!overlayOpen) return;
+  if(e.deltaY>0) openOverlay((currentOverlayIndex+1)%paintings.length);
+  else openOverlay((currentOverlayIndex-1+paintings.length)%paintings.length);
+},{passive:false});
 overlay.addEventListener('click',e=>{
   if(e.target===overlay||e.target.id==='close-hint') closeOverlay();
 });
