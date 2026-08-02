@@ -551,7 +551,7 @@ function tryOpenNearest(){
   if(bd < PAINTING_SPACING()*0.5) openOverlay(best);
 }
 let langEN=false;
-let langMainEN=false;
+let langMainEN=true;
 function toggleLangMain(){
   langMainEN=!langMainEN;
   document.getElementById('ltm-zh').classList.toggle('active', !langMainEN);
@@ -812,7 +812,7 @@ catImg.onload=initCat; if(catImg.complete) initCat();
 function loop(){update();draw();requestAnimationFrame(loop);}
 loop();
 // init lang toggle active state
-document.getElementById('ltm-zh').classList.add('active');
+document.getElementById('ltm-en').classList.add('active');
 // 查看大图按钮
 document.getElementById('btn-view').addEventListener('click',()=>{
   let best=-1, bd=Infinity;
