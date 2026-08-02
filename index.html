@@ -48,6 +48,23 @@ canvas { display:block; }
 .feed-slot .db:hover{color:#fff;background:rgba(255,255,255,0.22);}
 
 
+#lang-toggle-main{
+  position:fixed;top:16px;left:16px;z-index:31;
+  display:flex;align-items:center;gap:0;
+  background:rgba(40,25,10,0.75);border:1px solid rgba(200,160,80,0.4);
+  border-radius:20px;overflow:hidden;cursor:pointer;
+  box-shadow:0 2px 10px rgba(0,0,0,0.35);font-size:12px;font-weight:bold;
+  user-select:none;
+}
+.ltm-opt{
+  padding:6px 12px;color:rgba(255,240,200,0.45);transition:all 0.2s;
+}
+.ltm-sep{
+  color:rgba(200,160,80,0.3);font-size:10px;
+}
+.ltm-opt.active{
+  color:#fff;background:rgba(180,130,50,0.6);border-radius:20px;
+}
 #feed-close-btn{display:none;
   position:fixed;top:16px;right:16px;z-index:30;
   color:#fff;font-size:14px;font-weight:bold;cursor:pointer;
@@ -116,7 +133,11 @@ canvas { display:block; }
   <div class="de"></div><div class="db" id="bd">▼</div><div class="de"></div>
 </div>
 <div id="feed-close-btn" onclick="closeOverlay()">✕</div>
-<div id="lang-toggle-main" onclick="toggleLangMain()" style="position:fixed;top:16px;left:16px;z-index:31;color:#fff;font-size:13px;font-weight:bold;cursor:pointer;padding:7px 14px;background:rgba(80,50,20,0.85);border-radius:20px;border:1px solid rgba(200,160,80,0.5);box-shadow:0 2px 12px rgba(0,0,0,0.4);">EN</div>
+<div id="lang-toggle-main" onclick="toggleLangMain()">
+  <span class="ltm-opt" id="ltm-zh">中</span>
+  <span class="ltm-sep">|</span>
+  <span class="ltm-opt" id="ltm-en">EN</span>
+</div>
 <div id="overlay">
   <div id="feed-inner"></div>
   </div>
@@ -533,7 +554,8 @@ let langEN=false;
 let langMainEN=false;
 function toggleLangMain(){
   langMainEN=!langMainEN;
-  document.getElementById('lang-toggle-main').textContent=langMainEN?'中文':'EN';
+  document.getElementById('ltm-zh').classList.toggle('active', !langMainEN);
+  document.getElementById('ltm-en').classList.toggle('active', langMainEN);
   // update feed cards if open
   document.querySelectorAll('.feed-slot').forEach((slot,i)=>{
     const p=paintings[i];
@@ -789,6 +811,8 @@ catImg.onload=initCat; if(catImg.complete) initCat();
 
 function loop(){update();draw();requestAnimationFrame(loop);}
 loop();
+// init lang toggle active state
+document.getElementById('ltm-zh').classList.add('active');
 // 查看大图按钮
 document.getElementById('btn-view').addEventListener('click',()=>{
   let best=-1, bd=Infinity;
