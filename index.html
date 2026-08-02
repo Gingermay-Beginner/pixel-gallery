@@ -591,6 +591,7 @@ function closeOverlay(){
   feedBuilt=false;
   document.getElementById('feed-inner').innerHTML='';
   document.getElementById('dpad').classList.remove('hidden');
+  document.getElementById('feed-close-btn').style.display='none';
   // reset cat to current painting so gallery is visible
   cat.wx = paintingWorldX(currentOverlayIndex >= 0 ? currentOverlayIndex : 0);
   cat.y = catFloorY();
